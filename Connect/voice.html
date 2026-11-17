@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Phòng trò chuyện thoại theo sở thích trên Connect.">
+  <link rel="icon" type="image/png" href="images/favicon.png"><title>Voice Community | Connect</title>
+  <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/voice.css">
+    <link rel="stylesheet" href="css/zodiac.css">
+    <link rel="stylesheet" href="css/polish.css">
+    <link rel="stylesheet" href="css/effects.css">
+</head>
+<body>
+<header class="site-header"><nav class="navbar" aria-label="Điều hướng chính">
+  <a href="index.html" class="logo">Connect<span>.</span></a><button class="menu-btn" id="menuBtn" type="button" aria-label="Mở menu" aria-expanded="false">☰</button>
+  <div class="nav-links" id="navLinks"><a href="index.html">Trang chủ</a><a href="discover.html">Khám phá</a><a href="voice.html" aria-current="page">Phòng thoại</a><a href="profile.html">Hồ sơ</a><a href="match.html">Soul Match</a>
+                <a href="square.html">Quảng trường</a><a href="avatar.html">Tạo Avatar</a></div>
+  <div class="nav-actions"><button id="themeToggle" class="theme-btn" type="button" aria-label="Đổi giao diện">🌙</button><div id="authArea" class="auth-area"></div></div>
+</nav></header>
+<main class="voice-main">
+  <section class="voice-heading"><span class="eyebrow">CONNECT COMMUNITY</span><h1>Phòng trò chuyện <span>thoại</span></h1><p>Gặp gỡ cộng đồng qua những cuộc trò chuyện theo chủ đề và sở thích chung.</p></section>
+  <section class="voice-layout">
+    <div class="room-list-panel">
+      <div class="panel-heading"><div><h2>Phòng đang mở</h2><p>Chọn một chủ đề để tham gia</p></div><button class="btn" id="showCreateBtn" type="button">＋ Tạo phòng</button></div>
+      <div class="topic-filters" id="topicFilters"><button class="topic-filter active" data-topic="all">Tất cả</button><button class="topic-filter" data-topic="music">🎵 Âm nhạc</button><button class="topic-filter" data-topic="games">🎲 Trò chơi</button><button class="topic-filter" data-topic="stories">📖 Kể chuyện</button><button class="topic-filter" data-topic="chat">💬 Sở thích</button></div>
+      <div id="roomList" class="room-grid"><div class="empty-state">Đang tải danh sách phòng...</div></div>
+    </div>
+    <aside class="safety-panel"><div class="safety-icon">🛡️</div><h2>Cùng giữ Connect an toàn</h2><ul><li>Chỉ tham gia những phòng phù hợp với bạn.</li><li>Không chia sẻ địa chỉ, mật khẩu hoặc thông tin riêng tư.</li><li>Bạn có thể tắt micro hoặc rời phòng bất cứ lúc nào.</li><li>Báo cáo hành vi không phù hợp với người quản trị.</li></ul><p>Phòng có tối đa 4 người để cuộc trò chuyện dễ quản lý.</p></aside>
+  </section>
+</main>
+<div class="modal" id="createModal" hidden><div class="modal-card"><button class="modal-close" id="closeCreateBtn" aria-label="Đóng">×</button><span class="eyebrow">NEW COMMUNITY ROOM</span><h2>Tạo phòng thoại</h2><form id="createRoomForm"><label for="roomName">Tên phòng</label><input id="roomName" maxlength="55" placeholder="Ví dụ: Góc kể chuyện" required><label for="roomTopic">Chủ đề</label><select id="roomTopic"><option value="music">🎵 Âm nhạc</option><option value="games">🎲 Trò chơi</option><option value="stories">📖 Kể chuyện</option><option value="chat">💬 Sở thích</option></select><label for="roomDescription">Mô tả ngắn</label><textarea id="roomDescription" maxlength="180" placeholder="Mọi người sẽ trò chuyện về điều gì?"></textarea><button class="btn" type="submit" id="createRoomBtn">Tạo phòng</button><p id="createMessage" class="form-message" aria-live="polite"></p></form></div></div>
+<div class="modal" id="callModal" hidden><div class="modal-card call-card"><button class="modal-close" id="closeCallBtn" aria-label="Đóng">×</button><span class="eyebrow">VOICE ROOM</span><h2 id="activeRoomName">Phòng thoại</h2><p id="callStatus" class="call-status">Đang kết nối...</p><div id="participantList" class="participant-list"></div><div class="call-controls"><button id="micBtn" class="call-control" type="button">🎙️ Tắt micro</button><button id="leaveBtn" class="call-control leave-control" type="button">Rời phòng</button></div>
+      <section class="party-tools" aria-label="Quà tặng và trò chuyện trong phòng">
+        <div class="party-gifts">
+          <span class="audio-tool-title">🎁 Tặng quà ảo</span>
+          <label class="sr-only" for="giftTo">Tặng cho</label><select id="giftTo" class="audio-select"><option value="all">Cả phòng</option></select>
+          <div class="sound-buttons" id="giftButtons"><button class="sound-btn" data-gift="fireworks" type="button">🎆 Pháo hoa</button><button class="sound-btn" data-gift="meteors" type="button">🌠 Mưa sao băng</button><button class="sound-btn" data-gift="hearts" type="button">💖 Trái tim bay</button></div>
+          <p id="giftStatus" class="audio-help" aria-live="polite">Quà sẽ hiện hiệu ứng toàn màn hình cho mọi người trong phòng.</p>
+        </div>
+        <div class="party-chat">
+          <span class="audio-tool-title">💬 Chat trong phòng</span>
+          <div id="chatLog" class="chat-log" role="log" aria-live="polite" aria-label="Tin nhắn trong phòng"><p class="chat-empty">Chưa có tin nhắn nào.</p></div>
+          <form id="chatForm" class="chat-form" autocomplete="off"><input id="chatInput" maxlength="200" placeholder="Nhắn gì đó cho mọi người..." aria-label="Tin nhắn"><button class="btn" type="submit">Gửi</button></form>
+          <p class="audio-help">Thử gõ “chúc mừng sinh nhật”, “nhớ bạn” hay “chúc ngủ ngon” để thả biểu tượng cảm xúc. Tin nhắn chỉ hiện trong lúc bạn ở phòng và không được lưu lại.</p>
+        </div>
+      </section>
+      <section class="audio-tools" aria-label="Hiệu ứng âm thanh">
+        <div class="audio-tool-group"><label for="voiceEffect">🎛️ Biến đổi giọng nói</label><select id="voiceEffect" class="audio-select"><option value="normal">Giọng bình thường</option><option value="deep">Giọng trầm · EQ</option><option value="high">Giọng cao · EQ</option><option value="cute">Giọng dễ thương · EQ</option><option value="robot">Giọng robot</option></select><p class="audio-help">Hiệu ứng được xử lý trực tiếp và gửi tới mọi người trong phòng.</p></div>
+        <div class="audio-tool-group"><span class="audio-tool-title">✨ Phát âm thanh vào phòng</span><div class="sound-buttons"><button class="sound-btn" data-sound="clap" type="button">👏 Vỗ tay</button><button class="sound-btn" data-sound="laugh" type="button">😂 Tiếng cười</button><button class="sound-btn" data-sound="heart" type="button">💓 Tim đập</button><button class="sound-btn" data-sound="ambient" type="button">🎶 Nhạc nền nhẹ</button></div><p id="soundStatus" class="audio-help" aria-live="polite">Âm thanh sẽ được phát cho cả phòng nghe.</p></div>
+      </section>
+      <p class="call-note">Hãy tôn trọng người khác. Không ghi âm hoặc phát tán nội dung cuộc trò chuyện khi chưa được đồng ý.</p><div id="remoteAudios" class="remote-audios"></div></div></div>
+<footer class="site-footer"><p>© 2026 Connect. Kết nối từ những sở thích chung.</p></footer>
+<script src="js/script.js"></script><script src="js/theme.js"></script><script type="module" src="js/session.js"></script><script type="module" src="js/voice.js"></script>
+</body></html>

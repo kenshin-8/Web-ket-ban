@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <title>Soul Match | Connect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/discover.css">
+    <link rel="stylesheet" href="css/match.css">
+    <link rel="stylesheet" href="css/zodiac.css">
+    <link rel="stylesheet" href="css/polish.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar" aria-label="Điều hướng chính">
+            <a href="index.html" class="logo">Connect<span>.</span></a>
+            <button class="menu-btn" id="menuBtn" type="button" aria-label="Mở menu" aria-expanded="false">☰</button>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html">Trang chủ</a>
+                <a href="discover.html">Khám phá</a>
+                <a href="profile.html">Hồ sơ cá nhân</a>
+                <a href="match.html">Soul Match</a>
+                <a href="square.html">Quảng trường</a>
+                <a href="avatar.html">Tạo Avatar</a>
+            </div>
+            <div class="nav-actions">
+                <button id="themeToggle" class="theme-btn" type="button" aria-label="Đổi giao diện">🌙</button>
+                <div id="authArea" class="auth-area"></div>
+            </div>
+        </nav>
+    </header>
+    <main class="match-wrap">
+        <span class="eyebrow">SOUL MATCH</span>
+        <h1>Những người đồng điệu với bạn</h1>
+        <p id="guestNotice" class="match-notice" hidden>Vui lòng <a href="login.html">đăng nhập</a> để xem gợi ý.</p>
+        <p id="quizNotice" class="match-notice" hidden>Bạn chưa làm Soul Quiz. <a href="quiz.html">Làm ngay (1 phút) →</a></p>
+        <div id="matchApp" hidden>
+            <p id="myPlanet" class="privacy-note"></p>
+            <p class="privacy-note">Độ hợp gu được tính từ kết quả Soul Quiz, tinh cầu và sở thích chung. Chỉ hiển thị hồ sơ công khai.</p>
+            <div id="soulList" class="members-grid"></div>
+            <h2>📍 Người hợp gu ở gần bạn</h2>
+            <p class="privacy-note">Tùy chọn, chỉ bật khi bạn bấm quét. Vị trí được làm tròn (~1 km), chỉ dùng để tính khoảng cách và bạn có thể xóa bất cứ lúc nào.</p>
+            <div class="near-controls">
+                <label for="radius">Bán kính</label>
+                <select id="radius"><option value="2">2 km</option><option value="5" selected>5 km</option><option value="20">20 km</option></select>
+                <button type="button" id="scanBtn" class="btn">Quét gần tôi</button>
+                <button type="button" id="stopShare" class="btn btn-light" hidden>Ngừng chia sẻ vị trí</button>
+            </div>
+            <p id="nearMessage" aria-live="polite"></p>
+            <div id="nearList" class="members-grid"><p class="empty-message">Bạn chưa quét.</p></div>
+        </div>
+    </main>
+    <footer class="site-footer"><p>© 2026 Connect. Kết nối từ những sở thích chung.</p></footer>
+    <script type="module" src="js/session.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/theme.js"></script>
+    <script type="module" src="js/match.js"></script>
+</body>
+</html>
