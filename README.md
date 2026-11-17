@@ -92,3 +92,12 @@ Bảng `soul_likes` có RLS: người dùng chỉ đọc lượt thích liên qu
 - A bỏ thích: lượt thích một chiều bị xóa và trạng thái ghép đôi không còn được xác nhận ở lần kiểm tra tiếp theo.
 
 Realtime cần kết nối Supabase đang hoạt động; nếu chưa chạy migration, nút thích sẽ không lưu được dữ liệu.
+
+
+## Connect 3D Planet
+
+- Màn hình chính có tinh cầu tương tác: kéo để xoay, cuộn hoặc dùng nút +/- để phóng to/thu nhỏ.
+- Các Avatar được dựng từ `avatar_data` của hồ sơ công khai (`is_visible = true`); không tạo hồ sơ giả và không tự hiển thị số người online.
+- Chọn một Avatar để xem tên, sở thích và độ tương hợp (dùng lại `compat()` trong `js/soul.js`). Nút thích sử dụng luồng `soul_likes` hiện có; Soul Match mở trang ghép đôi, Audio mở `voice.html`.
+- Tính năng dùng lại Supabase Auth, hồ sơ và RLS hiện tại. Không cần migration mới. Hồ sơ công khai vẫn tuân theo chính sách `profiles_read_public_or_own`.
+- Muốn xuất hiện trên tinh cầu, thành viên cần bật hiển thị hồ sơ trong trang Hồ sơ. Trạng thái online không được suy diễn từ việc hồ sơ công khai.
