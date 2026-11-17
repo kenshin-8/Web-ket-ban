@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quản lý hồ sơ Connect.">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <title>Hồ sơ cá nhân | Connect</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="css/zodiac.css">
+    <link rel="stylesheet" href="css/polish.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar" aria-label="Điều hướng chính">
+            <a href="index.html" class="logo">Connect<span>.</span></a>
+            <button class="menu-btn" id="menuBtn" type="button" aria-label="Mở menu" aria-expanded="false">☰</button>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html">Trang chủ</a>
+                <a href="discover.html">Khám phá</a>
+                <a href="profile.html" aria-current="page">Hồ sơ cá nhân</a>
+                <a href="match.html">Soul Match</a>
+                <a href="square.html">Quảng trường</a>
+                    <a href="icebreaker.html">Mini-games</a>
+                <a href="avatar.html">Tạo Avatar</a>
+
+            </div>
+            <div class="nav-actions">
+                <button id="themeToggle" class="theme-btn" type="button" aria-label="Đổi giao diện">🌙</button>
+                <div id="authArea" class="auth-area"></div>
+            </div>
+        </nav>
+    </header>
+    <main class="profile-container">
+        <section class="profile-card">
+            <span class="eyebrow">TÀI KHOẢN CỦA BẠN</span>
+            <h1>Hồ sơ cá nhân</h1>
+            <p class="subtitle">Chia sẻ những điều bạn yêu thích với cộng đồng Connect.</p>
+            <section class="profile-avatar-section">
+                <h2>Avatar của tôi</h2>
+                <div class="avatar-planet-row">
+                <div id="savedAvatarDisplay">
+                    <svg id="profileAvatarCanvas" viewBox="10 10 220 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Avatar của tôi">
+                        <path id="backHair" d="M65 95 Q55 20 120 25 Q185 20 175 95 L170 160 L70 160 Z" fill="#30251f"/>
+                        <rect id="neck" x="105" y="155" width="30" height="40" rx="10" fill="#f1c7a5"/>
+                        <path id="body" d="M65 190 Q120 165 175 190 L200 285 L40 285 Z" fill="#6c63ff"/>
+                        <path id="face" d="M120 50 C65 50 65 90 70 125 C75 165 95 180 120 180 C145 180 165 165 170 125 C175 90 175 50 120 50 Z" fill="#f1c7a5"/>
+                        <g id="avatarEyes" fill="#30251f"><ellipse cx="100" cy="112" rx="5" ry="7"/><ellipse cx="140" cy="112" rx="5" ry="7"/></g>
+                        <path id="avatarMouth" d="M108 145 Q120 155 132 145" stroke="#a34f4f" stroke-width="3" fill="none" stroke-linecap="round"/>
+                        <path id="frontHair" d="M68 95 Q75 35 120 45 Q165 35 172 95 Q150 70 130 80 Q100 60 68 95" fill="#30251f"/>
+                    </svg>
+                </div>
+                <div id="profilePlanetBadge" class="planet-orb-badge" hidden aria-live="polite"></div>
+                </div>
+                <a href="avatar.html" class="edit-avatar-btn">✏️ Chỉnh sửa Avatar</a>
+                <a href="quiz.html" class="retake-soul-quiz">✦ Làm lại Bài test tâm hồn</a>
+            </section>
+            <form id="profileForm">
+                <label for="displayName">Tên hiển thị</label>
+                <input type="text" id="displayName" maxlength="50" placeholder="Tên bạn muốn mọi người nhìn thấy" required>
+                <label for="city">Thành phố</label>
+                <input type="text" id="city" maxlength="100" placeholder="Ví dụ: Hà Nội">
+                <label for="bio">Giới thiệu bản thân</label>
+                <textarea id="bio" maxlength="500" rows="4" placeholder="Hãy kể một chút về bạn..."></textarea>
+                <label for="interests">Sở thích</label>
+                <input type="text" id="interests" placeholder="Đọc sách, âm nhạc, thể thao...">
+                <label for="zodiac">Cung hoàng đạo</label>
+                <select id="zodiac"><option value="">Không chia sẻ</option><option value="Bạch Dương">♈ Bạch Dương</option><option value="Kim Ngưu">♉ Kim Ngưu</option><option value="Song Tử">♊ Song Tử</option><option value="Cự Giải">♋ Cự Giải</option><option value="Sư Tử">♌ Sư Tử</option><option value="Xử Nữ">♍ Xử Nữ</option><option value="Thiên Bình">♎ Thiên Bình</option><option value="Thiên Yết">♏ Thiên Yết</option><option value="Nhân Mã">♐ Nhân Mã</option><option value="Ma Kết">♑ Ma Kết</option><option value="Bảo Bình">♒ Bảo Bình</option><option value="Song Ngư">♓ Song Ngư</option></select>
+                <small class="privacy-note">Chỉ lưu tên cung, không lưu ngày sinh. Cung giúp Soul Match tính độ hợp theo nguyên tố.</small>
+                <section class="soul-card-editor" aria-labelledby="soulCardTitle">
+                    <h2 id="soulCardTitle">✦ Soul Card – Danh thiếp tâm hồn</h2>
+                    <p>Chọn tối đa 6 từ khóa để giới thiệu những điều bạn muốn chia sẻ.</p>
+                    <label for="soulTags">Từ khóa (phân cách bằng dấu phẩy)</label>
+                    <input type="text" id="soulTags" maxlength="180" placeholder="Hướng nội, thích mèo, mê âm nhạc...">
+                    <div id="soulCardPreview" class="soul-card-preview" aria-live="polite">
+                        <span class="soul-card-empty">Từ khóa của bạn sẽ xuất hiện ở đây.</span>
+                    </div>
+                </section>
+                <label class="visibility-option" for="isVisible">
+                    <input type="checkbox" id="isVisible">
+                    <span><strong>Hiển thị hồ sơ trong cộng đồng</strong><small>Chỉ bật nếu bạn muốn hồ sơ xuất hiện trên trang Khám phá.</small></span>
+                </label>
+                <button type="submit" id="saveBtn" class="btn profile-save-btn">Lưu hồ sơ</button>
+                <p id="profileMessage" role="status" aria-live="polite"></p>
+            </form>
+        </section>
+    </main>
+    <footer class="site-footer"><p>© 2026 Connect. Bạn luôn kiểm soát thông tin được chia sẻ.</p></footer>
+    <script type="module" src="js/session.js"></script>
+    <script src="js/script.js"></script>
+<script src="js/theme.js"></script>
+    <script type="module" src="js/profile.js"></script>
+</body>
+</html>
