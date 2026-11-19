@@ -4,7 +4,6 @@ import { signByName } from "./zodiac.js";
 import { PLANETS, compat } from "./soul.js";
 import { initSoulConnections, createSoulLikeButton, sharedInterests } from "./soul-connection.js";
 
-const likeSafe = text => text.replace(/[\\%_]/g, "\\$&");
 const membersList = document.getElementById("membersList");
 const memberCount = document.getElementById("memberCount");
 const searchInput = document.getElementById("searchInput");
@@ -57,6 +56,11 @@ function renderMember(member) {
         addText(interests, "span", "interest-empty", "Chưa cập nhật");
     }
     card.appendChild(interests);
+    const profileLink = document.createElement("a");
+    profileLink.className = "member-profile-link";
+    profileLink.href = `public-profile.html?id=${encodeURIComponent(member.id)}`;
+    profileLink.textContent = "Xem hồ sơ ↗";
+    card.appendChild(profileLink);
     if (currentUser && member.id !== currentUser.id) {
         const common = sharedInterests(myProfile?.interests, member.interests);
         const score = myProfile?.planet && member.planet ? compat(myProfile, member) : 0;
@@ -67,47 +71,66 @@ function renderMember(member) {
     return card;
 }
 
-async function loadMembers() {
-    if (!membersList || !memberCount) return;
-    const nameTerm = searchInput?.value.trim() || "";
-    const cityTerm = cityFilter?.value.trim() || "";
-    const interestTerm = (interestFilter?.value.trim() || "").toLocaleLowerCase("vi-VN");
+const PAGE_SIZE = 24;
+let loadToken = 0, loadedCount = 0, moreBtn = null;
 
-    membersList.replaceChildren();
-    addText(membersList, "p", "empty-message", "Đang tải thành viên...");
+function setMoreButton(total) {
+    if (!moreBtn) {
+        moreBtn = document.createElement("button");
+        moreBtn.type = "button"; moreBtn.className = "btn btn-light load-more-btn";
+        moreBtn.addEventListener("click", () => loadMembers({ append: true }));
+        membersList.after(moreBtn);
+    }
+    moreBtn.hidden = loadedCount >= total;
+    moreBtn.disabled = false;
+    moreBtn.textContent = `Xem thêm (${total - loadedCount} thành viên)`;
+}
+
+// Tìm kiếm và phân trang chạy phía server (hàm search_profiles trong supabase/discover_search.sql).
+async function loadMembers({ append = false } = {}) {
+    if (!membersList || !memberCount) return;
+    const token = ++loadToken;
+    const offset = append ? loadedCount : 0;
+    if (!append) {
+        loadedCount = 0;
+        membersList.replaceChildren();
+        addText(membersList, "p", "empty-message", "Đang tải thành viên...");
+        if (moreBtn) moreBtn.hidden = true;
+    } else if (moreBtn) { moreBtn.disabled = true; moreBtn.textContent = "Đang tải..."; }
     if (searchBtn) searchBtn.disabled = true;
 
     try {
-        let query = supabase
-            .from("profiles")
-            .select("id, display_name, bio, interests, city, avatar_data, zodiac, planet, soul_scores")
-            .eq("is_visible", true);
-        if (nameTerm) query = query.ilike("display_name", `%${likeSafe(nameTerm)}%`);
-        if (cityTerm) query = query.ilike("city", `%${likeSafe(cityTerm)}%`);
-
-        const { data, error } = await query.order("display_name", { ascending: true });
+        const { data, error } = await supabase.rpc("search_profiles", {
+            p_name: searchInput?.value.trim() || null,
+            p_city: cityFilter?.value.trim() || null,
+            p_interest: interestFilter?.value.trim() || null,
+            p_limit: PAGE_SIZE,
+            p_offset: offset
+        });
+        if (token !== loadToken) return; // đã có lần tìm mới hơn
         if (error) throw error;
 
-        const filtered = (data || []).filter(member => {
-            if (!interestTerm) return true;
-            const interests = Array.isArray(member.interests) ? member.interests : [];
-            return interests.some(item => String(item).toLocaleLowerCase("vi-VN").includes(interestTerm));
-        });
-
-        memberCount.textContent = `${filtered.length} thành viên`;
-        membersList.replaceChildren();
-        if (!filtered.length) {
+        const rows = data || [];
+        const total = rows.length ? Number(rows[0].total_count) : (append ? loadedCount : 0);
+        if (!append) membersList.replaceChildren();
+        if (!rows.length && !append) {
+            memberCount.textContent = "0 thành viên";
             addText(membersList, "p", "empty-message", "Không tìm thấy thành viên phù hợp. Hãy thử thay đổi bộ lọc.");
             return;
         }
-        filtered.forEach(member => membersList.appendChild(renderMember(member)));
+        rows.forEach(member => membersList.appendChild(renderMember(member)));
+        loadedCount += rows.length;
+        memberCount.textContent = `${total} thành viên`;
+        setMoreButton(total);
     } catch (error) {
+        if (token !== loadToken) return;
         console.error("Lỗi tải thành viên:", error);
         memberCount.textContent = "Chưa tải được";
-        membersList.replaceChildren();
-        addText(membersList, "p", "empty-message", "Không thể tải danh sách. Hãy kiểm tra kết nối hoặc quyền truy cập Supabase.");
+        if (!append) membersList.replaceChildren();
+        addText(membersList, "p", "empty-message", "Không thể tải danh sách. Hãy chạy supabase/discover_search.sql và kiểm tra kết nối.");
+        if (moreBtn) moreBtn.hidden = true;
     } finally {
-        if (searchBtn) searchBtn.disabled = false;
+        if (token === loadToken && searchBtn) searchBtn.disabled = false;
     }
 }
 

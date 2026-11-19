@@ -1,0 +1,22 @@
+/* Báo cáo, chặn và danh sách đã chặn */
+.safety-dialog { width:min(420px,92vw); padding:20px; border:1px solid var(--border); border-radius:16px; background:var(--surface); color:var(--text); box-shadow:0 24px 70px rgba(20,15,45,.28); }
+.safety-dialog::backdrop { background:rgba(10,14,28,.5); }
+.safety-dialog h2 { margin:0 0 6px; font-size:18px; }
+.safety-dialog p { margin:0 0 12px; color:var(--muted); font-size:13px; line-height:1.5; }
+.safety-reasons { display:grid; gap:6px; margin:0 0 12px; padding:0; border:0; }
+.safety-reasons label { display:flex; gap:8px; align-items:center; padding:8px 10px; border:1px solid var(--border); border-radius:10px; font-size:13px; cursor:pointer; }
+.safety-reasons label:has(input:checked) { border-color:var(--primary); background:var(--primary-soft); }
+.safety-dialog textarea { width:100%; min-height:64px; margin-bottom:12px; border:1px solid var(--border); border-radius:10px; background:var(--background); color:var(--text); font:inherit; resize:vertical; box-sizing:border-box; }
+.safety-actions { display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; }
+.safety-actions button { padding:9px 14px; border-radius:999px; border:1px solid var(--border); background:var(--soft); color:var(--text); font-size:13px; cursor:pointer; }
+.safety-actions button.safety-primary { background:var(--primary); border-color:transparent; color:#fff; }
+.safety-actions button:disabled { opacity:.6; cursor:default; }
+.safety-block-list { display:grid; gap:8px; max-height:320px; overflow:auto; margin:0 0 12px; padding:0; list-style:none; }
+.safety-block-list li { display:flex; gap:10px; align-items:center; justify-content:space-between; padding:9px 11px; border:1px solid var(--border); border-radius:10px; font-size:13px; }
+.safety-block-list small { display:block; color:var(--muted); }
+.safety-toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); z-index:9999; max-width:min(420px,92vw); padding:11px 16px; border-radius:12px; background:var(--text); color:var(--surface); font-size:13px; box-shadow:0 12px 32px rgba(0,0,0,.25); }
+.safety-link { padding:5px 8px; border:0; background:none; color:var(--muted); font-size:12px; cursor:pointer; text-decoration:underline; }
+.safety-link:hover,.safety-link:focus-visible { color:var(--text); }
+@media(prefers-reduced-motion:no-preference) { .safety-toast{animation:safety-in .2s ease-out}@keyframes safety-in{from{opacity:0;transform:translate(-50%,8px)}} }
+.profile-safety{display:flex;gap:14px;align-items:center;margin-left:auto}
+@media(max-width:680px){.profile-safety{flex-basis:100%;margin-left:0}}

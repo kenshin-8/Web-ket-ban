@@ -64,3 +64,11 @@ input:not([type="checkbox"]):not([type="radio"]),select,textarea{border-radius:1
 
 .member-card.soul-lit { border-color:rgba(242,198,109,.72); box-shadow:0 0 0 1px rgba(242,198,109,.24),0 0 28px rgba(151,112,255,.25),0 0 38px rgba(242,198,109,.12); }
 .member-card.soul-lit::before { content:"✦ KẾT NỐI RỰC SÁNG"; display:block; width:max-content; max-width:100%; margin:0 auto 10px; color:var(--gold); font-size:9px; font-weight:900; letter-spacing:.12em; text-shadow:0 0 10px rgba(242,198,109,.5); }
+
+/* Shared interaction polish */
+:where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:3px solid var(--primary,#8b5cf6);outline-offset:3px}
+:where(button,[role="button"]):disabled{cursor:not-allowed;opacity:.62}
+:where(input,select,textarea){max-width:100%}
+img,svg,video,canvas{max-width:100%}
+::selection{background:rgba(116,91,235,.28)}
+@media(prefers-reduced-motion:reduce){html:focus-within{scroll-behavior:auto!important}*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}

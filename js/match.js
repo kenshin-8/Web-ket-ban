@@ -1,5 +1,5 @@
 import { supabase } from "./supabase.js";
-import { PLANETS, compat, distanceKm } from "./soul.js";
+import { PLANETS, compat } from "./soul.js";
 import { createAvatarSvg } from "./avatar-data.js";
 import { signByName } from "./zodiac.js";
 import { initSoulConnections, createSoulLikeButton, sharedInterests } from "./soul-connection.js";
@@ -59,15 +59,16 @@ async function scanNearby() {
     const { error: upErr } = await supabase.from("user_locations").upsert({ id: user.id, lat, lng, updated_at: new Date().toISOString() });
     if (upErr) { console.error(upErr); nearMsg.textContent = "Không lưu được vị trí: " + upErr.message; return; }
     $("stopShare").hidden = false;
-    const { data: locs, error } = await supabase.from("user_locations").select("id, lat, lng").neq("id", user.id).limit(500);
-    if (error) { nearMsg.textContent = "Không thể quét: " + error.message; return; }
-    const near = locs.map(l => ({ id: l.id, km: distanceKm(lat, lng, l.lat, l.lng) })).filter(l => l.km <= radius);
+    // Khoảng cách được tính phía server; trình duyệt chỉ nhận id + nấc khoảng cách, không nhận tọa độ của ai khác.
+    const { data: nearRows, error } = await supabase.rpc("nearby_users", { radius_km: radius });
+    if (error) { console.error(error); nearMsg.textContent = "Không thể quét. Hãy chạy supabase/safety_hardening.sql."; return; }
+    const near = (nearRows || []).map(r => ({ id: r.user_id, km: r.distance_bucket_km }));
     if (!near.length) { nearMsg.textContent = ""; return empty(nearList, `Chưa có ai trong bán kính ${radius} km.`); }
     const { data: profs } = await supabase.from("profiles").select("id, display_name, interests, planet, soul_scores, avatar_data, zodiac").eq("is_visible", true).in("id", near.map(n => n.id));
     const rows = (profs || []).map(p => ({ p, km: near.find(n => n.id === p.id).km, score: me.planet ? compat(me, p) : 0 })).sort((a, b) => b.score - a.score || a.km - b.km);
     nearMsg.textContent = "";
     if (!rows.length) return empty(nearList, "Có người ở gần nhưng chưa ai bật hiển thị hồ sơ công khai.");
-    nearList.replaceChildren(...rows.map(({ p, km, score }) => card(p, `${score}%`, `Cách bạn khoảng ${km < 1 ? "dưới 1" : Math.round(km)} km`, score)));
+    nearList.replaceChildren(...rows.map(({ p, km, score }) => card(p, `${score}%`, `Trong vòng ${km} km quanh bạn`, score)));
 }
 
 async function init() {

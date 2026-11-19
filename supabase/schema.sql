@@ -42,7 +42,10 @@ create table if not exists public.user_locations (
 );
 alter table public.user_locations enable row level security;
 drop policy if exists "loc_read_auth" on public.user_locations;
-create policy "loc_read_auth" on public.user_locations for select to authenticated using (updated_at > now() - interval '24 hours');
+drop policy if exists "loc_read_own" on public.user_locations;
+-- Tọa độ thô chỉ chủ tài khoản được đọc. Tìm người ở gần phải gọi nearby_users()
+-- sau khi chạy safety_hardening.sql; không cấp quyền đọc vị trí của thành viên khác.
+create policy "loc_read_own" on public.user_locations for select to authenticated using (id = auth.uid());
 drop policy if exists "loc_write_own" on public.user_locations;
 create policy "loc_write_own" on public.user_locations for all to authenticated using (id = auth.uid()) with check (id = auth.uid());
 

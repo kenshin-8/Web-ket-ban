@@ -1,6 +1,7 @@
 import { supabase } from "./supabase.js";
 import { SIGNS } from "./zodiac.js";
 import { effectForText, playTextEffect, stopEffects } from "./effects.js";
+import { reportContent, blockMomentAuthor, blockThreadGuest, openBlockedDialog } from "./safety.js";
 const $ = id => document.getElementById(id);
 const el = (tag, cls, text, parent) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; parent?.appendChild(e); return e; };
 const W1 = ["Mây", "Gió", "Sao", "Trăng", "Nắng", "Sương", "Lá", "Biển"], W2 = ["lặng lẽ", "dịu dàng", "mơ màng", "tò mò", "ấm áp", "bình yên"];
@@ -15,7 +16,7 @@ async function upload(blob, type) {
     const ext = ({ "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "video/mp4": "mp4", "video/webm": "webm", "audio/webm": "webm", "audio/ogg": "ogg", "audio/mp4": "m4a", "audio/mpeg": "mp3" })[type.split(";")[0]] || "bin";
     const path = `${crypto.randomUUID()}.${ext}`; // không chứa id người dùng
     const { error } = await supabase.storage.from("moments").upload(path, blob, { contentType: type.split(";")[0] });
-    if (error) throw error;
+    if (error) throw (/row-level security|violates/i.test(error.message) ? new Error("Bạn đã đạt giới hạn tải lên (20 tệp/24 giờ) hoặc tệp không hợp lệ.") : error);
     return supabase.storage.from("moments").getPublicUrl(path).data.publicUrl;
 }
 function setMedia(f, label) { file = f; $("mediaInfo").textContent = f ? label : ""; }
@@ -75,7 +76,11 @@ function renderMoment(m) {
     const cmBtn = el("button", "", `💬 ${m.comment_count}`, act); const box = el("div", "cm", null, c); box.hidden = true;
     cmBtn.onclick = () => { box.hidden = !box.hidden; if (!box.hidden) loadComments(m, box); };
     if (m.is_mine) { const del = el("button", "", "🗑 Xóa", act); del.onclick = async () => { if (confirm("Xóa bài viết này?") && !(await supabase.from("moments").delete().eq("id", m.id)).error) c.remove(); }; }
-    else { const b = el("button", "", "✉️ Nhắn tin kín", act); b.onclick = () => openThread(m); }
+    else {
+        const b = el("button", "", "✉️ Nhắn tin kín", act); b.onclick = () => openThread(m);
+        const rep = el("button", "", "⚑ Báo cáo", act); rep.onclick = () => reportContent("moment", m.id, "Báo cáo bài viết");
+        const blk = el("button", "", "🚫 Chặn", act); blk.onclick = async () => { if (await blockMomentAuthor(m.id)) c.remove(); };
+    }
     return c;
 }
 async function loadComments(m, box) {
@@ -83,7 +88,10 @@ async function loadComments(m, box) {
     const { data, error } = await supabase.from("comments_feed").select("*").eq("moment_id", m.id).order("created_at");
     box.replaceChildren();
     if (error) { el("p", null, "Không tải được bình luận.", box); return; }
-    data.forEach(c => { const p = el("p", null, null, box); el("strong", null, c.alias + ": ", p); p.append(c.body); });
+    data.forEach(c => {
+        const p = el("p", null, null, box); el("strong", null, c.alias + ": ", p); p.append(c.body);
+        if (!c.is_mine) { const r = el("button", "safety-link", "Báo cáo", p); r.type = "button"; r.onclick = () => reportContent("moment_comment", c.id, "Báo cáo bình luận"); }
+    });
     const row = el("div", "sq-row", null, box), inp = el("input", null, null, row); inp.maxLength = 300; inp.placeholder = "Viết bình luận...";
     const send = el("button", "", "Gửi", row); send.type = "button";
     send.onclick = async () => {
@@ -121,7 +129,14 @@ async function openThread(m) {
     showDm(t.id, false, `Nhắn cho ${m.alias}`);
 }
 function showDm(threadId, isAuthor, title) {
-    dm = { threadId, isAuthor, lastId: null }; $("dmTitle").textContent = title; $("dmDialog").showModal(); refreshDm();
+    dm = { threadId, isAuthor, lastId: null }; $("dmTitle").textContent = title;
+    $("dmBlock")?.remove();
+    if (isAuthor) { // chủ bài chặn người lạ đang nhắn (không lộ danh tính)
+        const b = el("button", "safety-link", "🚫 Chặn người này"); b.id = "dmBlock"; b.type = "button";
+        b.onclick = async () => { if (await blockThreadGuest(threadId)) $("dmDialog").close(); };
+        $("dmTitle").after(b);
+    }
+    $("dmDialog").showModal(); refreshDm();
     clearInterval(dmTimer); dmTimer = setInterval(refreshDm, 5000);
 }
 async function refreshDm() {
@@ -143,6 +158,7 @@ $("dmSend").onclick = async () => {
     if (!error) { $("dmInput").value = ""; playTextEffect(body); refreshDm(); } else alert("Gửi thất bại: " + error.message);
 };
 $("dmClose").onclick = () => $("dmDialog").close();
+$("blockedBtn")?.addEventListener("click", openBlockedDialog);
 $("dmDialog").addEventListener("close", () => { clearInterval(dmTimer); dm = null; stopEffects(); });
 async function loadInbox() {
     const { data: th } = await supabase.from("moment_threads").select("id, moment_id, guest_id, created_at").order("created_at", { ascending: false }).limit(30);

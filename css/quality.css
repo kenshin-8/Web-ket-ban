@@ -1,0 +1,31 @@
+/* Connect quality layer: shared accessibility, responsive safety and resilient media. */
+:root { color-scheme: light; }
+[data-theme="dark"] { color-scheme: dark; }
+html { scroll-padding-top: 5rem; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { min-width: 320px; overflow-x: clip; text-rendering: optimizeLegibility; }
+img, video, canvas, svg { max-width: 100%; }
+img { height: auto; }
+button, input, select, textarea { font: inherit; }
+button, [role="button"], a { -webkit-tap-highlight-color: transparent; }
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary, #7665d8) 72%, white);
+  outline-offset: 3px;
+}
+:where(button, input, select, textarea):disabled { cursor: not-allowed; opacity: .65; }
+:where(input, select, textarea) { min-width: 0; }
+:where(dialog, [role="dialog"]) { max-width: min(100vw - 24px, 760px); }
+::placeholder { color: color-mix(in srgb, var(--muted, #77758f) 78%, transparent); opacity: 1; }
+@media (max-width: 700px) {
+  :where(button, [role="button"]) { touch-action: manipulation; }
+  :where(input, select, textarea) { font-size: max(16px, 1em); }
+  :where(table) { display: block; max-width: 100%; overflow-x: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

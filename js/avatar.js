@@ -105,38 +105,68 @@ async function loadAvatar() {
 }
 
 async function saveCurrentAvatar() {
+    if (!saveAvatar) return;
     saveAvatar.disabled = true;
     setMessage("Đang lưu Avatar...");
+
     try {
-        const { data, error: authError } = await supabase.auth.getUser();
+        const { data: authData, error: authError } = await supabase.auth.getUser();
         if (authError) throw authError;
-        const user = data.user;
+        const user = authData?.user;
         if (!user) {
-            setMessage("Vui lòng đăng nhập trước khi lưu Avatar.", "error");
+            setMessage("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại rồi lưu Avatar.", "error");
             return;
         }
 
         const avatar_data = getAvatarData();
-        const { data: existing, error: readError } = await supabase
-            .from("profiles").select("id").eq("id", user.id).maybeSingle();
-        if (readError) throw readError;
-
         const now = new Date().toISOString();
-        const result = existing
-            ? await supabase.from("profiles").update({ avatar_data, updated_at: now }).eq("id", user.id)
-            : await supabase.from("profiles").insert({
-                id: user.id,
-                display_name: user.user_metadata?.username || user.email?.split("@")[0] || "Thành viên",
-                is_visible: false,
-                avatar_data,
-                updated_at: now
-            });
-        if (result.error) throw result.error;
+
+        // Upsert theo ID giúp xử lý an toàn cả hồ sơ đã tồn tại và hồ sơ chưa được tạo.
+        // Chỉ gửi các cột cần thiết để không ghi đè tên, bio hay cài đặt hồ sơ hiện tại.
+        const { data: savedProfile, error: saveError } = await supabase
+            .from("profiles")
+            .upsert(
+                { id: user.id, avatar_data, updated_at: now },
+                { onConflict: "id" }
+            )
+            .select("id, avatar_data")
+            .single();
+
+        if (saveError) {
+            if (saveError.code === "42501" || /row-level security|permission denied/i.test(saveError.message || "")) {
+                throw new Error("Supabase đang từ chối quyền lưu hồ sơ. Hãy kiểm tra policy profiles_insert_own và profiles_update_own trong SQL Editor.");
+            }
+            if (saveError.code === "42P01") {
+                throw new Error("Không tìm thấy bảng profiles. Hãy kiểm tra schema Connect trong Supabase.");
+            }
+            if (saveError.code === "42703" || /avatar_data/i.test(saveError.message || "")) {
+                throw new Error("Cột avatar_data chưa tồn tại trong bảng profiles. Hãy cập nhật schema Connect trong Supabase.");
+            }
+            throw saveError;
+        }
+
+        if (!savedProfile || savedProfile.id !== user.id || !savedProfile.avatar_data) {
+            throw new Error("Supabase chưa xác nhận dữ liệu Avatar đã được ghi. Vui lòng thử lại.");
+        }
+
         currentUser = user;
+        // Chỉ đồng bộ sang các trang khác sau khi Supabase xác nhận lưu thành công.
+        try {
+            localStorage.setItem("connect:avatar-updated", JSON.stringify({
+                userId: user.id,
+                avatarData: savedProfile.avatar_data,
+                updatedAt: now
+            }));
+        } catch (storageError) {
+            console.warn("Không thể phát tín hiệu đồng bộ Avatar:", storageError);
+        }
+        window.dispatchEvent(new CustomEvent("connect:avatar-updated", {
+            detail: { userId: user.id, avatarData: savedProfile.avatar_data, updatedAt: now }
+        }));
         setMessage("Đã lưu Avatar vào tài khoản thành công!", "success");
     } catch (error) {
         console.error("Lỗi lưu Avatar:", error);
-        setMessage(`Lưu thất bại: ${error.message}`, "error");
+        setMessage(`Lưu Avatar thất bại: ${error.message || "Lỗi không xác định"}`, "error");
     } finally {
         saveAvatar.disabled = false;
     }

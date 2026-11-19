@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Khám phá hồ sơ thành viên Connect.">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <title>Hồ sơ thành viên | Connect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap">
+    <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/profile.css"><link rel="stylesheet" href="css/public-profile.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/safety.css">
+    <link rel="stylesheet" href="css/compact-ui.css">
+    <link rel="stylesheet" href="css/quality.css">
+</head>
+<body>
+  <header class="site-header"><nav class="navbar" aria-label="Điều hướng chính">
+    <a href="index.html" class="logo">Connect<span>.</span></a><button class="menu-btn" id="menuBtn" type="button" aria-label="Mở menu" aria-expanded="false">☰</button>
+    <div class="nav-links" id="navLinks"><a href="index.html">Trang chủ</a><a href="discover.html">Khám phá</a><a href="friends.html">Bạn bè</a><a href="profile.html">Hồ sơ của tôi</a></div>
+    <div class="nav-actions"><button id="themeToggle" class="theme-btn" type="button" aria-label="Đổi giao diện">🌙</button><div id="authArea" class="auth-area"></div></div>
+  </nav></header>
+  <main class="public-profile-wrap">
+    <p id="publicProfileStatus" class="public-profile-status" role="status">Đang tải hồ sơ…</p>
+    <article id="publicProfile" class="public-profile-card" hidden>
+      <div id="publicCover" class="public-cover"><span>CONNECT MEMBER</span></div>
+      <section class="public-identity">
+        <div id="publicAvatar" class="public-avatar" aria-label="Avatar thành viên"></div>
+        <div class="public-name-block"><h1 id="publicName"></h1><p id="publicHeadline"></p><span id="publicCity"></span></div>
+        <a id="editOwnProfile" class="public-edit-link" href="profile.html" hidden>Chỉnh sửa hồ sơ</a>
+      </section>
+      <div class="public-profile-grid">
+        <section class="public-info-panel"><h2>Giới thiệu</h2><p id="publicBio" class="public-bio"></p><div id="publicInterests" class="public-chip-list"></div><div id="publicSoulTags" class="public-chip-list soul-chip-list"></div><p id="publicZodiac" class="public-zodiac"></p><div id="publicPlanet" class="public-planet"></div></section>
+        <section class="public-info-panel"><h2>Dấu mốc Connect</h2><p class="achievement-intro">Các huy hiệu được mở khóa từ thông tin bạn đã hoàn thiện.</p><div id="publicAchievements" class="achievement-grid"></div></section>
+      </div>
+      <section id="profileSocialNotifications" class="profile-social-notifications" hidden>
+        <div class="timeline-heading"><h2>Tương tác với bài viết</h2><span id="profileSocialNotificationCount">0</span></div><button id="profileSocialMarkRead" class="profile-social-mark-read" type="button">Đánh dấu đã đọc</button>
+        <div id="profileSocialNotificationList" class="profile-social-notification-list"></div>
+      </section>
+      <section class="public-timeline"><div class="timeline-heading"><h2>Dòng thời gian</h2><span id="publicPostCount"></span></div><div id="publicPosts" class="profile-posts-list"></div></section>
+    </article>
+  </main>
+  <footer class="site-footer"><p>© 2026 Connect. Bạn luôn kiểm soát thông tin được chia sẻ.</p></footer>
+  <script type="module" src="js/session.js"></script><script src="js/script.js"></script><script src="js/theme.js"></script><script type="module" src="js/public-profile.js"></script>
+</body>
+</html>

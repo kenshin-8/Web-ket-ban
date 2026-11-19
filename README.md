@@ -1,103 +1,106 @@
-# Connect - hướng dẫn chạy dự án
+# Connect
 
-## Chạy trên máy tính
-1. Giải nén thư mục dự án.
+Nền tảng kết nối cộng đồng với hồ sơ cá nhân, Avatar, tinh cầu 3D, Soul Match, bạn bè, nhắn tin, Quảng trường, cộng đồng theo chủ đề và phòng thoại WebRTC.
+
+> **Trạng thái:** mã nguồn frontend và các file SQL được cung cấp trong thư mục này. Các migration SQL không tự chạy trên Supabase. Cần áp dụng đúng thứ tự bên dưới và kiểm thử bằng tài khoản thử nghiệm trước khi mở cho người dùng thật.
+
+## 1. Chạy ứng dụng cục bộ
+
+1. Giải nén thư mục `Connect`.
 2. Mở thư mục bằng Visual Studio Code.
-3. Mở `index.html` bằng Live Server (không mở bằng `file://`).
-4. Đăng ký/đăng nhập bằng tài khoản Supabase đã cấu hình.
+3. Chạy bằng Live Server hoặc máy chủ HTTP cục bộ; không mở trang bằng `file://`.
+4. Mở `js/supabase.js` và kiểm tra Supabase URL cùng publishable/anon key.
+5. Trong Supabase Auth, cấu hình Site URL và Redirect URLs tương ứng với domain phát triển/production.
+6. Mở `register.html` để tạo tài khoản thử nghiệm.
 
-## Cấu hình Supabase
-- Thông tin kết nối trình duyệt nằm trong `js/supabase.js`.
-- Chỉ sử dụng Publishable/anon key ở trình duyệt. Không bao giờ đưa `service_role` key vào mã nguồn hoặc ZIP.
-- Trong Supabase Auth, thêm URL chạy Live Server vào danh sách Site URL / Redirect URLs nếu cần xác minh email.
+Frontend chỉ được chứa publishable/anon key. **Không bao giờ đưa `service_role` key, mật khẩu quản trị, TURN secret hoặc khóa bí mật vào JavaScript, HTML hay ZIP.** Publishable key không thay thế RLS.
 
-## Thiết lập cơ sở dữ liệu nhanh
-Mở Supabase > SQL Editor, dán và chạy `supabase/schema.sql` (tạo `profiles`, `contact_messages` và các chính sách RLS; chạy lại nhiều lần vẫn an toàn).
+## 2. Thứ tự cài đặt SQL
 
-## Cấu trúc bảng `public.profiles` mà dự án sử dụng
-- `id`: uuid, khóa liên kết với `auth.users.id`.
-- `display_name`: text.
-- `bio`: text.
-- `interests`: text[] (mảng chuỗi).
-- `city`: text.
-- `is_visible`: boolean.
-- `avatar_data`: jsonb.
-- `updated_at`: timestamptz.
+Chạy từng file trong **Supabase → SQL Editor**, theo thứ tự sau. Không chạy các file ngẫu nhiên hoặc bỏ qua migration phụ thuộc. Các file migration được thiết kế để chạy lại an toàn ở mức lệnh đã khai báo, nhưng vẫn nên sao lưu trước khi cập nhật hệ thống đang hoạt động.
 
-Dự án giả định bảng `profiles` và các cột trên đã tồn tại. Không chạy lệnh xóa bảng để sửa lỗi.
+| Thứ tự | File | Mục đích / phụ thuộc |
+|---:|---|---|
+| 1 | `supabase/schema.sql` | Bảng hồ sơ, liên hệ, vị trí, phòng thoại, Quảng trường, Soul Card, cung hoàng đạo và Soul Likes |
+| 2 | `supabase/community_members.sql` | Thành viên các cộng đồng chủ đề |
+| 3 | `supabase/community_feed.sql` | Bài đăng và bình luận; cần `community_members.sql` |
+| 4 | `supabase/community_chat.sql` | Tin nhắn cộng đồng; cần `community_members.sql` |
+| 5 | `supabase/community_interactions.sql` | Lượt thích và thông báo cộng đồng; cần `community_members.sql` và `community_feed.sql` |
+| 6 | `supabase/friend_system.sql` | Lời mời kết bạn và tin nhắn riêng; cần `schema.sql` |
+| 7 | `supabase/notification_presence.sql` | Trung tâm thông báo và trạng thái online; cần `friend_system.sql` |
+| 8 | `supabase/profile_social_identity.sql` | Ảnh bìa và bài đăng hồ sơ; cần `schema.sql` |
+| 9 | `supabase/profile_social_interactions.sql` | Like/comment bài đăng hồ sơ; cần `profile_social_identity.sql` |
+| 10 | `supabase/safety_hardening.sql` | Chặn, báo cáo, giới hạn tần suất, bảo vệ vị trí và upload; chạy sau schema và các migration liên quan ở trên |
+| 11 | `supabase/discover_search.sql` | Tìm kiếm hồ sơ phía server; cần `safety_hardening.sql` |
+| 12 | `supabase/admin_moderation.sql` | Hàng đợi kiểm duyệt và nhật ký thao tác; cần `safety_hardening.sql` |
 
-## Row Level Security (RLS)
-Bật RLS cho `public.profiles`. Các chính sách tối thiểu nên đảm bảo:
-- Người dùng chỉ được thêm/cập nhật hàng có `id = auth.uid()`.
-- Người dùng có thể đọc hồ sơ công khai (`is_visible = true`).
-- Người dùng có thể đọc hồ sơ của chính mình kể cả khi hồ sơ riêng tư.
-- Không cấp quyền ghi hồ sơ cho `anon` hoặc người dùng khác.
+Nếu một tính năng chưa được sử dụng, có thể chưa cần chạy migration riêng của tính năng đó. Tuy nhiên, trước khi phát hành bản đầy đủ, hãy chạy toàn bộ theo đúng thứ tự. `schema.sql` đã được chỉnh để tọa độ thô trong `user_locations` chỉ đọc được bởi chính chủ tài khoản; tìm người ở gần dùng RPC `nearby_users()` sau khi cài `safety_hardening.sql`.
 
-Nếu trang Khám phá báo lỗi quyền truy cập, hãy kiểm tra RLS policies trong Supabase. Không tắt RLS để khắc phục nhanh.
+### Cấu trúc hồ sơ cốt lõi
 
-## Voice Community (phòng thoại nhóm)
-- Mở `voice.html` bằng Live Server và đăng nhập.
-- Trong Supabase > SQL Editor, chạy phần `Voice Community` ở cuối `supabase/schema.sql` (hoặc chạy lại toàn bộ schema; các lệnh đều dùng `if not exists`/`drop policy if exists`).
-- Phòng thoại dùng Supabase Realtime Presence/Broadcast để báo hiệu và WebRTC để truyền âm thanh trực tiếp giữa tối đa 4 thành viên. Trình duyệt cần quyền micro và phải chạy trên HTTPS hoặc localhost (Live Server).
-- Nếu Supabase project tắt Realtime hoặc chính sách Realtime không cho phép kênh public, bật Realtime Broadcast/Presence cho dự án và kiểm tra cấu hình quyền truy cập kênh.
-- Bản thử nghiệm dùng STUN công khai; một số mạng/NAT có thể cần TURN server riêng để kết nối ổn định. Không đưa TURN secret hoặc service_role key vào mã frontend.
-- Phòng được tạo bởi tài khoản đăng nhập; chủ phòng kết thúc phòng khi rời đi. Không có ghép đôi ẩn danh 1-1.
-- Trong cuộc gọi có bộ lọc giọng (trầm/cao/dễ thương dạng EQ, robot dạng ring-modulation) và hiệu ứng vỗ tay, cười, nhịp tim, nhạc nền tổng hợp. Âm thanh hiệu ứng được trộn vào luồng WebRTC gửi tới người trong phòng. Đây là hiệu ứng Web Audio nhẹ, không phải công nghệ đổi cao độ/formant chất lượng phòng thu; nên thử trên Chrome/Edge và HTTPS hoặc localhost.
+`public.profiles` liên kết `id` với `auth.users.id`. Các trường được dùng gồm `display_name`, `bio`, `interests`, `city`, `is_visible`, `avatar_data`, `updated_at` và các trường mở rộng do migration thêm. Không xóa bảng hoặc thay đổi kiểu dữ liệu tùy tiện để sửa lỗi; hãy tạo migration bổ sung có kiểm soát.
 
-## Các trang
-- `index.html`: Trang chủ.
-- `register.html`, `login.html`: Tạo tài khoản và đăng nhập.
-- `profile.html`: Chỉnh sửa hồ sơ và tùy chọn công khai.
-- `avatar.html`: Thiết kế và lưu Avatar hoạt hình.
-- `discover.html`: Tìm hồ sơ công khai theo tên, thành phố và sở thích.
-- `voice.html`: Tạo và tham gia phòng trò chuyện thoại nhóm.
+## 3. Các trang chính
 
-## Ghi chú
-- Biểu mẫu liên hệ lưu lời nhắn vào bảng `contact_messages` (xem trong Supabase Dashboard); không gửi email.
-- Mã vẽ Avatar dùng chung nằm ở `js/avatar-data.js`.
-- Ảnh đại diện chân dung không được tải lên; hồ sơ sử dụng Avatar hoạt hình.
-- Kiểm tra kỹ quyền truy cập và chính sách RLS trước khi triển khai công khai.
+- `index.html`: trang chủ và Connect Planet 3D.
+- `register.html`, `login.html`: đăng ký và đăng nhập.
+- `quiz.html`: bài trắc nghiệm Soul.
+- `profile.html`, `public-profile.html`: hồ sơ cá nhân và hồ sơ công khai.
+- `avatar.html`: thiết kế Avatar SVG.
+- `discover.html`, `match.html`: khám phá và Soul Match.
+- `friends.html`: lời mời, bạn bè, nhắn tin riêng và thông báo.
+- `square.html`: Quảng trường Moments, bình luận và tin nhắn kín.
+- `voice.html`: phòng thoại nhóm WebRTC.
+- `admin.html`: giao diện kiểm duyệt; cần cấp quyền admin qua SQL.
+- `icebreaker.html`: mini-games và gợi ý phá băng.
 
-## Quảng trường (Moments)
-- Chạy lại `supabase/schema.sql` (phần "Quảng trường": 5 bảng, 2 view, bucket `moments`). Mở `square.html` bằng Live Server và đăng nhập.
-- Bài đăng gồm chữ, ảnh, video (≤10 MB) hoặc ghi âm (≤60 giây); thẻ `#chủ_đề` trong nội dung tự thành hashtag.
-- Ẩn danh: người xem chỉ thấy biệt danh ngẫu nhiên. `author_id` chỉ chủ bài đọc được; mọi người đọc qua view `moments_feed`/`comments_feed`. Tin nhắn kín dùng mã cuộc trò chuyện, người nhận không thấy tài khoản người gửi.
-- Chưa có kiểm duyệt/báo cáo vi phạm: cần bổ sung trước khi công khai.
+## 4. Bảo mật và quyền riêng tư
 
+- **RLS:** bật RLS và kiểm tra mọi policy bằng ít nhất hai tài khoản độc lập. Không tắt RLS để khắc phục lỗi truy vấn.
+- **Vị trí:** người dùng chủ động chia sẻ; tọa độ thô chỉ chủ tài khoản đọc được. `nearby_users(radius_km)` trả ID và nấc khoảng cách, không trả tọa độ. Tắt chia sẻ vị trí bằng cách xóa dòng của chính mình.
+- **Chặn/báo cáo:** `safety_hardening.sql` thêm luồng chặn, báo cáo và tự ẩn nội dung Quảng trường khi có đủ báo cáo hợp lệ. Đây không thay thế quy trình kiểm duyệt của con người.
+- **Quảng trường:** bucket `moments` đang public để ảnh/video/ghi âm trong bài có thể hiển thị qua URL công khai. Không tải lên dữ liệu nhạy cảm hoặc nội dung cần bảo mật. Muốn nội dung riêng tư thực sự cần chuyển sang private bucket và thay luồng URL bằng signed URL đồng bộ với RLS.
+- **Ảnh bìa:** bucket `profile-covers` đang public để hiển thị ảnh; quyền tải lên/cập nhật/xóa được giới hạn theo thư mục người dùng.
+- **Admin:** bảng `admins` không có policy truy cập client. Thêm tài khoản quản trị bằng SQL Editor, ví dụ:
 
-## Mini-games & Soul Card
-- Mở `icebreaker.html` bằng Live Server để chơi Đoán chữ, Câu hỏi phá băng và Lá bài gợi ý (mang tính giải trí, không dự đoán tương lai).
-- Mở `profile.html`, nhập tối đa 6 từ khóa vào Soul Card và nhấn Lưu hồ sơ.
-- Chạy lại `supabase/schema.sql` để thêm cột `soul_tags` vào `profiles`; lệnh dùng `add column if not exists` nên không xóa dữ liệu.
-- Avatar hiện là nhân vật hoạt hình SVG 2D có thể tùy chỉnh tóc, màu tóc, khuôn mặt, mắt, biểu cảm, màu da và trang phục; chưa phải mô hình 3D tương tác.
+  ```sql
+  insert into public.admins (user_id)
+  select id from auth.users where email = 'admin@example.com';
+  ```
 
+  Thay email ví dụ bằng email tài khoản thực tế. Không cấp quyền admin từ trình duyệt. `admin_moderation.sql` ghi nhật ký thay đổi trạng thái báo cáo vào `admin_audit_log`; bảng này không mở cho client. Nhật ký được ghi khi thao tác xử lý báo cáo cập nhật trạng thái thông qua giao diện/RPC quản trị.
+- **Auth:** bật xác minh email, đặt chính sách mật khẩu phù hợp và cấu hình giới hạn đăng nhập trong Supabase Auth. CAPTCHA/Turnstile cần Edge Function hoặc lớp backend; frontend hiện không tự cung cấp cơ chế CAPTCHA hoàn chỉnh.
 
-## Mutual Like + Soul Connection
+## 5. Hiệu năng và giới hạn đã biết
 
-Tính năng thích hồ sơ và kết nối tương hỗ được tích hợp ở `discover.html` và `match.html`. Khi A thích B và B cũng thích A, cả hai phía nhận sự kiện Realtime, hiển thị độ tương hợp từ thuật toán Soul Match hiện tại, tinh cầu đôi và các sở thích chung. Người dùng có thể bỏ thích để hủy lượt thích của chính mình.
+- Tinh cầu có lớp Three.js/WebGL và Canvas 2D dự phòng. Three.js được tải từ CDN; cần Internet. Kiểm tra cả thiết bị không hỗ trợ WebGL.
+- Tinh cầu và một số thống kê Universe vẫn tải theo giới hạn hữu hạn ở frontend; với cộng đồng lớn cần tiếp tục chuyển sang phân trang/truy vấn server-side.
+- Phòng thoại dùng WebRTC với STUN công khai. Một số NAT/firewall cần TURN server riêng để kết nối ổn định; cấu hình TURN phải đặt ở backend an toàn, không nhúng TURN secret vào frontend.
+- Presence là trạng thái ước lượng, có thể trễ khi thiết bị mất mạng đột ngột.
+- Bucket `moments` hiện dùng public URL; chưa phải signed URL riêng tư.
+- Push notification/email chưa được tích hợp.
 
-### Bước bắt buộc trên Supabase
+## 6. Kiểm thử trước khi phát hành
 
-1. Mở **Supabase → SQL Editor**.
-2. Chạy toàn bộ file `supabase/migrations/20261117_soul_likes.sql` (hoặc chạy phần cùng tên ở cuối `supabase/schema.sql`).
-3. Đảm bảo Realtime đang bật cho bảng `public.soul_likes` trong publication `supabase_realtime` (migration đã tự thêm nếu chưa có).
+Dùng tối thiểu hai tài khoản A/B và kiểm tra:
 
-Bảng `soul_likes` có RLS: người dùng chỉ đọc lượt thích liên quan đến chính họ, chỉ tạo lượt thích với `from_user_id = auth.uid()` và chỉ xóa lượt thích do mình tạo. Không cần thêm cột vào `profiles`.
+1. Đăng ký, xác minh email, đăng nhập, đăng xuất, hết phiên và đặt lại mật khẩu.
+2. Hồ sơ công khai/riêng tư; A không đọc được hồ sơ riêng tư của B.
+3. A/B thích nhau, bỏ thích, kết bạn, từ chối lời mời và hủy kết bạn.
+4. Tin nhắn riêng chỉ đọc/gửi được giữa hai người đã kết bạn; người bị chặn không thể gửi lời mời hoặc tin nhắn.
+5. Quảng trường: tạo bài, tải media, like, bình luận, báo cáo, chặn và xóa bài của chính mình.
+6. Kiểm tra `moments_feed` không làm lộ `author_id` của bài ẩn danh; kiểm tra URL media vì bucket hiện public.
+7. Cộng đồng: chỉ thành viên mới đọc/đăng bài và gửi tin nhắn trong cộng đồng tương ứng.
+8. Admin: tài khoản thường không xem được hàng đợi; admin xử lý báo cáo và kiểm tra `admin_audit_log`.
+9. Vị trí: tài khoản A không thể SELECT tọa độ của B; RPC chỉ trả ID và nấc khoảng cách.
+10. Phòng thoại: cấp/thu hồi quyền micro, rời phòng, đóng phòng, mất mạng, Chrome/Edge và thiết bị di động.
+11. Giao diện: desktop/mobile, chế độ sáng/tối, bàn phím, reduced motion và trạng thái mạng chậm.
 
-### Kiểm thử thủ công
+## 7. Ghi chú phát triển
 
-- Dùng hai tài khoản đã đăng nhập, hồ sơ công khai.
-- Tài khoản A nhấn **Thích hồ sơ** của B: A thấy trạng thái **Đã thích**, chưa có ghép đôi.
-- Tài khoản B nhấn **Thích hồ sơ** của A: cả hai phía nhận thông báo **Hai tinh cầu đã tìm thấy nhau**, điểm tương hợp và tag chung.
-- A bỏ thích: lượt thích một chiều bị xóa và trạng thái ghép đôi không còn được xác nhận ở lần kiểm tra tiếp theo.
-
-Realtime cần kết nối Supabase đang hoạt động; nếu chưa chạy migration, nút thích sẽ không lưu được dữ liệu.
-
-
-## Connect 3D Planet
-
-- Màn hình chính có tinh cầu tương tác: kéo để xoay, cuộn hoặc dùng nút +/- để phóng to/thu nhỏ.
-- Các Avatar được dựng từ `avatar_data` của hồ sơ công khai (`is_visible = true`); không tạo hồ sơ giả và không tự hiển thị số người online.
-- Chọn một Avatar để xem tên, sở thích và độ tương hợp (dùng lại `compat()` trong `js/soul.js`). Nút thích sử dụng luồng `soul_likes` hiện có; Soul Match mở trang ghép đôi, Audio mở `voice.html`.
-- Tính năng dùng lại Supabase Auth, hồ sơ và RLS hiện tại. Không cần migration mới. Hồ sơ công khai vẫn tuân theo chính sách `profiles_read_public_or_own`.
-- Muốn xuất hiện trên tinh cầu, thành viên cần bật hiển thị hồ sơ trong trang Hồ sơ. Trạng thái online không được suy diễn từ việc hồ sơ công khai.
+- Supabase client: `js/supabase.js` (supabase-js `2.45.4`).
+- Mã nguồn Avatar: `js/avatar-data.js` và `js/avatar.js`.
+- Tinh cầu: `js/planet-3d.js`, `js/planet-three.js`, `js/universe.js`.
+- Âm thanh/WebRTC: `js/voice.js`, `js/effects.js`.
+- CSS nền tảng: `css/style.css`, `css/theme.css`, `css/compact-ui.css`, `css/quality.css`; CSS tính năng nằm trong các file cùng tên.
+- Các file `*_UPDATE.md`, `CHANGELOG_*.md` là ghi chú lịch sử; khi có khác biệt, ưu tiên mã nguồn và migration SQL hiện tại.

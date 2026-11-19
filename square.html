@@ -5,12 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="images/favicon.png">
     <title>Quảng trường | Connect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/match.css">
     <link rel="stylesheet" href="css/square.css">
-    <link rel="stylesheet" href="css/zodiac.css">
+    <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/effects.css">
-    <link rel="stylesheet" href="css/polish.css">
+    <link rel="stylesheet" href="css/safety.css">
+    <link rel="stylesheet" href="css/compact-ui.css">
+    <link rel="stylesheet" href="css/quality.css">
 </head>
 <body>
     <header class="site-header">
@@ -49,6 +54,7 @@
             </section>
             <div class="sq-row"><input id="tagSearch" placeholder="Tìm theo thẻ, ví dụ: âm_nhạc"><button id="tagGo" class="btn btn-light" type="button">Lọc</button></div>
             <div id="trending" class="sq-tags"></div>
+            <p><button type="button" id="blockedBtn" class="safety-link">Danh sách đã chặn</button></p>
             <section id="inbox" class="sq-inbox" hidden><strong>💬 Tin nhắn của tôi</strong><div id="inboxList"></div></section>
             <div id="feed"></div>
         </div>
@@ -61,5 +67,6 @@
     <script src="js/script.js"></script>
     <script src="js/theme.js"></script>
     <script type="module" src="js/square.js"></script>
+  <script type="module" src="js/presence.js"></script>
 </body>
 </html>

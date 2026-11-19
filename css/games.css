@@ -1,1 +1,26 @@
-.games-wrap{width:min(1080px,calc(100% - 32px));margin:55px auto 80px}.games-heading{text-align:center;max-width:680px;margin:0 auto 34px}.games-heading h1{font:800 clamp(30px,5vw,46px)/1.12 'Manrope',sans-serif;letter-spacing:-.04em;margin:8px 0 12px}.games-heading p,.game-card>p{color:var(--muted)}.games-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.game-card{display:flex;flex-direction:column;align-items:flex-start;padding:24px;border:1px solid var(--border);border-radius:18px;background:var(--surface);box-shadow:var(--shadow);min-height:390px}.game-icon{font-size:30px}.game-card h2{font:800 21px 'Manrope',sans-serif;margin:12px 0 5px}.game-card>p{font-size:13px;margin:0 0 18px}.game-question{width:100%;padding:16px;border-radius:12px;background:var(--soft);font-weight:700;line-height:1.55;margin:8px 0 14px;min-height:76px}.game-options{display:grid;gap:8px;width:100%;margin-bottom:12px}.game-option{padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--text);text-align:left;cursor:pointer}.game-option:hover{border-color:var(--primary)}.game-option:disabled{cursor:default;opacity:.8}.game-option.correct{border-color:#279b70;background:#e8f7f0;color:#176b4b}.game-option.wrong{border-color:#d58a8a;background:#fff0f0;color:#984646}.game-card .btn{margin-top:auto;margin-bottom:8px}.game-card .btn-outline{background:transparent;color:var(--primary)}.game-feedback{min-height:20px;margin:5px 0 0!important;color:var(--primary)!important;font-weight:700}.tarot-result{width:100%;min-height:140px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;margin:8px 0 18px;padding:18px;border:1px dashed var(--primary);border-radius:14px;background:var(--soft);text-align:center}.tarot-result span{font-size:34px;color:var(--primary)}.tarot-result strong{font:800 18px 'Manrope',sans-serif}.tarot-result small{color:var(--muted);line-height:1.5}.games-note{text-align:center;color:var(--muted);font-size:13px;margin:25px 0 0}@media(max-width:850px){.games-grid{grid-template-columns:1fr 1fr}}@media(max-width:600px){.games-grid{grid-template-columns:1fr}.games-wrap{margin-top:30px}.game-card{min-height:0}}
+.games-wrap { width:min(1080px,calc(100% - 32px)); margin:55px auto 80px; }
+.games-heading { text-align:center; max-width:680px; margin:0 auto 34px; }
+.games-heading h1 { font:800 clamp(30px,5vw,46px)/1.12 'Manrope',sans-serif; letter-spacing:-.04em; margin:8px 0 12px; }
+.games-heading p,.game-card>p { color:var(--muted); }
+.games-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.game-card { display:flex; flex-direction:column; align-items:flex-start; padding:24px; border:1px solid var(--border); border-radius:18px; background:var(--surface); box-shadow:var(--shadow); min-height:390px; }
+.game-icon { font-size:30px; }
+.game-card h2 { font:800 21px 'Manrope',sans-serif; margin:12px 0 5px; }
+.game-card>p { font-size:13px; margin:0 0 18px; }
+.game-question { width:100%; padding:16px; border-radius:12px; background:var(--soft); font-weight:700; line-height:1.55; margin:8px 0 14px; min-height:76px; }
+.game-options { display:grid; gap:8px; width:100%; margin-bottom:12px; }
+.game-option { padding:10px 12px; border:1px solid var(--border); border-radius:9px; background:var(--surface); color:var(--text); text-align:left; cursor:pointer; }
+.game-option:hover { border-color:var(--primary); }
+.game-option:disabled { cursor:default; opacity:.8; }
+.game-option.correct { border-color:#279b70; background:#e8f7f0; color:#176b4b; }
+.game-option.wrong { border-color:#d58a8a; background:#fff0f0; color:#984646; }
+.game-card .btn { margin-top:auto; margin-bottom:8px; }
+.game-card .btn-outline { background:transparent; color:var(--primary); }
+.game-feedback { min-height:20px; margin:5px 0 0 !important; color:var(--primary) !important; font-weight:700; }
+.tarot-result { width:100%; min-height:140px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px; margin:8px 0 18px; padding:18px; border:1px dashed var(--primary); border-radius:14px; background:var(--soft); text-align:center; }
+.tarot-result span { font-size:34px; color:var(--primary); }
+.tarot-result strong { font:800 18px 'Manrope',sans-serif; }
+.tarot-result small { color:var(--muted); line-height:1.5; }
+.games-note { text-align:center; color:var(--muted); font-size:13px; margin:25px 0 0; }
+@media(max-width:850px) { .games-grid{grid-template-columns:1fr 1fr} }
+@media(max-width:600px) { .games-grid{grid-template-columns:1fr}.games-wrap{margin-top:30px}.game-card{min-height:0} }

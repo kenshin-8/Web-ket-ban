@@ -6,10 +6,14 @@
     <meta name="description" content="Quản lý hồ sơ Connect.">
     <link rel="icon" type="image/png" href="images/favicon.png">
     <title>Hồ sơ cá nhân | Connect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/profile.css">
-    <link rel="stylesheet" href="css/zodiac.css">
-    <link rel="stylesheet" href="css/polish.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/compact-ui.css">
+    <link rel="stylesheet" href="css/quality.css">
 </head>
 <body>
     <header class="site-header">
@@ -37,6 +41,16 @@
             <span class="eyebrow">TÀI KHOẢN CỦA BẠN</span>
             <h1>Hồ sơ cá nhân</h1>
             <p class="subtitle">Chia sẻ những điều bạn yêu thích với cộng đồng Connect.</p>
+            <section class="profile-cover-editor" aria-labelledby="coverTitle">
+                <div class="profile-cover-preview" id="coverPreview"><span>YOUR CONNECT STORY</span></div>
+                <div class="cover-editor-controls">
+                    <div><h2 id="coverTitle">Ảnh bìa hồ sơ</h2><p>Chọn ảnh ngang để tạo dấu ấn riêng. Ảnh tối đa 5 MB.</p></div>
+                    <label class="cover-upload-btn" for="coverFile">Chọn ảnh bìa</label>
+                    <input id="coverFile" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+                    <button type="button" id="removeCover" class="cover-remove-btn">Gỡ ảnh</button>
+                </div>
+                <p id="coverMessage" class="cover-message" role="status"></p>
+            </section>
             <section class="profile-avatar-section">
                 <h2>Avatar của tôi</h2>
                 <div class="avatar-planet-row">
@@ -59,6 +73,8 @@
             <form id="profileForm">
                 <label for="displayName">Tên hiển thị</label>
                 <input type="text" id="displayName" maxlength="50" placeholder="Tên bạn muốn mọi người nhìn thấy" required>
+                <label for="headline">Dòng giới thiệu ngắn</label>
+                <input type="text" id="headline" maxlength="90" placeholder="Ví dụ: Khám phá thế giới qua công nghệ và sáng tạo">
                 <label for="city">Thành phố</label>
                 <input type="text" id="city" maxlength="100" placeholder="Ví dụ: Hà Nội">
                 <label for="bio">Giới thiệu bản thân</label>
@@ -81,9 +97,22 @@
                     <input type="checkbox" id="isVisible">
                     <span><strong>Hiển thị hồ sơ trong cộng đồng</strong><small>Chỉ bật nếu bạn muốn hồ sơ xuất hiện trên trang Khám phá.</small></span>
                 </label>
+                <div class="profile-visibility-tools">
+                    <div><strong>Trang hồ sơ công khai</strong><small>Xem trước những gì người khác có thể nhìn thấy.</small></div>
+                    <a id="publicProfileLink" href="public-profile.html" target="_blank" rel="noopener">Xem hồ sơ ↗</a>
+                </div>
                 <button type="submit" id="saveBtn" class="btn profile-save-btn">Lưu hồ sơ</button>
                 <p id="profileMessage" role="status" aria-live="polite"></p>
             </form>
+            <section class="profile-posts-editor" aria-labelledby="postsTitle">
+                <div class="posts-heading"><div><h2 id="postsTitle">Dòng thời gian của tôi</h2><p>Chia sẻ một cập nhật ngắn trên hồ sơ Connect.</p></div><span id="postCount">0 bài viết</span></div>
+                <form id="profilePostForm" class="profile-post-form">
+                    <textarea id="profilePostBody" rows="3" maxlength="500" placeholder="Hôm nay bạn muốn chia sẻ điều gì?" required></textarea>
+                    <div><small>Tối đa 500 ký tự</small><button type="submit" id="publishPostBtn">Đăng bài</button></div>
+                </form>
+                <div id="profilePostsList" class="profile-posts-list"><p class="posts-empty">Đang tải bài viết…</p></div>
+                <p id="postsMessage" role="status" class="posts-message"></p>
+            </section>
         </section>
     </main>
     <footer class="site-footer"><p>© 2026 Connect. Bạn luôn kiểm soát thông tin được chia sẻ.</p></footer>
@@ -91,5 +120,6 @@
     <script src="js/script.js"></script>
 <script src="js/theme.js"></script>
     <script type="module" src="js/profile.js"></script>
+  <script type="module" src="js/presence.js"></script>
 </body>
 </html>

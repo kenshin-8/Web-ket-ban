@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kết bạn và nhắn tin riêng trên Connect.">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <title>Bạn bè & Tin nhắn | Connect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/friends.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/safety.css">
+    <link rel="stylesheet" href="css/compact-ui.css">
+    <link rel="stylesheet" href="css/quality.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar" aria-label="Điều hướng chính">
+      <a href="index.html" class="logo">Connect<span>.</span></a>
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="Mở menu" aria-expanded="false">☰</button>
+      <div class="nav-links" id="navLinks">
+        <a href="index.html">Trang chủ</a>
+        <a href="discover.html">Khám phá</a>
+        <a href="friends.html" aria-current="page">Bạn bè & Tin nhắn</a>
+        <a href="profile.html">Hồ sơ</a>
+        <a href="match.html">Soul Match</a>
+      </div>
+      <div class="nav-actions"><button id="themeToggle" class="theme-btn" type="button" aria-label="Đổi giao diện">🌙</button><div id="authArea" class="auth-area"></div></div>
+    </nav>
+  </header>
+  <main class="friends-page">
+    <section class="friends-hero">
+      <span class="eyebrow">CONNECT NETWORK</span>
+      <h1>Kết nối gần hơn, <span>chia sẻ nhiều hơn.</span></h1>
+      <p>Tìm thành viên có hồ sơ công khai, gửi lời mời kết bạn và trò chuyện riêng với bạn bè đã chấp nhận.</p>
+      <p><button type="button" id="blockedBtn" class="safety-link">Danh sách đã chặn</button></p>
+    </section>
+    <section class="friends-panel notification-panel" aria-labelledby="notificationTitle">
+      <div class="panel-heading">
+        <div><span class="panel-kicker">YOUR NOTIFICATIONS</span><h2 id="notificationTitle">Thông báo <span class="count-pill" id="notificationUnreadCount">0</span></h2></div>
+        <button type="button" class="notification-mark-all" id="notificationMarkAll">Đánh dấu đã đọc</button>
+      </div>
+      <div class="notification-list" id="notificationList" aria-live="polite"><p class="empty-state">Đang tải thông báo…</p></div>
+      <p class="friends-status" id="notificationStatus" aria-live="polite"></p>
+    </section>
+    <section class="friends-panel presence-panel" aria-labelledby="presenceTitle">
+      <div class="panel-heading"><div><span class="panel-kicker">ONLINE PRESENCE</span><h2 id="presenceTitle">Bạn bè đang hoạt động <span class="count-pill" id="onlineFriendsCount">0</span></h2></div><span class="presence-live-label"><i></i> LIVE</span></div>
+      <div class="people-list" id="onlineFriendsList"><p class="empty-state">Đang kiểm tra trạng thái bạn bè…</p></div>
+    </section>
+    <div class="friends-layout">
+      <section class="friends-panel friends-discover">
+        <div class="panel-heading"><div><span class="panel-kicker">DISCOVER PEOPLE</span><h2>Tìm bạn mới</h2></div><span class="panel-icon">✦</span></div>
+        <form id="friendSearchForm" class="friend-search"><label class="sr-only" for="friendSearchInput">Tìm theo tên</label><input id="friendSearchInput" type="search" maxlength="60" placeholder="Nhập tên hiển thị…" autocomplete="off"><button type="submit">Tìm kiếm</button></form>
+        <p class="friends-status" id="friendSearchStatus" aria-live="polite">Nhập tên để tìm thành viên Connect.</p>
+        <div class="people-list" id="friendSearchResults"></div>
+      </section>
+      <section class="friends-panel">
+        <div class="panel-heading"><div><span class="panel-kicker">CONNECTION REQUESTS</span><h2>Lời mời kết bạn <span class="count-pill" id="requestCount">0</span></h2></div></div>
+        <div class="people-list" id="friendRequests"><p class="empty-state">Chưa có lời mời nào.</p></div>
+      </section>
+      <section class="friends-panel friends-list-panel">
+        <div class="panel-heading"><div><span class="panel-kicker">YOUR NETWORK</span><h2>Bạn bè <span class="count-pill" id="friendsCount">0</span></h2></div></div>
+        <div class="people-list" id="friendsList"><p class="empty-state">Danh sách bạn bè sẽ xuất hiện ở đây.</p></div>
+      </section>
+      <section class="friends-panel dm-panel" id="directMessagePanel">
+        <div class="dm-heading"><div><span class="panel-kicker">PRIVATE CONVERSATION</span><h2 id="dmTitle">Tin nhắn riêng</h2><p id="dmSubtitle">Chọn một người bạn để bắt đầu trò chuyện.</p></div><span class="dm-live-indicator">DIRECT</span></div>
+        <div class="dm-messages" id="dmMessages" role="log" aria-live="polite" aria-relevant="additions"><p class="empty-state">Tin nhắn riêng tư chỉ dành cho hai người trong cuộc trò chuyện.</p></div>
+        <p class="dm-status" id="dmStatus" aria-live="polite"></p>
+        <form class="dm-compose" id="dmForm" hidden><label class="sr-only" for="dmInput">Nội dung tin nhắn</label><input id="dmInput" type="text" maxlength="2000" placeholder="Viết tin nhắn…" autocomplete="off" required><button type="submit" id="dmSend">Gửi</button></form>
+      </section>
+    </div>
+    <p class="privacy-footnote">Quyền riêng tư: tìm kiếm chỉ hiển thị hồ sơ đã bật công khai. Tin nhắn riêng chỉ được phép giữa hai tài khoản đã kết bạn.</p>
+  </main>
+  <footer class="site-footer"><p>© 2026 Connect. Bạn luôn kiểm soát thông tin được chia sẻ.</p></footer>
+  <script type="module" src="js/session.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/theme.js"></script>
+  <script type="module" src="js/notification-badge.js"></script>
+  <script type="module" src="js/friends.js"></script>
+  <script type="module" src="js/presence.js"></script>
+</body>
+</html>

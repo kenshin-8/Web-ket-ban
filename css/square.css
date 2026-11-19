@@ -1,13 +1,22 @@
 .sq-compose,.moment,.sq-inbox { padding:18px; margin-bottom:16px; background:var(--surface); border:1px solid var(--border); border-radius:16px; box-shadow:var(--shadow); }
 .sq-compose textarea,.sq-row input { width:100%; padding:12px; border:1px solid var(--border); border-radius:10px; background:var(--surface); color:var(--text); font:inherit; }
-.sq-row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px; } .sq-row input { flex:1; min-width:160px; }
-.sq-tags { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; } .tag-chip { border:0; cursor:pointer; padding:6px 12px; border-radius:999px; background:var(--primary-soft); color:var(--primary); font:700 13px inherit; }
+.sq-row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px; }
+.sq-row input { flex:1; min-width:160px; }
+.sq-tags { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; }
+.tag-chip { border:0; cursor:pointer; padding:6px 12px; border-radius:999px; background:var(--primary-soft); color:var(--primary); font:700 13px inherit; }
 .tag-chip.on { background:var(--primary); color:#fff; }
-.moment header { display:flex; justify-content:space-between; color:var(--muted); font-size:13px; } .moment header strong { color:var(--text); }
-.moment-body { white-space:pre-wrap; overflow-wrap:anywhere; margin:10px 0; } .moment img,.moment video { max-width:100%; border-radius:12px; } .moment audio { width:100%; }
-.moment-actions { display:flex; flex-wrap:wrap; gap:8px; } .moment-actions button,.cm button { border:1px solid var(--border); background:var(--soft); color:var(--text); border-radius:999px; padding:6px 12px; cursor:pointer; }
+.moment header { display:flex; justify-content:space-between; color:var(--muted); font-size:13px; }
+.moment header strong { color:var(--text); }
+.moment-body { white-space:pre-wrap; overflow-wrap:anywhere; margin:10px 0; }
+.moment img,.moment video { max-width:100%; border-radius:12px; }
+.moment audio { width:100%; }
+.moment-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.moment-actions button,.cm button { border:1px solid var(--border); background:var(--soft); color:var(--text); border-radius:999px; padding:6px 12px; cursor:pointer; }
 .moment-actions .on { background:var(--primary-soft); border-color:var(--primary); }
-.cm { margin-top:12px; padding-top:10px; border-top:1px solid var(--border); font-size:14px; } .cm p { margin:6px 0; overflow-wrap:anywhere; }
-#dmDialog { width:min(420px,92vw); border:1px solid var(--border); border-radius:16px; background:var(--surface); color:var(--text); } #dmLog { max-height:300px; overflow:auto; display:grid; gap:6px; margin:10px 0; }
-.dm-msg { padding:8px 12px; border-radius:12px; background:var(--soft); max-width:85%; overflow-wrap:anywhere; } .dm-msg.me { background:var(--primary); color:#fff; justify-self:end; }
+.cm { margin-top:12px; padding-top:10px; border-top:1px solid var(--border); font-size:14px; }
+.cm p { margin:6px 0; overflow-wrap:anywhere; }
+#dmDialog { width:min(420px,92vw); border:1px solid var(--border); border-radius:16px; background:var(--surface); color:var(--text); }
+#dmLog { max-height:300px; overflow:auto; display:grid; gap:6px; margin:10px 0; }
+.dm-msg { padding:8px 12px; border-radius:12px; background:var(--soft); max-width:85%; overflow-wrap:anywhere; }
+.dm-msg.me { background:var(--primary); color:#fff; justify-self:end; }
 .sq-inbox button { display:block; width:100%; text-align:left; margin:4px 0; padding:9px; border:0; border-radius:8px; background:var(--soft); color:var(--text); cursor:pointer; }

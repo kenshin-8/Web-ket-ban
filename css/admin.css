@@ -1,0 +1,19 @@
+/* Trang quản trị báo cáo (admin.html) */
+.admin-wrap{width:min(920px,calc(100% - 32px));margin:0 auto;padding:36px 0 64px}
+.admin-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:18px 0 8px}
+.admin-toolbar select{padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text);font:inherit}
+.admin-list{display:grid;gap:14px;margin-top:10px}
+.admin-card{padding:16px 18px;border:1px solid var(--border);border-radius:16px;background:var(--surface);box-shadow:var(--shadow)}
+.admin-card-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.admin-type{font-weight:700;font-size:14px}
+.admin-badge{padding:3px 9px;border-radius:999px;background:var(--primary-soft);color:var(--text);font-size:12px;font-weight:600}
+.admin-badge.is-count{background:var(--primary);color:#fff}
+.admin-badge.is-hidden{background:var(--soft);border:1px solid var(--border)}
+.admin-badge.is-gone{background:var(--soft);color:var(--muted)}
+.admin-preview{margin:0 0 10px;padding:10px 12px;border-radius:10px;background:var(--soft);white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.5}
+.admin-preview.is-empty{color:var(--muted);font-style:italic}
+.admin-details{margin:0 0 10px;padding-left:18px;color:var(--muted);font-size:13px}
+.admin-actions{display:flex;gap:8px;flex-wrap:wrap}
+.admin-actions button{padding:8px 14px;border:1px solid var(--border);border-radius:999px;background:var(--soft);color:var(--text);font-size:13px;cursor:pointer}
+.admin-actions button.is-danger{background:var(--primary);border-color:transparent;color:#fff}
+.admin-actions button:disabled{opacity:.55;cursor:default}

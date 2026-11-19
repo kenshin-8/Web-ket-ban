@@ -6,11 +6,15 @@
     <meta name="description" content="Connect - Khám phá cộng đồng từ những sở thích chung.">
     <link rel="icon" type="image/png" href="images/favicon.png">
     <title>Connect | Cộng đồng của bạn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap">
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/zodiac.css">
-    <link rel="stylesheet" href="css/polish.css">
-    <link rel="stylesheet" href="css/planet-3d.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/safety.css">
+    <link rel="stylesheet" href="css/compact-ui.css">
+    <link rel="stylesheet" href="css/quality.css">
 </head>
 <body>
     <header class="site-header">
@@ -22,6 +26,7 @@
                 <a href="#about">Giới thiệu</a>
                 <a href="#zodiac">12 cung</a>
                 <a href="discover.html">Khám phá</a>
+                <a href="friends.html">Bạn bè & Tin nhắn</a>
                 <a href="profile.html">Hồ sơ</a>
                 <a href="match.html">Soul Match</a>
                 <a href="square.html">Quảng trường</a>
@@ -52,15 +57,66 @@
                 <div class="zodiac-core" aria-hidden="true"><div><span>✦</span>12 cung</div></div>
             </div>
         </section>
+        <section class="universe-section" id="universe" aria-labelledby="universeTitle">
+            <div class="universe-heading"><span class="eyebrow">CONNECT SOCIAL UNIVERSE</span><h2 id="universeTitle">Khám phá những thế giới của bạn</h2><p>Mỗi hành tinh là một cộng đồng. Chọn một thế giới để khám phá thành viên có cùng sở thích.</p></div>
+            <div class="universe-grid" id="universeGrid" aria-live="polite">
+                <button class="universe-planet-card is-tech" type="button" data-community="tech"><span class="universe-planet-art"><i></i></span><span class="universe-card-copy"><strong>Tech Planet</strong><small>Công nghệ · Lập trình · AI</small><em class="universe-member-count">Đang tải thành viên…</em></span></button>
+                <button class="universe-planet-card is-art" type="button" data-community="art"><span class="universe-planet-art"><i></i></span><span class="universe-card-copy"><strong>Art Planet</strong><small>Nghệ thuật · Thiết kế · Nhiếp ảnh</small><em class="universe-member-count">Đang tải thành viên…</em></span></button>
+                <button class="universe-planet-card is-music" type="button" data-community="music"><span class="universe-planet-art"><i></i></span><span class="universe-card-copy"><strong>Music Planet</strong><small>Âm nhạc · Ca hát · Nhạc cụ</small><em class="universe-member-count">Đang tải thành viên…</em></span></button>
+                <button class="universe-planet-card is-nature" type="button" data-community="nature"><span class="universe-planet-art"><i></i></span><span class="universe-card-copy"><strong>Nature Planet</strong><small>Thiên nhiên · Du lịch · Môi trường</small><em class="universe-member-count">Đang tải thành viên…</em></span></button>
+                <button class="universe-planet-card is-books" type="button" data-community="books"><span class="universe-planet-art"><i></i></span><span class="universe-card-copy"><strong>Book Planet</strong><small>Đọc sách · Truyện · Viết lách</small><em class="universe-member-count">Đang tải thành viên…</em></span></button>
+                <button class="universe-planet-card is-sport" type="button" data-community="sport"><span class="universe-planet-art"><i></i></span><span class="universe-card-copy"><strong>Sport Planet</strong><small>Thể thao · Bóng đá · Chạy bộ</small><em class="universe-member-count">Đang tải thành viên…</em></span></button>
+            </div>
+            <div class="universe-detail" id="universeDetail" hidden>
+                <div class="universe-detail-copy"><span class="universe-detail-kicker">COMMUNITY SELECTED</span><h3 id="universeDetailTitle">Tech Planet</h3><p id="universeDetailText">Khám phá những thành viên cùng sở thích.</p><p class="universe-joined-count" id="universeJoinedCount"></p></div>
+                <div class="universe-detail-actions"><button type="button" class="universe-join-btn" id="universeJoinBtn">Tham gia cộng đồng</button><button type="button" id="universeExploreBtn">Khám phá trên tinh cầu ↗</button></div>
+                <div class="universe-members" id="universeMembers" aria-live="polite"><span>Chọn một hành tinh để xem thành viên.</span></div>
+                <section class="community-feed" id="communityFeed" aria-labelledby="communityFeedTitle">
+                    <div class="community-feed-heading"><div><span class="universe-detail-kicker">COMMUNITY FEED</span><h4 id="communityFeedTitle">Bảng tin cộng đồng</h4><p>Chia sẻ ý tưởng, câu hỏi và điều bạn yêu thích.</p></div><div class="community-feed-tools"><span class="community-feed-lock" id="communityFeedAccess">Dành cho thành viên</span><button type="button" class="community-notification-button" id="communityNotificationButton" aria-expanded="false">Thông báo <span id="communityNotificationCount">0</span></button></div></div>
+                    <section class="community-notifications" id="communityNotifications" hidden aria-label="Thông báo cộng đồng"><div class="community-notifications-heading"><strong>Thông báo của bạn</strong><button type="button" id="communityMarkNotificationsRead">Đánh dấu đã đọc</button></div><div id="communityNotificationList"><p>Chưa có thông báo.</p></div></section>
+                    <form class="community-post-form" id="communityPostForm">
+                        <label class="sr-only" for="communityPostBody">Nội dung bài đăng</label>
+                        <textarea id="communityPostBody" maxlength="2000" rows="3" placeholder="Bạn muốn chia sẻ điều gì với cộng đồng?" required></textarea>
+                        <div class="community-post-form-footer"><small>Tối đa 2.000 ký tự</small><button type="submit" id="communityPostSubmit">Đăng bài</button></div>
+                    </form>
+                    <p class="community-feed-status" id="communityFeedStatus" aria-live="polite">Chọn một hành tinh để tải bảng tin.</p>
+                    <div class="community-post-list" id="communityPostList"></div>
+                    <section class="community-chat" id="communityChat" hidden aria-labelledby="communityChatTitle">
+                        <div class="community-chat-heading">
+                            <div><span class="universe-detail-kicker">LIVE COMMUNITY ROOM</span><h4 id="communityChatTitle">Phòng trò chuyện</h4><p>Trao đổi nhanh cùng các thành viên đang ở trong hành tinh.</p></div>
+                            <div class="community-chat-presence"><span class="community-chat-live-dot"></span><strong id="communityChatOnline">0 đang trong phòng</strong><div id="communityChatOnlineList" aria-label="Thành viên đang trong phòng"></div></div>
+                        </div>
+                        <div class="community-chat-messages" id="communityChatMessages" role="log" aria-live="polite" aria-relevant="additions"></div>
+                        <p class="community-chat-status" id="communityChatStatus" aria-live="polite">Đăng nhập và tham gia hành tinh để trò chuyện.</p>
+                        <form class="community-chat-form" id="communityChatForm" hidden>
+                            <div class="community-chat-emoji-bar" id="communityChatEmojiBar" aria-label="Chọn biểu tượng cảm xúc">
+                                <button type="button" data-emoji="😊" aria-label="Thêm mặt cười">😊</button><button type="button" data-emoji="✨" aria-label="Thêm lấp lánh">✨</button><button type="button" data-emoji="👍" aria-label="Thêm thích">👍</button><button type="button" data-emoji="❤️" aria-label="Thêm trái tim">❤️</button><button type="button" data-emoji="🚀" aria-label="Thêm tên lửa">🚀</button>
+                            </div>
+                            <div class="community-chat-compose"><label class="sr-only" for="communityChatInput">Tin nhắn</label><input id="communityChatInput" type="text" maxlength="1000" placeholder="Nhập tin nhắn…" autocomplete="off" required><button type="submit" id="communityChatSend">Gửi</button></div>
+                            <small>Tối đa 1.000 ký tự · Không chia sẻ thông tin cá nhân nhạy cảm.</small>
+                        </form>
+                    </section>
+                </section>
+            </div>
+            <p class="universe-note" id="universeStatus">Đang đồng bộ các cộng đồng với hồ sơ công khai…</p>
+        </section>
         <section class="planet3d-section" id="planet3d" aria-labelledby="planet3dTitle">
             <div class="planet3d-topline"><span class="planet3d-brand-mark">✦ CONNECT UNIVERSE</span><span class="planet3d-online" id="planet3dStatus" aria-live="polite">Đang tải hồ sơ công khai…</span></div>
             <div class="planet3d-heading"><span class="eyebrow">YOUR UNIVERSE OF FRIENDS</span><h2 id="planet3dTitle">Chạm vào vũ trụ kết nối</h2><p>Kéo để xoay tinh cầu · cuộn hoặc dùng nút để thu phóng · chọn một Avatar để khám phá.</p></div>
+            <div class="planet3d-discovery" aria-label="Công cụ khám phá tinh cầu">
+                <label class="planet3d-search"><span aria-hidden="true">⌕</span><input id="planet3dSearch" type="search" placeholder="Tìm thành viên hoặc sở thích…" autocomplete="off" aria-label="Tìm thành viên hoặc sở thích"></label>
+                <label class="planet3d-filter"><span class="sr-only">Lọc theo sở thích</span><select id="planet3dInterestFilter" aria-label="Lọc theo sở thích"><option value="">Tất cả sở thích</option></select></label>
+                <button type="button" class="planet3d-utility-btn" id="planet3dRotateToggle" aria-pressed="true">⏸ Tạm dừng xoay</button>
+                <button type="button" class="planet3d-utility-btn" id="planet3dResetView">◎ Đặt lại góc nhìn</button>
+                <span class="planet3d-filter-count" id="planet3dFilterCount" aria-live="polite">Đang hiển thị hồ sơ</span>
+            </div>
             <div class="planet3d-layout">
                 <aside class="planet3d-info glass-panel"><span class="panel-kicker">✧ THÔNG TIN TINH CẦU</span><strong class="planet3d-member-count" id="planet3dCount">—</strong><span>hồ sơ đang hiển thị công khai</span><div class="planet3d-mini-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><p>Những điểm sáng đại diện cho thành viên đã bật chia sẻ hồ sơ.</p></aside>
                 <div class="planet3d-stage">
                     <div class="planet3d-wrap" id="planet3dWrap">
+                        <canvas id="planetThreeCanvas" aria-hidden="true"></canvas>
                         <canvas id="connectPlanetCanvas" aria-label="Tinh cầu 3D tương tác. Kéo để xoay, cuộn để phóng to, chạm Avatar để xem thành viên."></canvas>
-                        <div class="planet3d-avatar-layer" id="planet3dAvatarLayer" aria-hidden="true"></div>
+                        <div class="planet3d-avatar-layer" id="planet3dAvatarLayer"></div>
                         <div class="planet3d-tip" id="planet3dTip" hidden></div>
                     </div>
                     <div class="planet3d-controls"><button type="button" data-planet-zoom="out" aria-label="Thu nhỏ">−</button><button type="button" data-planet-scan="soul" class="planet3d-soul-button"><span>♧</span> Soul Match</button><button type="button" data-planet-zoom="in" aria-label="Phóng to">+</button></div>
@@ -103,6 +159,7 @@
                 <label for="contactName">Tên của bạn</label><input type="text" id="contactName" maxlength="100" placeholder="Tên hiển thị" required>
                 <label for="contactEmail">Email</label><input type="email" id="contactEmail" placeholder="email@example.com" required>
                 <label for="contactMessage">Nội dung</label><textarea id="contactMessage" maxlength="2000" placeholder="Bạn muốn chia sẻ điều gì?" required></textarea>
+                <div aria-hidden="true" style="position:absolute;left:-9999px;height:0;overflow:hidden"><label for="contactWebsite">Để trống mục này</label><input type="text" id="contactWebsite" name="website" tabindex="-1" autocomplete="off"></div>
                 <button type="submit" class="btn">Gửi lời nhắn</button><p id="formMessage" aria-live="polite"></p>
             </form>
         </section>
@@ -111,9 +168,15 @@
     <script src="js/script.js"></script>
     <script src="js/theme.js"></script>
     <script type="module" src="js/session.js"></script>
+    <script type="module" src="js/notification-badge.js"></script>
     <script type="module" src="js/planet-3d.js"></script>
+    <script type="module" src="js/planet-three.js"></script>
+    <script type="module" src="js/universe.js"></script>
+    <script type="module" src="js/community-feed.js"></script>
+    <script type="module" src="js/community-chat.js"></script>
     <script type="module" src="js/zodiac.js"></script>
     <script type="module" src="js/zodiac-wheel.js"></script>
     <script type="module" src="js/contact.js"></script>
+  <script type="module" src="js/presence.js"></script>
 </body>
 </html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <title>Quản trị báo cáo | Connect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/compact-ui.css">
+    <link rel="stylesheet" href="css/quality.css">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar" aria-label="Điều hướng chính">
+            <a href="index.html" class="logo">Connect<span>.</span></a>
+            <button class="menu-btn" id="menuBtn" type="button" aria-label="Mở menu" aria-expanded="false">☰</button>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html">Trang chủ</a>
+                <a href="discover.html">Khám phá</a>
+                <a href="profile.html">Hồ sơ cá nhân</a>
+                <a href="match.html">Soul Match</a>
+                <a href="square.html">Quảng trường</a>
+                <a href="avatar.html">Tạo Avatar</a>
+            </div>
+            <div class="nav-actions">
+                <button id="themeToggle" class="theme-btn" type="button" aria-label="Đổi giao diện">🌙</button>
+                <div id="authArea" class="auth-area"></div>
+            </div>
+        </nav>
+    </header>
+    <main class="admin-wrap">
+        <span class="eyebrow">QUẢN TRỊ</span>
+        <h1>Báo cáo nội dung</h1>
+        <p id="adminNotice" class="privacy-note" aria-live="polite">Đang kiểm tra quyền truy cập...</p>
+        <section id="adminApp" hidden>
+            <div class="admin-toolbar">
+                <label for="statusFilter">Trạng thái</label>
+                <select id="statusFilter">
+                    <option value="open">Đang chờ xử lý</option>
+                    <option value="actioned">Đã xử lý</option>
+                    <option value="dismissed">Đã bỏ qua</option>
+                </select>
+                <button type="button" id="reloadBtn" class="btn btn-light">Tải lại</button>
+                <span id="adminCount" class="privacy-note"></span>
+            </div>
+            <p id="adminMessage" class="privacy-note" aria-live="polite"></p>
+            <div id="reportList" class="admin-list"></div>
+        </section>
+    </main>
+    <script type="module" src="js/session.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/theme.js"></script>
+    <script type="module" src="js/admin.js"></script>
+</body>
+</html>
