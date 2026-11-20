@@ -1,0 +1,7 @@
+{
+  "name": "connect-test-account-generator",
+  "private": true,
+  "type": "module",
+  "scripts": { "create": "node create-test-accounts.mjs" },
+  "dependencies": { "@supabase/supabase-js": "2.45.4" }
+}

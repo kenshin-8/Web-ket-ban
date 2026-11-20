@@ -11,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/avatar-hologram.css">
 
     <style>
         .avatar-studio {
@@ -118,9 +119,58 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/compact-ui.css">
     <link rel="stylesheet" href="css/quality.css">
+    <link rel="stylesheet" href="css/connect-refine.css">
+    <link rel="stylesheet" href="css/cosmic-feature-polish.css">
+    <style id="avatar-preview-overflow-fix">
+        /* Keep the complete avatar inside its preview stage. */
+        .avatar-studio .avatar-preview {
+            min-width: 0;
+            max-width: 100%;
+            overflow: hidden;
+            contain: paint;
+        }
+        .avatar-studio #avatarCanvas {
+            display: block;
+            width: min(100%, 360px);
+            max-width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            margin: 20px auto;
+            overflow: hidden !important;
+            object-fit: contain;
+            border-radius: 50% !important;
+            clip-path: circle(50% at 50% 50%);
+            flex: 0 1 auto;
+            background: var(--surface);
+            box-shadow: 0 0 0 5px color-mix(in srgb, var(--primary) 12%, transparent),
+                        0 18px 36px rgba(32, 30, 83, .2);
+        }
+        .avatar-studio .studio-content {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        }
+        .avatar-studio .avatar-options {
+            min-width: 0;
+            max-width: 100%;
+        }
+        @media (max-width: 760px) {
+            .avatar-studio .studio-content {
+                grid-template-columns: minmax(0, 1fr);
+            }
+            .avatar-studio .avatar-preview {
+                min-height: 0;
+            }
+            .avatar-studio #avatarCanvas {
+                width: min(100%, 320px);
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="css/header-compact.css">
+    <link rel="stylesheet" href="css/page-themes.css">
+    <link rel="stylesheet" href="css/zodiac-universe.css">
+    <link rel="stylesheet" href="css/cosmic-color-restore.css">
 </head>
 
-<body>
+<body class="zodiac-page zodiac-page-avatar" data-zodiac-mark="♌">
 
 <header class="site-header">
     <nav class="navbar" aria-label="Điều hướng chính">
@@ -222,10 +272,20 @@
         </section>
 
     </div>
+
+    <section class="avatar-holo-panel avatar-studio-holo" aria-labelledby="studioHoloTitle">
+        <div class="avatar-holo-heading">
+            <span>CONNECT AVATAR EXPERIENCE</span>
+            <h3 id="studioHoloTitle">Avatar Hologram 3D · Xoay 360°</h3>
+        </div>
+        <div id="studioAvatarHologram" class="avatar-holo-host"></div>
+        <p class="avatar-studio-holo-note">Hình chiếu hologram cập nhật trực tiếp khi bạn thay đổi kiểu tóc, khuôn mặt và trang phục.</p>
+    </section>
 </main>
 
 <script type="module" src="js/session.js"></script>
 <script src="js/script.js"></script>
+<script src="js/nav-compact.js"></script>
 <script src="js/theme.js"></script>
 <script type="module" src="js/avatar.js"></script>
 

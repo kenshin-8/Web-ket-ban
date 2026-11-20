@@ -1,5 +1,6 @@
 import { supabase } from "./supabase.js";
 import { applyAvatar } from "./avatar-data.js";
+import { renderAvatarHologram } from "./avatar-hologram.js";
 import { PLANETS } from "./soul.js";
 import { reportContent, blockUser, safetyButton } from "./safety.js";
 const $ = id => document.getElementById(id);
@@ -219,6 +220,7 @@ async function load() {
   $("publicCity").textContent = profile.city ? `⌖ ${profile.city}` : "Thành viên Connect";
   $("publicBio").textContent = profile.bio || "Thành viên này chưa thêm phần giới thiệu.";
   renderAvatar($("publicAvatar"), profile.avatar_data, profile.display_name);
+  renderAvatarHologram($("publicAvatarHologram"), profile.avatar_data, profile.display_name || "thành viên Connect");
   if (profile.cover_url) $("publicCover").style.backgroundImage = `linear-gradient(90deg,rgba(8,12,30,.45),rgba(8,12,30,.05)),url("${profile.cover_url.replaceAll('"','%22')}")`;
   chipList($("publicInterests"), profile.interests, "public-chip");
   chipList($("publicSoulTags"), profile.soul_tags, "public-chip soul-chip");

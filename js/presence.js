@@ -1,7 +1,12 @@
-import { supabase } from "./supabase.js";
+import { supabase, getInitialSession } from "./supabase.js";
 
-const { data } = await supabase.auth.getUser();
-const user = data?.user;
+let user = null;
+try {
+  const session = await getInitialSession();
+  user = session?.user || null;
+} catch (error) {
+  console.debug("Presence: phiên đăng nhập chưa sẵn sàng:", error.message);
+}
 if (user) {
   let busy = false;
   const heartbeat = async () => {

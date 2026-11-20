@@ -1,0 +1,57 @@
+/* Connect Planet — contextual page backgrounds
+   Keeps the shared visual language while giving each destination its own atmosphere. */
+:root {
+  --page-glow-a: rgba(153, 132, 255, .15);
+  --page-glow-b: rgba(120, 208, 224, .12);
+  --page-wash: #f5f4fb;
+}
+body:has(.discover-container) { --page-glow-a:rgba(67,169,255,.19); --page-glow-b:rgba(100,226,213,.15); --page-wash:#f0f7ff; }
+body:has(.friends-page) { --page-glow-a:rgba(255,135,180,.18); --page-glow-b:rgba(190,143,255,.15); --page-wash:#fff3f8; }
+body:has(.profile-container) { --page-glow-a:rgba(164,135,255,.19); --page-glow-b:rgba(246,190,214,.13); --page-wash:#f6f2ff; }
+body:has(.match-wrap):not(:has(.games-wrap)) { --page-glow-a:rgba(194,113,255,.18); --page-glow-b:rgba(255,147,190,.14); --page-wash:#f8f2ff; }
+body:has(.voice-main) { --page-glow-a:rgba(43,205,194,.18); --page-glow-b:rgba(83,156,255,.15); --page-wash:#effaf9; }
+body:has(.avatar-studio) { --page-glow-a:rgba(150,100,255,.2); --page-glow-b:rgba(65,211,255,.14); --page-wash:#f4f1ff; }
+body:has(.games-wrap) { --page-glow-a:rgba(255,190,91,.2); --page-glow-b:rgba(255,135,151,.13); --page-wash:#fff8ed; }
+body:has(.admin-wrap) { --page-glow-a:rgba(103,133,177,.16); --page-glow-b:rgba(143,157,190,.12); --page-wash:#f1f4f8; }
+body:has(.public-profile-wrap) { --page-glow-a:rgba(255,151,184,.17); --page-glow-b:rgba(170,147,255,.14); --page-wash:#fff4f7; }
+body:has(.auth-container) { --page-glow-a:rgba(154,130,255,.2); --page-glow-b:rgba(119,212,218,.15); --page-wash:#f4f2ff; }
+body:has(.discover-container), body:has(.friends-page), body:has(.profile-container),
+body:has(.match-wrap), body:has(.voice-main), body:has(.avatar-studio),
+body:has(.games-wrap), body:has(.admin-wrap), body:has(.public-profile-wrap),
+body:has(.auth-container) {
+  position:relative;
+  isolation:isolate;
+  background-color:var(--page-wash);
+  background-image:radial-gradient(ellipse at 8% 4%,var(--page-glow-a),transparent 36%),
+                   radial-gradient(ellipse at 92% 20%,var(--page-glow-b),transparent 34%),
+                   linear-gradient(145deg,color-mix(in srgb,var(--page-wash) 92%,white),var(--background,var(--page-wash)));
+  background-attachment:fixed;
+}
+body:has(.discover-container)::before, body:has(.friends-page)::before,
+body:has(.profile-container)::before, body:has(.match-wrap)::before,
+body:has(.voice-main)::before, body:has(.avatar-studio)::before,
+body:has(.games-wrap)::before, body:has(.admin-wrap)::before,
+body:has(.public-profile-wrap)::before, body:has(.auth-container)::before {
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.34;
+  background-image:radial-gradient(1px 1px at 14% 18%,currentColor 55%,transparent 100%),
+                   radial-gradient(1px 1px at 82% 28%,currentColor 55%,transparent 100%),
+                   radial-gradient(1.5px 1.5px at 68% 82%,currentColor 55%,transparent 100%);
+  background-size:190px 190px,260px 240px,310px 280px;
+  color:color-mix(in srgb,var(--primary) 24%,transparent);
+}
+[data-theme="dark"] body:has(.discover-container), [data-theme="dark"] body:has(.friends-page),
+[data-theme="dark"] body:has(.profile-container), [data-theme="dark"] body:has(.match-wrap),
+[data-theme="dark"] body:has(.voice-main), [data-theme="dark"] body:has(.avatar-studio),
+[data-theme="dark"] body:has(.games-wrap), [data-theme="dark"] body:has(.admin-wrap),
+[data-theme="dark"] body:has(.public-profile-wrap), [data-theme="dark"] body:has(.auth-container) {
+  background-color:var(--background,#11101c);
+  background-image:radial-gradient(ellipse at 8% 4%,color-mix(in srgb,var(--page-glow-a) 75%,transparent),transparent 38%),
+                   radial-gradient(ellipse at 92% 20%,color-mix(in srgb,var(--page-glow-b) 75%,transparent),transparent 36%),
+                   linear-gradient(145deg,#11101c,#171528 58%,#11101c);
+}
+@media (max-width:700px) {
+  body:has(.discover-container), body:has(.friends-page), body:has(.profile-container),
+  body:has(.match-wrap), body:has(.voice-main), body:has(.avatar-studio),
+  body:has(.games-wrap), body:has(.admin-wrap), body:has(.public-profile-wrap), body:has(.auth-container) { background-attachment:scroll; }
+}
+@media (prefers-reduced-motion:reduce) { body::before { animation:none!important; } }

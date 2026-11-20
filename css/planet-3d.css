@@ -31,3 +31,64 @@
 .planet3d-wrap .planet3d-connection-lines{position:absolute;inset:0;z-index:2;width:100%;height:100%;overflow:visible;pointer-events:none}
 .planet3d-wrap .planet3d-avatar-layer{z-index:3}
 .planet3d-wrap .planet3d-avatar-node{z-index:4}
+
+/* Avatar holograms inside the shared Connect universe */
+.planet3d-avatar-node{transform-style:preserve-3d;perspective:520px;isolation:isolate;transition:transform .24s ease,box-shadow .24s ease}
+.planet3d-avatar-node:before{content:"";position:absolute;z-index:0;left:-19%;top:24%;width:138%;height:52%;border:1px solid rgba(105,229,255,.72);border-radius:50%;transform:rotateX(68deg) translateZ(-5px);box-shadow:0 0 10px rgba(70,215,255,.35);pointer-events:none}
+.planet3d-avatar-node:after{content:"";position:absolute;z-index:-1;inset:-16%;border-radius:50%;background:radial-gradient(circle,rgba(101,113,255,.34),rgba(53,218,255,.12) 48%,transparent 72%);filter:blur(4px);opacity:.8;pointer-events:none}
+.planet3d-avatar-node img{position:relative;z-index:1;border:1px solid rgba(174,238,255,.65);box-shadow:inset 0 0 10px rgba(255,255,255,.16)}
+.planet3d-avatar-node:hover,.planet3d-avatar-node.is-selected{transform:translateY(-3px) translateZ(12px) rotateY(-8deg);}
+.planet3d-avatar-node:focus-visible{outline:3px solid #64e8ff;outline-offset:5px}
+@media(prefers-reduced-motion:reduce){.planet3d-avatar-node{transition:none!important}}
+
+/* Controllable member avatar walking across the visible globe surface. */
+.planet3d-player-node{position:absolute;z-index:230;display:grid;justify-items:center;gap:3px;transform:translate(-50%,-50%);pointer-events:none;filter:drop-shadow(0 0 10px rgba(69,232,255,.85));transition:left .12s ease-out,top .12s ease-out;}
+.planet3d-player-node[hidden]{display:none}
+.planet3d-player-avatar{position:relative;width:100%;height:100%;display:grid;place-items:center;border:2px solid #8bfbff;border-radius:50%;background:linear-gradient(145deg,#7d4cff,#1bc9e9);box-shadow:0 0 0 5px rgba(72,223,255,.18),0 0 24px rgba(69,232,255,.8),inset 0 0 12px rgba(255,255,255,.4);animation:planet-player-pulse 2.2s ease-in-out infinite;}
+.planet3d-player-avatar svg{width:100%;height:100%;border-radius:50%;}
+.planet3d-player-avatar span{color:#fff;font-size:22px;font-weight:900}
+.planet3d-player-label{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:3px 8px;border:1px solid rgba(100,237,255,.5);border-radius:20px;background:rgba(5,13,44,.9);color:#e9fdff;font-size:9px;letter-spacing:.04em}
+.planet3d-player-node.is-moving .planet3d-player-avatar{animation:planet-player-step .22s ease-out}
+.planet-walk-panel{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px 18px;width:min(100%,520px);margin:10px auto 0;padding:12px 15px;border:1px solid rgba(93,215,255,.28);border-radius:16px;background:linear-gradient(135deg,rgba(10,18,57,.9),rgba(34,18,82,.82));box-shadow:0 10px 28px rgba(0,0,0,.2);text-align:left}
+.planet-walk-copy{display:grid;gap:4px}.planet-walk-copy strong{color:#8defff;font-size:10px;letter-spacing:.15em}.planet-walk-copy span,.planet-walk-help{color:#b9c6ec;font-size:10px;line-height:1.45}
+.planet-walk-pad{display:grid;grid-template-columns:repeat(3,34px);grid-template-rows:repeat(2,32px);gap:4px;justify-items:center}
+.planet-walk-pad button{width:34px;height:32px;border:1px solid rgba(107,222,255,.52);border-radius:9px;background:rgba(43,55,132,.82);color:#fff;font-size:17px;font-weight:800;cursor:pointer;touch-action:manipulation}
+.planet-walk-pad button:nth-child(1){grid-column:2;grid-row:1}.planet-walk-pad button:nth-child(2){grid-column:1;grid-row:2}.planet-walk-pad button:nth-child(3){grid-column:2;grid-row:2}.planet-walk-pad button:nth-child(4){grid-column:3;grid-row:2}
+.planet-walk-pad button:focus-visible{outline:2px solid #8ef5ff;outline-offset:2px}.planet-walk-help{grid-column:1/-1}
+@keyframes planet-player-pulse{0%,100%{box-shadow:0 0 0 4px rgba(72,223,255,.14),0 0 18px rgba(69,232,255,.55)}50%{box-shadow:0 0 0 7px rgba(72,223,255,.22),0 0 29px rgba(69,232,255,.9)}}
+@keyframes planet-player-step{50%{transform:scale(1.12)}}
+@media(max-width:560px){.planet-walk-panel{grid-template-columns:1fr auto;padding:10px}.planet-walk-copy span{max-width:220px}.planet-walk-help{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.planet3d-player-avatar,.planet3d-player-node.is-moving .planet3d-player-avatar{animation:none!important}.planet3d-player-node,.planet-walk-pad button{transition:none!important}}
+
+/* Avatar của thành viên khác được đồng bộ qua Supabase Realtime. */
+.planet3d-remote-player-node{pointer-events:auto;border:0;padding:0;background:transparent;cursor:pointer;filter:drop-shadow(0 0 12px rgba(153,104,255,.9));}
+.planet3d-remote-player-node:hover .planet3d-player-avatar,
+.planet3d-remote-player-node:focus-visible .planet3d-player-avatar{box-shadow:0 0 0 5px rgba(153,104,255,.28),0 0 30px rgba(153,104,255,.95),inset 0 0 12px rgba(255,255,255,.4);}
+.planet3d-remote-player-node:focus-visible{outline:2px solid #9cf7ff;outline-offset:5px;border-radius:50%;}
+
+/* Nearby-member encounter and lightweight social actions */
+.planet-proximity-notice{position:relative;z-index:6;display:flex;align-items:center;justify-content:space-between;gap:12px;width:min(calc(100% - 24px),520px);margin:10px auto 0;padding:12px 14px;border:1px solid rgba(93,230,255,.58);border-radius:16px;background:linear-gradient(120deg,rgba(17,37,91,.96),rgba(63,25,112,.94));box-shadow:0 0 24px rgba(65,202,255,.2),0 12px 30px rgba(0,0,0,.24);text-align:left;animation:planet-card-in .22s ease-out}
+.planet-proximity-notice[hidden]{display:none}.planet-proximity-copy{display:grid;gap:4px;min-width:0}.planet-proximity-copy strong{color:#9cf4ff;font-size:12px}.planet-proximity-detail{color:#d5d7fa;font-size:11px;line-height:1.4}.planet-proximity-actions{display:flex;gap:6px;flex-shrink:0}.planet-proximity-actions button,.planet3d-friend-request{min-height:36px;padding:0 12px;border:1px solid rgba(115,225,255,.55);border-radius:10px;background:rgba(37,80,145,.7);color:#f4fbff;font-size:11px;font-weight:800;cursor:pointer}.planet-proximity-actions .planet-proximity-view{background:linear-gradient(100deg,#176fbd,#753bd2)}.planet-proximity-actions .planet-proximity-dismiss{background:rgba(17,22,59,.75);color:#c5c8e9}.planet3d-friend-request{background:linear-gradient(100deg,rgba(32,112,160,.92),rgba(105,51,171,.92))}.planet-proximity-actions button:focus-visible,.planet3d-friend-request:focus-visible{outline:2px solid #a1f5ff;outline-offset:3px}
+@media(max-width:520px){.planet-proximity-notice{align-items:flex-start;flex-direction:column}.planet-proximity-actions{width:100%}.planet-proximity-actions button{flex:1}}
+@media(prefers-reduced-motion:reduce){.planet-proximity-notice{animation:none}}
+
+/* Compact private chat inside the selected planet member card */
+.planet3d-card-actions .planet3d-message-button{padding:10px 15px;border:1px solid rgba(73,220,255,.7);border-radius:12px;background:linear-gradient(100deg,rgba(22,111,160,.92),rgba(69,65,181,.94));color:#fff;font-size:12px;font-weight:700;cursor:pointer}
+.planet3d-chat-panel{margin-top:15px;padding:12px;border:1px solid rgba(90,220,255,.36);border-radius:15px;background:rgba(7,12,43,.72);text-align:left}
+.planet3d-chat-panel[hidden]{display:none}
+.planet3d-chat-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#e8e3ff;font-size:12px}
+.planet3d-chat-close{padding:5px 9px;border:1px solid rgba(164,145,255,.4);border-radius:8px;background:rgba(83,63,145,.35);color:#d9d2ff;font-size:10px;cursor:pointer}
+.planet3d-chat-messages{display:flex;flex-direction:column;gap:7px;max-height:210px;min-height:52px;overflow-y:auto;margin:10px 0;padding:2px}
+.planet3d-chat-message{align-self:flex-start;max-width:86%;padding:8px 10px;border:1px solid rgba(130,143,255,.2);border-radius:12px 12px 12px 3px;background:rgba(62,65,130,.38);color:#f3f0ff;overflow-wrap:anywhere}
+.planet3d-chat-message.is-mine{align-self:flex-end;border-color:rgba(80,220,255,.25);border-radius:12px 12px 3px 12px;background:rgba(27,111,151,.35)}
+.planet3d-chat-message p{margin:0;font-size:12px;line-height:1.45;white-space:pre-wrap}
+.planet3d-chat-message time{display:block;margin-top:4px;color:#aaa9d0;font-size:9px;text-align:right}
+.planet3d-chat-empty,.planet3d-chat-status{margin:7px 0;color:#aaa9d0;font-size:10px;line-height:1.45}
+.planet3d-chat-form{display:flex;gap:7px}
+.planet3d-chat-form[hidden]{display:none}
+.planet3d-chat-form input{min-width:0;flex:1;padding:10px;border:1px solid rgba(139,132,225,.38);border-radius:10px;outline:none;background:rgba(13,20,61,.8);color:#fff;font:inherit;font-size:12px}
+.planet3d-chat-form input:focus{border-color:#58dcff;box-shadow:0 0 0 2px rgba(88,220,255,.12)}
+.planet3d-chat-form button{padding:0 14px;border:0;border-radius:10px;background:linear-gradient(100deg,#6725e9,#287ed0);color:#fff;font-size:11px;font-weight:800;cursor:pointer}
+.planet3d-chat-form button:disabled{opacity:.55;cursor:wait}
+.planet3d-chat-panel button:focus-visible,.planet3d-chat-form input:focus-visible{outline:2px solid #64e8ff;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.planet3d-chat-panel{scroll-behavior:auto}}

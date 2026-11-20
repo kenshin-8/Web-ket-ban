@@ -1,0 +1,122 @@
+/* Connect — Cosmic Galaxy color restoration
+   Layered surfaces and readable contrast; intentionally avoids a global black overlay. */
+:root {
+  --cosmic-night:#071326;
+  --cosmic-navy:#101b3b;
+  --cosmic-violet:#24164d;
+  --cosmic-purple:#9b7cff;
+  --cosmic-cyan:#62e6f5;
+  --cosmic-gold:#f2c66d;
+  --cosmic-pink:#ee8bd4;
+}
+[data-theme="dark"] {
+  color-scheme: dark;
+  --background:#071326;
+  --surface:#111d38;
+  --text:#f4f2ff;
+  --muted:#c0c8dc;
+  --primary:#b39aff;
+  --primary-soft:rgba(139,111,255,.19);
+  --soft:#172544;
+  --border:rgba(164,151,255,.25);
+  --shadow:0 16px 42px rgba(0,0,0,.28);
+  --gold:var(--cosmic-gold);
+  --star:rgba(190,178,255,.7);
+  --grad:linear-gradient(135deg,#7558df,#b05edb 58%,#49cce5);
+}
+html[data-theme="dark"] body {
+  color:var(--text);
+  background-color:var(--cosmic-night);
+  background-image:
+    radial-gradient(ellipse at 12% 8%,rgba(102,77,196,.26),transparent 34%),
+    radial-gradient(ellipse at 88% 22%,rgba(29,133,177,.18),transparent 32%),
+    radial-gradient(ellipse at 52% 88%,rgba(105,53,151,.18),transparent 38%),
+    radial-gradient(1px 1px at 18% 24%,rgba(255,255,255,.7) 50%,transparent 100%),
+    radial-gradient(1px 1px at 76% 64%,rgba(120,224,255,.7) 50%,transparent 100%),
+    linear-gradient(145deg,#071326,#101735 56%,#0b142c);
+  background-size:auto,auto,auto,190px 190px,260px 230px,auto;
+  background-attachment:fixed;
+}
+[data-theme="dark"] .site-header {
+  background:rgba(9,19,42,.82);
+  border-color:rgba(155,132,255,.27);
+  box-shadow:0 8px 30px rgba(0,0,0,.22);
+}
+[data-theme="dark"] .nav-links a { color:#c5cce0; }
+[data-theme="dark"] .nav-links a:hover,
+[data-theme="dark"] .nav-links a[aria-current="page"] {
+  color:#fff; background:rgba(139,111,255,.2);
+}
+[data-theme="dark"] .theme-btn,
+[data-theme="dark"] .menu-btn {
+  color:#f6f2ff; background:#172544; border-color:rgba(153,133,255,.34);
+}
+[data-theme="dark"] :where(
+  .feature-card,.member-card,.moment,.profile-card,.auth-card,.sq-compose,
+  .quiz-q,.zd-card,.room-list-panel,.safety-panel,.game-card,.search-panel,
+  .person-card,.profile-post-card,.friends-panel,.community-panel,.avatar-preview,
+  .avatar-options,.room-card,.planet-card,.match-card,.member-panel,.post-card
+) {
+  color:var(--text);
+  background:linear-gradient(145deg,rgba(26,39,72,.91),rgba(14,27,53,.94));
+  border-color:rgba(157,139,255,.25);
+  box-shadow:0 14px 38px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.035);
+  backdrop-filter:blur(16px) saturate(1.18);
+  -webkit-backdrop-filter:blur(16px) saturate(1.18);
+}
+[data-theme="dark"] :where(.feature-card,.member-card,.moment,.zd-card,.game-card,.room-card):hover {
+  border-color:rgba(98,230,245,.58);
+  box-shadow:0 0 0 1px rgba(98,230,245,.12),0 18px 44px rgba(0,0,0,.3),0 0 26px rgba(137,105,255,.12);
+}
+[data-theme="dark"] :where(h1,h2,h3,h4,h5,strong,.card-title,.section-title) { color:#f7f4ff; }
+[data-theme="dark"] :where(p,.description,.muted,.subtitle,.card-description,small) { color:#c0c8dc; }
+[data-theme="dark"] .hero {
+  color:#f7f4ff !important;
+  background:
+    radial-gradient(ellipse at 78% 38%,rgba(121,91,235,.42),transparent 43%),
+    radial-gradient(ellipse at 18% 78%,rgba(39,174,203,.16),transparent 38%),
+    radial-gradient(1.5px 1.5px at 12% 20%,#fff,transparent),
+    radial-gradient(1px 1px at 40% 80%,#9beaff,transparent),
+    linear-gradient(125deg,#09152e,#191849 58%,#2a1951) !important;
+  border:1px solid rgba(172,150,255,.18);
+}
+[data-theme="dark"] .hero .description,
+[data-theme="dark"] .hero-note { color:#d0d5e8 !important; }
+[data-theme="dark"] .hero h1 span { color:#f2c66d !important; }
+[data-theme="dark"] .hero .eyebrow { color:#f2c66d !important; }
+[data-theme="dark"] .hero .btn-outline {
+  color:#f5f2ff !important; border-color:rgba(202,190,255,.48) !important;
+  background:rgba(20,26,58,.45) !important;
+}
+[data-theme="dark"] :where(input,select,textarea,.zd-finder input) {
+  color:#f7f5ff !important;
+  background:rgba(9,20,43,.88) !important;
+  border-color:rgba(153,139,222,.42) !important;
+  caret-color:var(--cosmic-cyan);
+}
+[data-theme="dark"] :where(input,textarea)::placeholder {
+  color:#aeb9d2 !important; opacity:1;
+}
+[data-theme="dark"] :where(input,select,textarea):focus {
+  border-color:var(--cosmic-cyan) !important;
+  box-shadow:0 0 0 3px rgba(98,230,245,.14),0 0 18px rgba(98,230,245,.08) !important;
+}
+[data-theme="dark"] :where(label,.form-label) { color:#e1e4f2; }
+[data-theme="dark"] :where(.zd-card,.interest-tag,.tag-chip,.match-badge) {
+  border-color:rgba(242,198,109,.34);
+}
+[data-theme="dark"] :where(.eyebrow,.zd-result,.zd-glyph) { color:var(--cosmic-gold) !important; }
+[data-theme="dark"] :where(.site-footer) { color:#aeb9d2; border-color:rgba(153,139,222,.22); }
+[data-theme="dark"] :where(.empty-message,.empty-state,.posts-empty) {
+  color:#c4cce0; background:rgba(17,29,56,.7); border:1px dashed rgba(153,139,222,.35);
+}
+[data-theme="dark"] :where(.universe-planet-card,.planet3d-section,.planet-panel) {
+  color:#f7f4ff; border-color:rgba(155,132,255,.3);
+}
+[data-theme="dark"] a { text-decoration-color:rgba(179,154,255,.45); }
+[data-theme="dark"] :where(button,a,input,select,textarea,[tabindex]):focus-visible {
+  outline-color:#62e6f5;
+}
+@media (max-width:700px) {
+  [data-theme="dark"] body { background-attachment:scroll; }
+}

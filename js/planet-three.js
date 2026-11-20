@@ -185,6 +185,8 @@ if (wrap && canvas) {
     function render() {
       if (disposed || document.hidden) return;
       const delta = Math.min(clock.getDelta(), .05);
+      // Camera zoom eases toward the target instead of jumping abruptly.
+      camera.position.z += (5.6 / targetZoom - camera.position.z) * Math.min(1, delta * 9);
       if (!reducedMotion) {
         if (autoRotate && !pointer) rotationY += delta * .075;
         planet.rotation.y = rotationY;
@@ -193,6 +195,8 @@ if (wrap && canvas) {
         orbitGroup.rotation.z += delta * .025;
         stars.rotation.y -= delta * .006;
       }
+      // Keep the HTML avatar layer mathematically aligned with the WebGL globe.
+      syncLegacyLayer();
       renderer.render(scene, camera);
       frame = requestAnimationFrame(render);
     }
@@ -204,8 +208,9 @@ if (wrap && canvas) {
 
     // Kéo để xoay trực tiếp mô hình WebGL; cuộn để phóng to/thu nhỏ.
     let pointer = null;
-    let rotationX = 0;
-    let rotationY = 0;
+    // Match the initial Canvas projection so avatars sit on the correct surface points.
+    let rotationX = -.12;
+    let rotationY = .25;
     let targetZoom = 1;
     let autoRotate = !reducedMotion;
     const syncLegacyLayer = () => wrap.dispatchEvent(new CustomEvent('connect:planet-transform', {
@@ -232,22 +237,20 @@ if (wrap && canvas) {
     };
     canvas.addEventListener('pointerup', endPointer);
     canvas.addEventListener('pointercancel', endPointer);
+    canvas.addEventListener('lostpointercapture', endPointer);
     canvas.addEventListener('wheel', event => {
       event.preventDefault();
       targetZoom = Math.max(0.78, Math.min(1.5, targetZoom + (event.deltaY < 0 ? 0.07 : -0.07)));
-      camera.position.z = 5.6 / targetZoom;
       syncLegacyLayer();
     }, { passive: false });
     wrap.addEventListener('connect:planet-zoom', event => {
       targetZoom = Math.max(0.78, Math.min(1.5, targetZoom + (event.detail?.direction === 'in' ? 0.12 : -0.12)));
-      camera.position.z = 5.6 / targetZoom;
       syncLegacyLayer();
     });
     wrap.addEventListener('connect:planet-reset', () => {
-      rotationX = 0;
-      rotationY = 0;
+      rotationX = -.12;
+      rotationY = .25;
       targetZoom = 1;
-      camera.position.z = 5.6;
       autoRotate = true;
       syncLegacyLayer();
     });

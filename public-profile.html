@@ -8,13 +8,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap">
-    <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/profile.css"><link rel="stylesheet" href="css/public-profile.css">
+    <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/profile.css"><link rel="stylesheet" href="css/public-profile.css"><link rel="stylesheet" href="css/avatar-hologram.css">
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/safety.css">
     <link rel="stylesheet" href="css/compact-ui.css">
     <link rel="stylesheet" href="css/quality.css">
+    <link rel="stylesheet" href="css/connect-refine.css">
+    <link rel="stylesheet" href="css/header-compact.css">
+    <link rel="stylesheet" href="css/page-themes.css">
+    <link rel="stylesheet" href="css/zodiac-universe.css">
+    <link rel="stylesheet" href="css/cosmic-color-restore.css">
 </head>
-<body>
+<body class="zodiac-page zodiac-page-public-profile" data-zodiac-mark="♌">
   <header class="site-header"><nav class="navbar" aria-label="Điều hướng chính">
     <a href="index.html" class="logo">Connect<span>.</span></a><button class="menu-btn" id="menuBtn" type="button" aria-label="Mở menu" aria-expanded="false">☰</button>
     <div class="nav-links" id="navLinks"><a href="index.html">Trang chủ</a><a href="discover.html">Khám phá</a><a href="friends.html">Bạn bè</a><a href="profile.html">Hồ sơ của tôi</a></div>
@@ -29,6 +34,10 @@
         <div class="public-name-block"><h1 id="publicName"></h1><p id="publicHeadline"></p><span id="publicCity"></span></div>
         <a id="editOwnProfile" class="public-edit-link" href="profile.html" hidden>Chỉnh sửa hồ sơ</a>
       </section>
+      <section class="avatar-holo-panel public-avatar-holo-panel" aria-labelledby="publicAvatarHoloTitle">
+        <div class="avatar-holo-heading"><span>CONNECT SOCIAL UNIVERSE</span><h3 id="publicAvatarHoloTitle">Avatar Hologram 3D</h3></div>
+        <div id="publicAvatarHologram" class="avatar-holo-host"></div>
+      </section>
       <div class="public-profile-grid">
         <section class="public-info-panel"><h2>Giới thiệu</h2><p id="publicBio" class="public-bio"></p><div id="publicInterests" class="public-chip-list"></div><div id="publicSoulTags" class="public-chip-list soul-chip-list"></div><p id="publicZodiac" class="public-zodiac"></p><div id="publicPlanet" class="public-planet"></div></section>
         <section class="public-info-panel"><h2>Dấu mốc Connect</h2><p class="achievement-intro">Các huy hiệu được mở khóa từ thông tin bạn đã hoàn thiện.</p><div id="publicAchievements" class="achievement-grid"></div></section>
@@ -41,6 +50,7 @@
     </article>
   </main>
   <footer class="site-footer"><p>© 2026 Connect. Bạn luôn kiểm soát thông tin được chia sẻ.</p></footer>
-  <script type="module" src="js/session.js"></script><script src="js/script.js"></script><script src="js/theme.js"></script><script type="module" src="js/public-profile.js"></script>
+  <script type="module" src="js/session.js"></script><script src="js/script.js"></script>
+<script src="js/nav-compact.js"></script><script src="js/theme.js"></script><script type="module" src="js/public-profile.js"></script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 import { supabase } from "./supabase.js";
 import { applyAvatar } from "./avatar-data.js";
+import { renderAvatarHologram } from "./avatar-hologram.js";
 import { PLANETS } from "./soul.js";
 
 const $ = id => document.getElementById(id);
@@ -39,6 +40,7 @@ async function loadProfile() {
 }
 
 function renderSavedAvatar(avatarData) {
+    renderAvatarHologram($("profileAvatarHologram"), avatarData, $("displayName")?.value || "bạn");
     const display = $("savedAvatarDisplay");
     const svg = $("profileAvatarCanvas");
     if (avatarData) {

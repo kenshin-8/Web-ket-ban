@@ -12,11 +12,17 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/planet-3d.css">
     <link rel="stylesheet" href="css/safety.css">
     <link rel="stylesheet" href="css/compact-ui.css">
     <link rel="stylesheet" href="css/quality.css">
+    <link rel="stylesheet" href="css/connect-refine.css">
+    <link rel="stylesheet" href="css/cosmic-feature-polish.css">
+    <link rel="stylesheet" href="css/header-compact.css">
+    <link rel="stylesheet" href="css/zodiac-universe.css">
+    <link rel="stylesheet" href="css/cosmic-color-restore.css">
 </head>
-<body>
+<body class="zodiac-page zodiac-page-home" data-zodiac-mark="♈">
     <header class="site-header">
         <nav class="navbar" aria-label="Điều hướng chính">
             <a href="index.html" class="logo">Connect<span>.</span></a>
@@ -120,7 +126,17 @@
                         <div class="planet3d-tip" id="planet3dTip" hidden></div>
                     </div>
                     <div class="planet3d-controls"><button type="button" data-planet-zoom="out" aria-label="Thu nhỏ">−</button><button type="button" data-planet-scan="soul" class="planet3d-soul-button"><span>♧</span> Soul Match</button><button type="button" data-planet-zoom="in" aria-label="Phóng to">+</button></div>
-                    <p class="planet3d-hint">☝ Chạm & vuốt để khám phá</p>
+                    <div class="planet-walk-panel" aria-label="Điều khiển Avatar trên tinh cầu">
+                        <div class="planet-walk-copy"><strong>DI CHUYỂN AVATAR</strong><span id="planetWalkStatus" aria-live="polite">Đăng nhập để xuất hiện trên tinh cầu</span></div>
+                        <div class="planet-walk-pad" role="group" aria-label="Phím di chuyển Avatar">
+                            <button type="button" data-player-move="up" aria-label="Di chuyển lên">↑</button>
+                            <button type="button" data-player-move="left" aria-label="Di chuyển sang trái">←</button>
+                            <button type="button" data-player-move="down" aria-label="Di chuyển xuống">↓</button>
+                            <button type="button" data-player-move="right" aria-label="Di chuyển sang phải">→</button>
+                        </div>
+                        <span class="planet-walk-help">Dùng phím WASD hoặc phím mũi tên · Có thể dùng nút trên điện thoại</span>
+                    </div>
+                    <p class="planet3d-hint">☝ Kéo tinh cầu để xoay · Chọn Avatar thành viên để khám phá</p>
                 </div>
                 <aside class="planet3d-radar glass-panel"><div class="planet3d-radar-graphic"><span></span><i></i><b></b></div><strong>RADAR SOUL MATCH</strong><p id="planet3dRadarText">Sẵn sàng tìm kiếm những tâm hồn đồng điệu.</p><a href="voice.html" class="planet3d-audio-link">Tìm kết nối Audio ↗</a></aside>
             </div>
@@ -166,6 +182,7 @@
     </main>
     <footer class="site-footer"><p>© 2026 Connect. Kết nối từ những sở thích chung.</p></footer>
     <script src="js/script.js"></script>
+<script src="js/nav-compact.js"></script>
     <script src="js/theme.js"></script>
     <script type="module" src="js/session.js"></script>
     <script type="module" src="js/notification-badge.js"></script>
