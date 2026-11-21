@@ -26,3 +26,15 @@
 @media(max-width:420px){.navbar{width:calc(100% - 20px)}.logo{font-size:23px!important}.nav-actions{gap:5px}.theme-btn{width:34px;height:34px}.welcome-user{max-width:92px;padding-right:7px}.welcome-user .user-name{max-width:42px}.logout-btn{padding:8px 9px;font-size:11px}.auth-area{gap:5px}}
 [data-theme=dark] .nav-more-panel{background:var(--surface)}
 @media(prefers-reduced-motion:reduce){.nav-links>a,.nav-more-toggle{transition:none}}
+
+/* Navigation accessibility and interaction polish */
+.nav-links>a:focus-visible,.nav-more-toggle:focus-visible,.menu-btn:focus-visible,
+.nav-more-panel a:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.nav-more-toggle.has-current{background:var(--primary-soft);color:var(--primary)}
+.nav-more-panel a[aria-current="page"]{background:var(--primary-soft);color:var(--primary)}
+.nav-more-panel{overscroll-behavior:contain; scrollbar-width:thin}
+@media(max-width:820px){
+  .nav-links.active{overscroll-behavior:contain}
+  .nav-links.active>.nav-more{order:5}
+  .nav-more-panel a{min-height:40px}
+}

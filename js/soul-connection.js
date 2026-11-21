@@ -13,14 +13,16 @@ function ensureToast() {
   let dialog = document.getElementById("soulConnectionDialog");
   if (dialog) return dialog;
   dialog = document.createElement("dialog"); dialog.id = "soulConnectionDialog"; dialog.className = "soul-connection-dialog";
-  dialog.innerHTML = `<button class="soul-connection-close" type="button" aria-label="Đóng">×</button><div class="soul-connection-stars" aria-hidden="true">✦　♡　✦</div><p class="eyebrow">SOUL CONNECTION</p><h2>Hai tinh cầu đã tìm thấy nhau!</h2><p class="soul-connection-score"></p><p class="soul-connection-planets"></p><div class="soul-connection-tags"></div><p class="soul-connection-footnote">Cả hai đã thích nhau. Hãy bắt đầu một cuộc trò chuyện nhé.</p><a class="btn soul-connection-chat" href="discover.html">Khám phá kết nối</a>`;
+  dialog.innerHTML = `<button class="soul-connection-close" type="button" aria-label="Đóng">×</button><div class="soul-connection-stars" aria-hidden="true">✦　♡　✦</div><p class="eyebrow">SOUL CONNECTION</p><h2>Hai tinh cầu đã tìm thấy nhau!</h2><p class="soul-connection-score"></p><p class="soul-connection-planets"></p><div class="soul-connection-tags"></div><p class="soul-connection-footnote">Cả hai đã thích nhau. Hãy bắt đầu một cuộc trò chuyện nhé.</p><a class="btn soul-connection-chat" href="discover.html">💬 Nhắn tin ngay</a>`;
   document.body.appendChild(dialog);
   dialog.querySelector(".soul-connection-close").addEventListener("click", () => dialog.close());
   dialog.addEventListener("click", e => { if (e.target === dialog) dialog.close(); });
   return dialog;
 }
 function showConnection(other, score, common) {
-  if (!other?.id || notified.has(other.id)) return;
+  if (!other?.id) return;
+  window.dispatchEvent(new CustomEvent("soul-matched", { detail: { id: other.id, name: other.display_name } }));
+  if (notified.has(other.id)) return;
   notified.add(other.id);
   const dialog = ensureToast(), scoreNode = dialog.querySelector(".soul-connection-score");
   scoreNode.textContent = `✧ Độ tương hợp tâm hồn ${score}% ✧`;
@@ -28,7 +30,12 @@ function showConnection(other, score, common) {
   dialog.querySelector(".soul-connection-planets").textContent = `${mine ? mine.icon + " " + mine.name : "Tinh cầu của bạn"}  ↔  ${theirs ? theirs.icon + " " + theirs.name : "Tinh cầu bạn ấy"}`;
   const tags = dialog.querySelector(".soul-connection-tags"); tags.replaceChildren();
   common.slice(0, 6).forEach(tag => { const span = document.createElement("span"); span.className = "interest-tag shared"; span.textContent = tag; tags.appendChild(span); });
-  dialog.querySelector(".soul-connection-chat").href = `discover.html?connection=${encodeURIComponent(other.id)}`;
+  const chatLink = dialog.querySelector(".soul-connection-chat");
+  chatLink.href = `discover.html?connection=${encodeURIComponent(other.id)}`;
+  chatLink.onclick = e => { // mở thẳng khung nhắn tin 1-1 thay vì chuyển trang
+    e.preventDefault(); dialog.close();
+    import("./match-chat.js").then(m => m.openChat({ id: other.id, name: other.display_name })).catch(() => { window.location.href = chatLink.href; });
+  };
   if (!dialog.open) dialog.showModal();
   document.querySelectorAll(`[data-member-id="${CSS.escape(other.id)}"]`).forEach(card => card.classList.add("soul-connected"));
 }

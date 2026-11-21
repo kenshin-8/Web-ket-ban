@@ -18,23 +18,18 @@
     <link rel="stylesheet" href="css/quality.css">
     <link rel="stylesheet" href="css/connect-refine.css">
     <link rel="stylesheet" href="css/header-compact.css">
+    <link rel="stylesheet" href="css/account-menu.css">
     <link rel="stylesheet" href="css/page-themes.css">
     <link rel="stylesheet" href="css/zodiac-universe.css">
     <link rel="stylesheet" href="css/cosmic-color-restore.css">
+    <link rel="stylesheet" href="css/cosmic-final.css">
 </head>
 <body class="zodiac-page zodiac-page-square" data-zodiac-mark="♒">
     <header class="site-header">
         <nav class="navbar" aria-label="Điều hướng chính">
             <a href="index.html" class="logo">Connect<span>.</span></a>
-            <button class="menu-btn" id="menuBtn" type="button" aria-label="Mở menu" aria-expanded="false">☰</button>
-            <div class="nav-links" id="navLinks">
-                <a href="index.html">Trang chủ</a>
-                <a href="discover.html">Khám phá</a>
-                <a href="profile.html">Hồ sơ cá nhân</a>
-                <a href="match.html">Soul Match</a>
-                <a href="square.html">Quảng trường</a>
-                <a href="avatar.html">Tạo Avatar</a>
-            </div>
+            <button class="menu-btn" id="menuBtn" type="button" aria-label="Mở menu điều hướng" aria-controls="navLinks" aria-expanded="false">☰</button>
+            <div class="nav-links" id="navLinks"><a href="index.html">Trang chủ</a><a href="discover.html">Khám phá</a><a href="friends.html">Bạn bè</a><a href="profile.html">Hồ sơ</a><a href="match.html">Soul Match</a><a href="square.html" aria-current="page">Quảng trường</a><a href="voice.html">Phòng thoại</a><a href="avatar.html">Tạo Avatar</a><a href="icebreaker.html">Mini-games</a><a href="quiz.html">Trắc nghiệm</a></div>
             <div class="nav-actions">
                 <button id="themeToggle" class="theme-btn" type="button" aria-label="Đổi giao diện">🌙</button>
                 <div id="authArea" class="auth-area"></div>
@@ -52,8 +47,24 @@
                 <div class="sq-row">
                     <label class="btn btn-light">📎 Ảnh/Video<input id="momentFile" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" hidden></label>
                     <button type="button" id="recBtn" class="btn btn-light">🎙️ Ghi âm</button>
+                    <button type="button" id="pollToggle" class="btn btn-light" aria-expanded="false" aria-controls="pollBuilder">📊 Bình chọn</button>
                     <span id="mediaInfo" class="privacy-note"></span>
                     <button type="button" id="postBtn" class="btn" style="margin-left:auto">Đăng</button>
+                </div>
+                <div id="pollBuilder" class="poll-builder" hidden>
+                    <p class="privacy-note">Nội dung ô viết phía trên là câu hỏi. Thêm 2–4 lựa chọn; phiếu bầu hoàn toàn ẩn danh.</p>
+                    <div id="pollOptions"></div>
+                    <div class="sq-row">
+                        <button type="button" id="pollAddOpt" class="btn btn-light">＋ Thêm lựa chọn</button>
+                        <label class="poll-duration">Kết thúc sau
+                            <select id="pollHours">
+                                <option value="">Không giới hạn</option>
+                                <option value="24">24 giờ</option>
+                                <option value="72">3 ngày</option>
+                                <option value="168">7 ngày</option>
+                            </select>
+                        </label>
+                    </div>
                 </div>
                 <p id="postMessage" class="privacy-note" aria-live="polite"></p>
             </section>
@@ -74,5 +85,6 @@
     <script src="js/theme.js"></script>
     <script type="module" src="js/square.js"></script>
   <script type="module" src="js/presence.js"></script>
+<script src="js/cosmic-bg.js" defer></script>
 </body>
 </html>

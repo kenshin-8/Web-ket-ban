@@ -118,7 +118,7 @@ async function loadChat(communityId) {
   if (token !== loadingToken) return;
   if (membership.error) {
     setChatEnabled(false);
-    showMessage('Không thể kiểm tra thành viên. Hãy chạy community_members.sql.', 'error');
+    showMessage('Không thể kiểm tra thành viên. Hãy chạy 002_community_members.sql.', 'error');
     return;
   }
   isMember = Boolean(membership.data);
@@ -137,7 +137,7 @@ async function loadChat(communityId) {
   if (token !== loadingToken) return;
   if (historyError) {
     setChatEnabled(false);
-    showMessage('Chưa tải được tin nhắn. Hãy chạy supabase/community_chat.sql.', 'error');
+    showMessage('Chưa tải được tin nhắn. Hãy chạy supabase/migrations/006_community_chat.sql.', 'error');
     return;
   }
   const ordered = (history || []).reverse();

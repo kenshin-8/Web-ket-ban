@@ -84,7 +84,7 @@ async function loadMembershipState() {
 
 async function loadCommunityMembers(communityId) {
   if (!membershipAvailable) {
-    setMembersMessage('Cần chạy tệp supabase/community_members.sql trong Supabase để bật danh sách thành viên.');
+    setMembersMessage('Cần chạy tệp supabase/migrations/002_community_members.sql trong Supabase để bật danh sách thành viên.');
     if (joinedCount) joinedCount.textContent = '';
     return;
   }

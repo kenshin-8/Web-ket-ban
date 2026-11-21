@@ -1,0 +1,274 @@
+
+/* CONNECT PLANET — Zodiac Universe: coherent 12-sign visual system */
+:root{
+ --zodiac-ink:#f5f0ff; --zodiac-muted:#c7bfdf; --zodiac-gold:#e9c77b;
+ --zodiac-line:rgba(211,195,255,.18); --zodiac-glow:rgba(154,126,255,.16);
+}
+body.zodiac-page{
+ color:var(--text,#f5f0ff);
+ background-color:#111027 !important;
+ background-image:
+  radial-gradient(ellipse at 12% 8%,rgba(111,91,191,.25),transparent 35%),
+  radial-gradient(ellipse at 88% 18%,rgba(64,127,166,.18),transparent 32%),
+  radial-gradient(1px 1px at 18px 24px,rgba(255,255,255,.9),transparent),
+  radial-gradient(1px 1px at 88px 116px,rgba(255,255,255,.65),transparent),
+  radial-gradient(1.5px 1.5px at 178px 62px,rgba(237,211,153,.85),transparent),
+  radial-gradient(1px 1px at 230px 180px,rgba(255,255,255,.65),transparent) !important;
+ background-size:auto,auto,240px 210px,290px 250px,330px 270px,370px 300px !important;
+ background-attachment:fixed !important;
+ position:relative;
+}
+body.zodiac-page::before{
+ content:""; position:fixed; z-index:0; pointer-events:none;
+ width:min(64vw,760px); aspect-ratio:1; right:-16vw; top:18vh;
+ border:1px solid rgba(226,205,255,.12); border-radius:50%;
+ background:
+  radial-gradient(circle,transparent 0 35%,rgba(222,203,255,.10) 35.1% 35.25%,transparent 35.4% 57%,rgba(222,203,255,.09) 57.1% 57.25%,transparent 57.4% 72%,rgba(222,203,255,.07) 72.1% 72.25%,transparent 72.4%),
+  repeating-conic-gradient(from -15deg,transparent 0deg 29deg,rgba(222,203,255,.12) 29.2deg 29.45deg,transparent 29.7deg 30deg);
+ opacity:.55; filter:drop-shadow(0 0 24px rgba(151,119,255,.12));
+}
+body.zodiac-page::after{
+ content:attr(data-zodiac-mark); position:fixed; z-index:0; pointer-events:none;
+ right:7vw; bottom:3vh; font-family:Georgia,serif; font-size:clamp(130px,23vw,300px);
+ line-height:1; color:rgba(224,205,255,.045); text-shadow:0 0 55px rgba(181,145,255,.12);
+}
+body.zodiac-page > *{position:relative; z-index:1}
+body.zodiac-page .site-header{
+ background:rgba(15,13,37,.78) !important; border-bottom:1px solid rgba(214,196,255,.16) !important;
+ box-shadow:0 8px 30px rgba(0,0,0,.18) !important; backdrop-filter:blur(18px);
+}
+body.zodiac-page .logo{color:#f8f2ff !important}
+body.zodiac-page .nav-links a{color:#ddd5f4 !important}
+body.zodiac-page .nav-links a:hover,body.zodiac-page .nav-links a[aria-current="page"]{
+ background:rgba(180,151,255,.17) !important;color:#f4d994 !important;
+}
+body.zodiac-page main{background:transparent !important}
+body.zodiac-page main > section:not(.hero),body.zodiac-page .discover-container,
+body.zodiac-page .friends-page,body.zodiac-page .profile-container,
+body.zodiac-page .match-wrap,body.zodiac-page .voice-main,
+body.zodiac-page .avatar-studio,body.zodiac-page .games-wrap,
+body.zodiac-page .admin-wrap,body.zodiac-page .public-profile-wrap{
+ background:transparent !important;
+}
+body.zodiac-page :is(.feature-card,.member-card,.profile-card,.auth-card,.search-panel,
+.sq-compose,.moment,.sq-inbox,.avatar-preview,.avatar-options,.quiz-q,.game-card,
+.room-list-panel,.safety-panel,.public-profile-card,.modal-card,#dmDialog){
+ background:rgba(27,23,57,.78) !important; color:#f4efff !important;
+ border:1px solid rgba(207,188,255,.19) !important;
+ box-shadow:0 14px 42px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.035) !important;
+ backdrop-filter:blur(14px);
+}
+body.zodiac-page :is(h1,h2,h3,.eyebrow,.subtitle,.description,label,p){text-shadow:0 1px 12px rgba(0,0,0,.10)}
+body.zodiac-page :is(.eyebrow,.section-kicker){color:#efd18a !important}
+body.zodiac-page :is(input,select,textarea){
+ background:rgba(12,10,31,.72) !important;color:#f7f2ff !important;
+ border-color:rgba(207,188,255,.24) !important;
+}
+body.zodiac-page input::placeholder,body.zodiac-page textarea::placeholder{color:#aaa0c8 !important}
+body.zodiac-page .site-footer{background:rgba(13,11,31,.78);color:#c9c0df;border-top:1px solid rgba(214,196,255,.13)}
+body.zodiac-page .hero{
+ background:radial-gradient(circle at 76% 30%,rgba(141,111,222,.28),transparent 36%),
+ linear-gradient(120deg,rgba(22,17,55,.96),rgba(41,30,81,.91) 55%,rgba(45,33,77,.9)) !important;
+ border:1px solid rgba(229,207,255,.2) !important; color:#f7f1ff !important;
+ box-shadow:0 24px 70px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.08) !important;
+}
+body.zodiac-page .hero :is(h1,.description,.hero-note){color:#f5efff !important}
+body.zodiac-page .hero h1 span{color:#f1d18b !important}
+body.zodiac-page .hero .btn-outline{color:#f5efff !important;border-color:rgba(235,218,255,.45) !important}
+body.zodiac-page .btn:not(.btn-light):not(.btn-outline),body.zodiac-page .logout-btn,
+body.zodiac-page .auth-link-primary{background:linear-gradient(135deg,#8066d7,#aa75bd) !important;color:#fff !important}
+body.zodiac-page .theme-btn{background:rgba(180,151,255,.14) !important;border-color:rgba(207,188,255,.25) !important}
+body.zodiac-page .cta-section,body.zodiac-page .quiz-result{
+ background:linear-gradient(135deg,rgba(78,57,127,.78),rgba(42,34,82,.86)) !important;color:#f7f1ff !important;
+ border:1px solid rgba(224,204,255,.2) !important;
+}
+/* Distinct constellation mood by area, while keeping one shared cosmic identity */
+.zodiac-page-discover{--zodiac-accent:#79d5e8}
+.zodiac-page-friends{--zodiac-accent:#f0a9d1}
+.zodiac-page-profile,.zodiac-page-public-profile,.zodiac-page-avatar{--zodiac-accent:#e9c77b}
+.zodiac-page-match{--zodiac-accent:#a9a7ff}
+.zodiac-page-square,.zodiac-page-voice{--zodiac-accent:#7bd8ce}
+.zodiac-page-quiz{--zodiac-accent:#c8b3ff}
+.zodiac-page-games{--zodiac-accent:#ffbd83}
+.zodiac-page-admin{--zodiac-accent:#a8c4df}
+body.zodiac-page :is(.feature-card:hover,.member-card:hover,.game-card:hover){
+ border-color:color-mix(in srgb,var(--zodiac-accent,#d9c1ff) 65%,transparent) !important;
+ box-shadow:0 0 0 1px color-mix(in srgb,var(--zodiac-accent,#d9c1ff) 35%,transparent),0 18px 44px rgba(0,0,0,.22) !important;
+}
+@media(max-width:760px){
+ body.zodiac-page::before{width:105vw;right:-45vw;top:28vh;opacity:.35}
+ body.zodiac-page::after{font-size:150px;right:3vw;bottom:2vh}
+}
+@media(prefers-reduced-motion:reduce){body.zodiac-page *{scroll-behavior:auto !important;transition-duration:.01ms !important}}
+
+
+/* ===== Bright Zodiac refinement: readable, luminous, homepage hero restored ===== */
+body.zodiac-page{
+ --zodiac-accent:#7861cf;
+ background-color:#f5f3ff !important;
+ background-image:
+  radial-gradient(ellipse at 8% 5%,rgba(183,166,255,.34),transparent 34%),
+  radial-gradient(ellipse at 92% 16%,rgba(160,222,235,.30),transparent 32%),
+  radial-gradient(ellipse at 50% 100%,rgba(246,213,231,.26),transparent 38%),
+  radial-gradient(1px 1px at 18px 24px,rgba(120,96,190,.35),transparent),
+  radial-gradient(1px 1px at 88px 116px,rgba(120,96,190,.25),transparent) !important;
+ background-size:auto,auto,auto,240px 210px,290px 250px !important;
+ color:#292443 !important;
+}
+body.zodiac-page::before{opacity:.34;border-color:rgba(121,94,190,.18);filter:drop-shadow(0 0 24px rgba(151,119,255,.10))}
+body.zodiac-page::after{color:rgba(105,79,165,.075);text-shadow:none}
+body.zodiac-page .site-header{
+ background:rgba(255,255,255,.88) !important;
+ border-bottom:1px solid rgba(119,96,173,.16) !important;
+ box-shadow:0 8px 28px rgba(73,55,120,.07) !important;
+}
+body.zodiac-page .logo{color:#292443 !important}
+body.zodiac-page .nav-links a{color:#51496c !important}
+body.zodiac-page .nav-links a:hover,body.zodiac-page .nav-links a[aria-current="page"]{
+ background:rgba(129,102,210,.12) !important;color:#624bb2 !important;
+}
+body.zodiac-page :is(.feature-card,.member-card,.profile-card,.auth-card,.search-panel,
+.sq-compose,.moment,.sq-inbox,.avatar-preview,.avatar-options,.quiz-q,.game-card,
+.room-list-panel,.safety-panel,.public-profile-card,.modal-card,#dmDialog){
+ background:rgba(255,255,255,.88) !important;
+ color:#292443 !important;
+ border:1px solid rgba(122,99,176,.17) !important;
+ box-shadow:0 12px 34px rgba(73,55,120,.075),inset 0 1px rgba(255,255,255,.9) !important;
+ backdrop-filter:blur(12px);
+}
+body.zodiac-page :is(p,span,label,small,li,.subtitle,.description,.muted,.text-muted){
+ color:inherit;
+}
+body.zodiac-page :is(.eyebrow,.section-kicker){color:#8a641a !important}
+body.zodiac-page :is(input,select,textarea){
+ background:#fff !important;color:#292443 !important;
+ border-color:rgba(122,99,176,.28) !important;
+}
+body.zodiac-page input::placeholder,body.zodiac-page textarea::placeholder{color:#827b97 !important}
+body.zodiac-page .site-footer{background:rgba(255,255,255,.72);color:#51496c;border-top:1px solid rgba(119,96,173,.14)}
+body.zodiac-page .hero{
+ background:
+  radial-gradient(circle at 78% 25%,rgba(75,198,255,.36),transparent 29%),
+  radial-gradient(circle at 18% 82%,rgba(196,89,255,.34),transparent 35%),
+  radial-gradient(circle at 82% 88%,rgba(255,184,110,.24),transparent 30%),
+  linear-gradient(125deg,#17104b 0%,#30206d 48%,#512a82 76%,#173c70 100%) !important;
+ border:1px solid rgba(255,255,255,.35) !important;
+ color:#fff !important;
+ box-shadow:0 26px 72px rgba(60,37,126,.24),inset 0 1px rgba(255,255,255,.12) !important;
+}
+body.zodiac-page .hero :is(h1,.description,.hero-note){color:#fff !important}
+body.zodiac-page .hero h1 span{color:#ffe18e !important}
+body.zodiac-page .hero .eyebrow{color:#ffe18e !important}
+body.zodiac-page .hero .btn-outline{color:#fff !important;border-color:rgba(255,255,255,.58) !important}
+body.zodiac-page .btn:not(.btn-light):not(.btn-outline),body.zodiac-page .logout-btn,
+body.zodiac-page .auth-link-primary{background:linear-gradient(135deg,#7861cf,#a15fc0) !important;color:#fff !important}
+body.zodiac-page .theme-btn{background:#f1edff !important;border-color:#ded5f5 !important}
+body.zodiac-page .cta-section,body.zodiac-page .quiz-result{
+ background:linear-gradient(135deg,#eee9ff,#f9eff8) !important;color:#292443 !important;
+ border:1px solid rgba(122,99,176,.18) !important;
+}
+body.zodiac-page [class*="notice"],body.zodiac-page [class*="empty"],body.zodiac-page [class*="hint"]{color:#51496c}
+[data-theme="dark"] body.zodiac-page,
+body.zodiac-page[data-theme="dark"]{
+ background-color:#19162d !important;color:#f3efff !important;
+}
+[data-theme="dark"] body.zodiac-page .site-header,
+body.zodiac-page[data-theme="dark"] .site-header{background:rgba(24,20,46,.9)!important}
+[data-theme="dark"] body.zodiac-page .logo,
+[data-theme="dark"] body.zodiac-page .nav-links a,
+body.zodiac-page[data-theme="dark"] .logo,
+body.zodiac-page[data-theme="dark"] .nav-links a{color:#eee8ff!important}
+[data-theme="dark"] body.zodiac-page :is(.feature-card,.member-card,.profile-card,.auth-card,.search-panel,.sq-compose,.moment,.sq-inbox,.avatar-preview,.avatar-options,.quiz-q,.game-card,.room-list-panel,.safety-panel,.public-profile-card,.modal-card,#dmDialog),
+body.zodiac-page[data-theme="dark"] :is(.feature-card,.member-card,.profile-card,.auth-card,.search-panel,.sq-compose,.moment,.sq-inbox,.avatar-preview,.avatar-options,.quiz-q,.game-card,.room-list-panel,.safety-panel,.public-profile-card,.modal-card,#dmDialog){
+ background:rgba(39,33,68,.92)!important;color:#f3efff!important;
+}
+[data-theme="dark"] body.zodiac-page :is(input,select,textarea),
+body.zodiac-page[data-theme="dark"] :is(input,select,textarea){background:#211c3b!important;color:#f5f0ff!important}
+
+/* ===== Zodiac Glassmorphism: aligned to supplied references ===== */
+body.zodiac-page{
+ background-color:#f4f0ff!important;
+ background-image:
+  radial-gradient(ellipse at 8% 5%,rgba(177,151,255,.48),transparent 34%),
+  radial-gradient(ellipse at 92% 12%,rgba(107,214,244,.38),transparent 31%),
+  radial-gradient(ellipse at 72% 88%,rgba(255,177,211,.34),transparent 34%),
+  radial-gradient(ellipse at 22% 76%,rgba(255,220,160,.22),transparent 32%),
+  radial-gradient(1px 1px at 18px 24px,rgba(114,86,182,.32),transparent),
+  radial-gradient(1px 1px at 88px 116px,rgba(114,86,182,.25),transparent)!important;
+ background-size:auto,auto,auto,auto,240px 210px,290px 250px!important;color:#292344!important;
+}
+body.zodiac-page::before{width:min(70vw,820px);right:-18vw;top:12vh;opacity:.30;border-color:rgba(119,92,190,.20)}
+body.zodiac-page::after{color:rgba(105,79,165,.065)}
+body.zodiac-page .site-header{background:rgba(255,255,255,.82)!important;border-bottom:1px solid rgba(131,105,190,.18)!important;backdrop-filter:blur(22px) saturate(150%)!important}
+body.zodiac-page :is(.feature-card,.member-card,.profile-card,.auth-card,.search-panel,.sq-compose,.moment,.sq-inbox,.avatar-preview,.avatar-options,.quiz-q,.game-card,.room-list-panel,.safety-panel,.public-profile-card,.modal-card,#dmDialog){
+ background:linear-gradient(145deg,rgba(255,255,255,.88),rgba(250,247,255,.72))!important;color:#292344!important;
+ border:1px solid rgba(255,255,255,.92)!important;box-shadow:0 16px 42px rgba(83,62,145,.10),0 2px 9px rgba(83,62,145,.045),inset 0 1px 0 #fff!important;backdrop-filter:blur(18px) saturate(145%)!important;
+}
+body.zodiac-page :is(h1,h2,h3,h4,strong,b,label,.card-title){color:#30264d}
+body.zodiac-page :is(p,li,.subtitle,.description,.muted,.text-muted,small){color:#625a79}
+body.zodiac-page :is(.eyebrow,.section-kicker){color:#88621b!important}
+body.zodiac-page .hero{
+ min-height:560px!important;
+ background:radial-gradient(circle at 76% 22%,rgba(78,219,255,.58),transparent 28%),radial-gradient(circle at 18% 86%,rgba(197,94,255,.52),transparent 34%),radial-gradient(circle at 88% 82%,rgba(255,196,112,.40),transparent 30%),radial-gradient(circle at 42% 12%,rgba(255,255,255,.16),transparent 36%),linear-gradient(125deg,#100b3d 0%,#29145e 35%,#54247e 68%,#123d70 100%)!important;
+ border:1px solid rgba(255,255,255,.52)!important;box-shadow:0 28px 80px rgba(62,35,130,.30),inset 0 1px 0 rgba(255,255,255,.24)!important;overflow:hidden;
+}
+body.zodiac-page .hero::before{content:"✦   ✧       ♈       ✧   ✦";position:absolute;right:5%;top:8%;color:rgba(255,232,177,.58);font-size:clamp(18px,3vw,30px);letter-spacing:.45em;pointer-events:none}
+body.zodiac-page .hero :is(h1,.description,.hero-note,.eyebrow){color:#fff!important}
+body.zodiac-page .hero h1 span{color:#ffe39b!important}
+body.zodiac-page .hero .description{color:#e9e2ff!important}
+body.zodiac-page :is(input,select,textarea){color:#30264d!important;background:rgba(255,255,255,.94)!important;border:1px solid rgba(133,108,190,.25)!important;box-shadow:inset 0 1px 3px rgba(63,42,115,.035)!important}
+body.zodiac-page input::placeholder,body.zodiac-page textarea::placeholder{color:#817995!important}
+body.zodiac-page .site-footer{background:rgba(255,255,255,.70)!important;color:#625a79!important;backdrop-filter:blur(16px);border-top:1px solid rgba(131,105,190,.16)!important}
+body.zodiac-page .cta-section,body.zodiac-page .quiz-result{background:linear-gradient(125deg,rgba(237,231,255,.94),rgba(255,238,247,.92),rgba(230,248,255,.92))!important;color:#30264d!important;border:1px solid rgba(255,255,255,.92)!important;box-shadow:0 14px 36px rgba(83,62,145,.08)!important}
+body.zodiac-page .btn:not(.btn-light):not(.btn-outline),body.zodiac-page .logout-btn,body.zodiac-page .auth-link-primary{background:linear-gradient(120deg,#7658d2,#a35fca 55%,#5d8edb)!important;color:#fff!important;box-shadow:0 8px 20px rgba(113,82,194,.20)!important}
+body.zodiac-page .theme-btn{background:rgba(242,237,255,.94)!important;color:#59478e!important}
+@media(max-width:760px){body.zodiac-page .hero{min-height:unset!important}body.zodiac-page .hero::before{right:4%;top:4%;font-size:16px}}
+
+
+/* ===== Restore vivid, luminous planet cards on the home page ===== */
+body.zodiac-page .universe-planet-card{
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.48)!important;
+  box-shadow:0 18px 42px rgba(49,40,112,.19),inset 0 1px 0 rgba(255,255,255,.28)!important;
+  backdrop-filter:blur(14px) saturate(155%)!important;
+  transition:transform .28s ease,box-shadow .28s ease,filter .28s ease!important;
+}
+body.zodiac-page .universe-planet-card:is(.is-tech){
+  background:radial-gradient(circle at 20% 18%,rgba(89,224,255,.52),transparent 38%),linear-gradient(125deg,#087fbd 0%,#2454b8 52%,#283c86 100%)!important;
+}
+body.zodiac-page .universe-planet-card:is(.is-art){
+  background:radial-gradient(circle at 20% 18%,rgba(255,169,255,.55),transparent 38%),linear-gradient(125deg,#a33cc1 0%,#8247c7 52%,#563b9c 100%)!important;
+}
+body.zodiac-page .universe-planet-card:is(.is-music){
+  background:radial-gradient(circle at 20% 18%,rgba(255,213,135,.58),transparent 38%),linear-gradient(125deg,#e66c65 0%,#bd477e 52%,#793b77 100%)!important;
+}
+body.zodiac-page .universe-planet-card:is(.is-nature){
+  background:radial-gradient(circle at 20% 18%,rgba(151,255,194,.55),transparent 38%),linear-gradient(125deg,#1da879 0%,#168b83 52%,#176b78 100%)!important;
+}
+body.zodiac-page .universe-planet-card:is(.is-books){
+  background:radial-gradient(circle at 20% 18%,rgba(255,230,153,.58),transparent 38%),linear-gradient(125deg,#d99a36 0%,#b97836 52%,#80513d 100%)!important;
+}
+body.zodiac-page .universe-planet-card:is(.is-sport){
+  background:radial-gradient(circle at 20% 18%,rgba(170,190,255,.58),transparent 38%),linear-gradient(125deg,#526fe0 0%,#4054bb 52%,#303b87 100%)!important;
+}
+body.zodiac-page .universe-card-copy strong{
+  color:#fff!important;text-shadow:0 2px 12px rgba(15,12,50,.28)!important;
+}
+body.zodiac-page .universe-card-copy small{
+  color:rgba(255,255,255,.88)!important;
+}
+body.zodiac-page .universe-card-copy em,
+body.zodiac-page .universe-member-count{
+  color:#fff4b8!important;font-weight:800!important;
+}
+body.zodiac-page .universe-planet-card:hover{
+  transform:translateY(-7px) scale(1.012)!important;
+  filter:saturate(1.16) brightness(1.08)!important;
+  box-shadow:0 24px 52px rgba(65,47,145,.27),0 0 0 1px rgba(255,255,255,.42),inset 0 1px 0 rgba(255,255,255,.35)!important;
+}
+body.zodiac-page .universe-planet-art{
+  filter:saturate(1.2) brightness(1.1) drop-shadow(0 8px 22px rgba(8,14,50,.32))!important;
+}
+@media(max-width:760px){
+ body.zodiac-page .universe-planet-card{box-shadow:0 12px 28px rgba(49,40,112,.16)!important}
+}

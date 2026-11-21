@@ -14,15 +14,16 @@
     <link rel="stylesheet" href="css/quality.css">
     <link rel="stylesheet" href="css/connect-refine.css">
     <link rel="stylesheet" href="css/header-compact.css">
+    <link rel="stylesheet" href="css/account-menu.css">
     <link rel="stylesheet" href="css/page-themes.css">
     <link rel="stylesheet" href="css/zodiac-universe.css">
     <link rel="stylesheet" href="css/cosmic-color-restore.css">
+    <link rel="stylesheet" href="css/cosmic-final.css">
 </head>
 <body class="zodiac-page zodiac-page-voice" data-zodiac-mark="♊">
 <header class="site-header"><nav class="navbar" aria-label="Điều hướng chính">
-  <a href="index.html" class="logo">Connect<span>.</span></a><button class="menu-btn" id="menuBtn" type="button" aria-label="Mở menu" aria-expanded="false">☰</button>
-  <div class="nav-links" id="navLinks"><a href="index.html">Trang chủ</a><a href="discover.html">Khám phá</a><a href="voice.html" aria-current="page">Phòng thoại</a><a href="profile.html">Hồ sơ</a><a href="match.html">Soul Match</a>
-                <a href="square.html">Quảng trường</a><a href="avatar.html">Tạo Avatar</a></div>
+  <a href="index.html" class="logo">Connect<span>.</span></a><button class="menu-btn" id="menuBtn" type="button" aria-label="Mở menu điều hướng" aria-controls="navLinks" aria-expanded="false">☰</button>
+  <div class="nav-links" id="navLinks"><a href="index.html">Trang chủ</a><a href="discover.html">Khám phá</a><a href="friends.html">Bạn bè</a><a href="profile.html">Hồ sơ</a><a href="match.html">Soul Match</a><a href="square.html">Quảng trường</a><a href="voice.html" aria-current="page">Phòng thoại</a><a href="avatar.html">Tạo Avatar</a><a href="icebreaker.html">Mini-games</a><a href="quiz.html">Trắc nghiệm</a></div>
   <div class="nav-actions"><button id="themeToggle" class="theme-btn" type="button" aria-label="Đổi giao diện">🌙</button><div id="authArea" class="auth-area"></div></div>
 </nav></header>
 <main class="voice-main">
@@ -52,6 +53,32 @@
           <p class="audio-help">Thử gõ “chúc mừng sinh nhật”, “nhớ bạn” hay “chúc ngủ ngon” để thả biểu tượng cảm xúc. Tin nhắn chỉ hiện trong lúc bạn ở phòng và không được lưu lại.</p>
         </div>
       </section>
+      <section class="party-music" id="musicPanel" aria-label="Nhạc chung trong phòng" hidden>
+        <span class="audio-tool-title">🎵 Nhạc chung · karaoke</span>
+        <p id="musicRole" class="audio-help"></p>
+        <div class="music-now"><strong id="musicTitle">Chưa có bài nào</strong><small id="musicBy"></small></div>
+        <div id="ytHost" class="yt-host" hidden><div id="ytPlayer"></div></div>
+        <audio id="musicAudio" preload="auto"></audio>
+        <div class="music-controls">
+          <button type="button" id="musicPrev" class="sound-btn" aria-label="Bài trước">⏮</button>
+          <button type="button" id="musicPlay" class="sound-btn" aria-label="Phát">▶ Phát</button>
+          <button type="button" id="musicNext" class="sound-btn" aria-label="Bài sau">⏭</button>
+          <span id="musicTime" class="music-time">0:00 / 0:00</span>
+        </div>
+        <label class="sr-only" for="musicSeek">Tua bài hát</label>
+        <input type="range" id="musicSeek" class="music-seek" min="0" max="1" value="0" step="1">
+        <div class="music-controls">
+          <label class="music-time vol-label" for="musicVolume">🔈 Âm lượng của bạn</label>
+          <input type="range" id="musicVolume" class="music-volume" min="0" max="100" value="60" aria-label="Âm lượng nhạc của bạn">
+          <button type="button" id="musicMute" class="sound-btn" aria-pressed="false">🔊 Tắt cho tôi</button>
+          <button type="button" id="musicResume" class="sound-btn" hidden>▶ Bấm để nghe nhạc</button>
+        </div>
+        <form id="musicAddForm" class="chat-form" autocomplete="off"><input id="musicUrl" maxlength="300" placeholder="Dán link YouTube hoặc file .mp3 (https)..." aria-label="Liên kết bài hát"><button class="btn" type="submit" id="musicAddBtn">Đề xuất bài</button></form>
+        <p id="musicMsg" class="audio-help" aria-live="polite"></p>
+        <div id="musicPending" class="music-pending" hidden><span class="audio-tool-title">Đề xuất chờ duyệt</span><ul id="musicPendingList"></ul></div>
+        <ol id="musicQueue" class="music-queue"></ol>
+        <p class="audio-help">Chỉ phát nội dung bạn có quyền chia sẻ. YouTube được phát bằng trình phát chính thức của YouTube. Nhạc chạy riêng trên máy từng người nên không lẫn vào micro.</p>
+      </section>
       <section class="audio-tools" aria-label="Hiệu ứng âm thanh">
         <div class="audio-tool-group"><label for="voiceEffect">🎛️ Biến đổi giọng nói</label><select id="voiceEffect" class="audio-select"><option value="normal">Giọng bình thường</option><option value="deep">Giọng trầm · EQ</option><option value="high">Giọng cao · EQ</option><option value="cute">Giọng dễ thương · EQ</option><option value="robot">Giọng robot</option></select><p class="audio-help">Hiệu ứng được xử lý trực tiếp và gửi tới mọi người trong phòng.</p></div>
         <div class="audio-tool-group"><span class="audio-tool-title">✨ Phát âm thanh vào phòng</span><div class="sound-buttons"><button class="sound-btn" data-sound="clap" type="button">👏 Vỗ tay</button><button class="sound-btn" data-sound="laugh" type="button">😂 Tiếng cười</button><button class="sound-btn" data-sound="heart" type="button">💓 Tim đập</button><button class="sound-btn" data-sound="ambient" type="button">🎶 Nhạc nền nhẹ</button></div><p id="soundStatus" class="audio-help" aria-live="polite">Âm thanh sẽ được phát cho cả phòng nghe.</p></div>
@@ -61,4 +88,5 @@
 <script src="js/script.js"></script>
 <script src="js/nav-compact.js"></script><script src="js/theme.js"></script><script type="module" src="js/session.js"></script><script type="module" src="js/voice.js"></script>
   <script type="module" src="js/presence.js"></script>
+<script src="js/cosmic-bg.js" defer></script>
 </body></html>

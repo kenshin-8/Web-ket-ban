@@ -135,7 +135,7 @@ if (canvas) {
     presenceWriteBusy=true;
     try{
       const {error}=await supabase.from('planet_presence').upsert({user_id:user.id,latitude:playerLat,longitude:playerLon,updated_at:new Date().toISOString()},{onConflict:'user_id'});
-      if(error){console.warn('Planet presence write:',error.message);updateWalkStatus('Chưa đồng bộ được vị trí · kiểm tra migration planet_presence.sql');}
+      if(error){console.warn('Planet presence write:',error.message);updateWalkStatus('Chưa đồng bộ được vị trí · kiểm tra migration 016_planet_presence.sql');}
       else updateWalkStatus(`Bạn đang hiện diện cùng ${remotePlayers.size} thành viên · WASD để di chuyển`);
     }catch(error){console.warn('Planet presence unavailable:',error);updateWalkStatus('Không thể kết nối đồng bộ vị trí.');}
     finally{presenceWriteBusy=false;if(presenceWritePending){presenceWritePending=false;setTimeout(writePlanetPresence,80);}}
@@ -148,7 +148,7 @@ if (canvas) {
   async function initPlanetPresence(){
     if(!user)return;
     const {data,error}=await supabase.from('planet_presence').select('user_id,latitude,longitude,updated_at');
-    if(error){console.warn('Planet presence load:',error.message);updateWalkStatus('Đang ở chế độ cá nhân · chạy migration planet_presence.sql để thấy thành viên khác');}
+    if(error){console.warn('Planet presence load:',error.message);updateWalkStatus('Đang ở chế độ cá nhân · chạy migration 016_planet_presence.sql để thấy thành viên khác');}
     else (data||[]).forEach(upsertRemotePlayer);
     planetChannel=supabase.channel('connect-planet-presence',{config:{broadcast:{self:false},presence:{key:user.id}}});
     planetChannel.on('postgres_changes',{event:'*',schema:'public',table:'planet_presence'},payload=>{
@@ -282,7 +282,7 @@ if (canvas) {
     }
     planetDmPeer=profile;planetChatForm.hidden=false;planetChatStatus.textContent='Đang tải tin nhắn…';
     const {data,error}=await supabase.from('direct_messages').select('id,sender_id,recipient_id,body,created_at').or(`and(sender_id.eq.${user.id},recipient_id.eq.${profile.id}),and(sender_id.eq.${profile.id},recipient_id.eq.${user.id})`).order('created_at',{ascending:true}).limit(60);
-    if(error){planetChatStatus.textContent='Không tải được tin nhắn. Hãy kiểm tra friend_system.sql và quyền RLS.';console.warn('Planet direct messages:',error);return;}
+    if(error){planetChatStatus.textContent='Không tải được tin nhắn. Hãy kiểm tra 003_friend_system.sql và quyền RLS.';console.warn('Planet direct messages:',error);return;}
     (data||[]).forEach(appendPlanetMessage);
     if(!data?.length){const empty=document.createElement('p');empty.className='planet3d-chat-empty';empty.textContent='Hãy gửi lời chào đầu tiên!';planetChatMessages.appendChild(empty);}
     planetChatStatus.textContent=`Đang trò chuyện với ${profile.display_name||'bạn bè'} · Đồng bộ realtime`;

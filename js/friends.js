@@ -172,7 +172,7 @@ async function loadNetwork() {
     .limit(200);
   if (error) {
     console.error("Load friend network:", error);
-    showEmpty(requestsBox, "Không tải được lời mời. Hãy chạy friend_system.sql trong Supabase.");
+    showEmpty(requestsBox, "Không tải được lời mời. Hãy chạy 003_friend_system.sql trong Supabase.");
     showEmpty(friendsBox, "Không tải được danh sách bạn bè.");
     return;
   }
@@ -269,7 +269,7 @@ async function openConversation(profile) {
     .order("created_at", { ascending: true })
     .limit(100);
   if (error) {
-    dmStatus.textContent = "Không tải được tin nhắn. Hãy kiểm tra friend_system.sql và trạng thái kết bạn.";
+    dmStatus.textContent = "Không tải được tin nhắn. Hãy kiểm tra 003_friend_system.sql và trạng thái kết bạn.";
     console.error("Load direct messages:", error);
     return;
   }
@@ -313,7 +313,7 @@ async function loadNotifications() {
     .eq("recipient_id", currentUser.id)
     .order("created_at", { ascending: false }).limit(40);
   if (error) {
-    showEmpty(list, "Không tải được thông báo. Hãy chạy notification_presence.sql trong Supabase.");
+    showEmpty(list, "Không tải được thông báo. Hãy chạy 009_notification_presence.sql trong Supabase.");
     $("notificationStatus").textContent = "";
     console.warn("Load notifications:", error);
     return;

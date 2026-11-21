@@ -151,7 +151,7 @@ function renderPost(post, authorName, token, initialLikes) {
       await refreshPostLikes(post, likeButton, likeCount);
     } catch (error) {
       console.warn('Like update failed:', error);
-      feedStatus.textContent = 'Chưa cập nhật được lượt thích. Hãy kiểm tra community_interactions.sql.';
+      feedStatus.textContent = 'Chưa cập nhật được lượt thích. Hãy kiểm tra 005_community_interactions.sql.';
     } finally {
       likeButton.disabled = !activeUser || !memberOf.has(selectedCommunity);
     }
@@ -171,7 +171,7 @@ function renderPost(post, authorName, token, initialLikes) {
         commentArea.dataset.loaded = 'true';
       } catch (error) {
         console.warn('Load comments failed:', error);
-        commentArea.textContent = 'Không thể tải bình luận. Vui lòng kiểm tra cấu hình community_feed.sql.';
+        commentArea.textContent = 'Không thể tải bình luận. Vui lòng kiểm tra cấu hình 004_community_feed.sql.';
       }
     }
   });
@@ -233,7 +233,7 @@ async function loadNotifications() {
     .eq('recipient_id', activeUser.id).order('created_at', { ascending: false }).limit(30);
   if (error) {
     console.warn('Notifications unavailable:', error);
-    notificationList.replaceChildren(element('p', '', 'Chưa bật thông báo. Hãy chạy community_interactions.sql trong Supabase.'));
+    notificationList.replaceChildren(element('p', '', 'Chưa bật thông báo. Hãy chạy 005_community_interactions.sql trong Supabase.'));
     return;
   }
   notificationRows = data || [];
@@ -263,7 +263,7 @@ async function loadFeed(communityId) {
     const memberships = await supabase.from('community_members').select('community_id').eq('user_id', activeUser.id);
     if (memberships.error) {
       feedReady = false; setFeedEnabled(false);
-      feedStatus.textContent = 'Chưa thể kiểm tra thành viên. Hãy chạy community_members.sql trước.';
+      feedStatus.textContent = 'Chưa thể kiểm tra thành viên. Hãy chạy 002_community_members.sql trước.';
       return;
     }
     (memberships.data || []).forEach(row => memberOf.add(row.community_id));
@@ -283,7 +283,7 @@ async function loadFeed(communityId) {
   if (token !== loadToken) return;
   if (error) {
     feedReady = false;
-    feedStatus.textContent = 'Chưa tải được bảng tin. Hãy chạy supabase/community_feed.sql trong Supabase.';
+    feedStatus.textContent = 'Chưa tải được bảng tin. Hãy chạy supabase/migrations/004_community_feed.sql trong Supabase.';
     return;
   }
   const postIds = (posts || []).map(post => post.id);
@@ -292,7 +292,7 @@ async function loadFeed(communityId) {
     const likesResult = await supabase.from('community_post_likes').select('post_id,user_id').in('post_id', postIds);
     if (likesResult.error) {
       console.warn('Likes unavailable:', likesResult.error);
-      feedStatus.textContent = 'Bảng tin đã tải; cần chạy community_interactions.sql để bật lượt thích.';
+      feedStatus.textContent = 'Bảng tin đã tải; cần chạy 005_community_interactions.sql để bật lượt thích.';
     } else likes = likesResult.data || [];
   }
   const authorIds = [...new Set((posts || []).map(post => post.author_id))];

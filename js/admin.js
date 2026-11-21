@@ -27,7 +27,7 @@ const CONFIRM = {
 const el = (tag, cls, text, parent) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; parent?.appendChild(e); return e; };
 const message = text => { $("adminMessage").textContent = text || ""; };
 const explain = error => /Không có quyền/.test(error?.message || "") ? "Bạn không có quyền quản trị."
-    : /function .* does not exist|schema cache/i.test(error?.message || "") ? "Chưa có hàm quản trị. Hãy chạy supabase/admin_moderation.sql."
+    : /function .* does not exist|schema cache/i.test(error?.message || "") ? "Chưa có hàm quản trị. Hãy chạy supabase/migrations/012_admin_moderation.sql."
     : "Có lỗi xảy ra. Vui lòng thử lại.";
 
 function renderCard(row, status) {

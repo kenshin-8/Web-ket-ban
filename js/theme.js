@@ -1,5 +1,5 @@
 const themeToggle = document.getElementById("themeToggle");
-let currentTheme = localStorage.getItem("theme") || "light";
+let currentTheme = localStorage.getItem("theme") || "dark";
 document.documentElement.setAttribute("data-theme", currentTheme);
 function updateThemeButton() {
     if (!themeToggle) return;

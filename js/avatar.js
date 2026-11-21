@@ -158,11 +158,11 @@ async function saveCurrentAvatar() {
 
         if (saveError) {
             if (saveError.code === "42501" || /row-level security|permission denied/i.test(saveError.message || "")) {
-                throw new Error("Supabase từ chối quyền ghi profiles.avatar_data (RLS/GRANT). Hãy kiểm tra đã chạy supabase/voice_avatar_repair_v2.sql trên đúng project chưa.");
+                throw new Error("Supabase từ chối quyền ghi profiles.avatar_data (RLS/GRANT). Hãy kiểm tra đã chạy supabase/migrations/015_voice_avatar_repair_v2.sql trên đúng project chưa.");
             }
             if (saveError.code === "42P01") throw new Error("Không tìm thấy bảng profiles trong Supabase.");
             if (saveError.code === "42703" || /avatar_data/i.test(saveError.message || "")) {
-                throw new Error("Bảng profiles chưa có cột avatar_data. Hãy chạy schema.sql và voice_avatar_repair_v2.sql trên đúng project.");
+                throw new Error("Bảng profiles chưa có cột avatar_data. Hãy chạy 001_schema.sql và 015_voice_avatar_repair_v2.sql trên đúng project.");
             }
             if (saveError.code === "PGRST116") {
                 throw new Error("Supabase đã ghi nhưng không đọc lại được dòng hồ sơ. Kiểm tra policy SELECT của profiles.");

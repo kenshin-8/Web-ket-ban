@@ -86,7 +86,7 @@ function setMoreButton(total) {
     moreBtn.textContent = `Xem thêm (${total - loadedCount} thành viên)`;
 }
 
-// Tìm kiếm và phân trang chạy phía server (hàm search_profiles trong supabase/discover_search.sql).
+// Tìm kiếm và phân trang chạy phía server (hàm search_profiles trong supabase/migrations/011_discover_search.sql).
 async function loadMembers({ append = false } = {}) {
     if (!membersList || !memberCount) return;
     const token = ++loadToken;
@@ -127,7 +127,7 @@ async function loadMembers({ append = false } = {}) {
         console.error("Lỗi tải thành viên:", error);
         memberCount.textContent = "Chưa tải được";
         if (!append) membersList.replaceChildren();
-        addText(membersList, "p", "empty-message", "Không thể tải danh sách. Hãy chạy supabase/discover_search.sql và kiểm tra kết nối.");
+        addText(membersList, "p", "empty-message", "Không thể tải danh sách. Hãy chạy supabase/migrations/011_discover_search.sql và kiểm tra kết nối.");
         if (moreBtn) moreBtn.hidden = true;
     } finally {
         if (token === loadToken && searchBtn) searchBtn.disabled = false;

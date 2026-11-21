@@ -165,9 +165,11 @@
         }
     </style>
     <link rel="stylesheet" href="css/header-compact.css">
+    <link rel="stylesheet" href="css/account-menu.css">
     <link rel="stylesheet" href="css/page-themes.css">
     <link rel="stylesheet" href="css/zodiac-universe.css">
     <link rel="stylesheet" href="css/cosmic-color-restore.css">
+    <link rel="stylesheet" href="css/cosmic-final.css">
 </head>
 
 <body class="zodiac-page zodiac-page-avatar" data-zodiac-mark="♌">
@@ -175,14 +177,8 @@
 <header class="site-header">
     <nav class="navbar" aria-label="Điều hướng chính">
         <a href="index.html" class="logo">Connect<span>.</span></a>
-        <button class="menu-btn" id="menuBtn" type="button" aria-label="Mở menu" aria-expanded="false">☰</button>
-            <div class="nav-links" id="navLinks">
-            <a href="index.html">Trang chủ</a>
-            <a href="discover.html">Khám phá</a>
-            <a href="profile.html">Hồ sơ cá nhân</a>
-            <a href="avatar.html" aria-current="page">Tạo Avatar</a>
-            <a href="icebreaker.html">Mini-games</a>
-        </div>
+        <button class="menu-btn" id="menuBtn" type="button" aria-label="Mở menu điều hướng" aria-controls="navLinks" aria-expanded="false">☰</button>
+            <div class="nav-links" id="navLinks"><a href="index.html">Trang chủ</a><a href="discover.html">Khám phá</a><a href="friends.html">Bạn bè</a><a href="profile.html">Hồ sơ</a><a href="match.html">Soul Match</a><a href="square.html">Quảng trường</a><a href="voice.html">Phòng thoại</a><a href="avatar.html" aria-current="page">Tạo Avatar</a><a href="icebreaker.html">Mini-games</a><a href="quiz.html">Trắc nghiệm</a></div>
         <div class="nav-actions">
             <button id="themeToggle" class="theme-btn" type="button" aria-label="Đổi giao diện">🌙</button>
             <div id="authArea" class="auth-area"></div>
@@ -290,5 +286,6 @@
 <script type="module" src="js/avatar.js"></script>
 
   <script type="module" src="js/presence.js"></script>
+<script src="js/cosmic-bg.js" defer></script>
 </body>
 </html>

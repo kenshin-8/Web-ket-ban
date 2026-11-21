@@ -1,3 +1,4 @@
+import { PartyMusic } from "./party-music.js";
 import { supabase } from "./supabase.js";
 import { GIFTS, playGift, playTextEffect, showBanner, stopEffects } from "./effects.js";
 
@@ -22,28 +23,105 @@ let voiceLfo = null;
 let soundBus = null;
 const peers = new Map();
 const remoteStreams = new Map();
+const pendingIceCandidates = new Map();
+const peerDisconnectTimers = new Map();
+let roomConnectionId = null;
+let roomHeartbeatTimer = null;
+
+function createConnectionId() {
+  if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  const bytes = new Uint8Array(16);
+  window.crypto.getRandomValues(bytes);
+  return [...bytes].map(value => value.toString(16).padStart(2, "0")).join("");
+}
+
+async function releaseRoomSlot(roomId = activeRoom?.id) {
+  if (roomHeartbeatTimer) window.clearInterval(roomHeartbeatTimer);
+  roomHeartbeatTimer = null;
+  const connectionId = roomConnectionId;
+  roomConnectionId = null;
+  if (!roomId || !connectionId) return;
+  try {
+    const { error } = await withRequestTimeout(
+      supabase.rpc("leave_voice_room", { p_room_id: roomId, p_connection_id: connectionId }), 5000
+    );
+    if (error) console.warn("Không thể giải phóng lượt tham gia phòng:", error);
+  } catch (error) {
+    console.warn("Không thể giải phóng lượt tham gia phòng:", error);
+  }
+}
+
+function startRoomHeartbeat(roomId) {
+  if (roomHeartbeatTimer) window.clearInterval(roomHeartbeatTimer);
+  roomHeartbeatTimer = window.setInterval(async () => {
+    if (!activeRoom || activeRoom.id !== roomId || !roomConnectionId) return;
+    try {
+      const { data, error } = await supabase.rpc("heartbeat_voice_room", {
+        p_room_id: roomId,
+        p_connection_id: roomConnectionId
+      });
+      if (error) {
+        console.warn("Không thể gia hạn lượt tham gia phòng:", error);
+      } else if (data === false) {
+        $("callStatus").textContent = "Lượt tham gia phòng đã hết hạn. Vui lòng tham gia lại.";
+        await leaveRoom(false);
+      }
+    } catch (error) {
+      console.warn("Không thể gia hạn lượt tham gia phòng:", error);
+    }
+  }, 30000);
+}
+
+async function withRequestTimeout(request, milliseconds = 12000) {
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = window.setTimeout(() => reject(new Error("Supabase phản hồi quá lâu. Kiểm tra kết nối rồi thử lại.")), milliseconds);
+  });
+  try { return await Promise.race([request, timeout]); }
+  finally { window.clearTimeout(timer); }
+}
 
 async function init() {
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data.user) {
-    $("roomList").innerHTML = '<div class="empty-state">Bạn cần <a href="login.html">đăng nhập</a> để xem và tham gia phòng thoại.</div>';
-    $("showCreateBtn").disabled = true;
-    return;
+  const list = $("roomList");
+  try {
+    const { data, error } = await withRequestTimeout(supabase.auth.getUser());
+    if (error) throw error;
+    currentUser = data.user || null;
+    // Cho phép mở biểu mẫu để hiển thị hướng dẫn đăng nhập thay vì vô hiệu hóa nút.
+    $("showCreateBtn").disabled = false;
+    if (!currentUser) {
+      list.innerHTML = '<div class="empty-state">Bạn cần <a href="login.html">đăng nhập</a> để tạo và tham gia phòng thoại.</div>';
+      return;
+    }
+    await loadRooms();
+  } catch (error) {
+    console.error("Không khởi tạo được phòng thoại:", error);
+    $("showCreateBtn").disabled = false;
+    list.innerHTML = '<div class="empty-state">Không kiểm tra được phiên đăng nhập. Hãy tải lại trang hoặc đăng nhập lại.</div>';
   }
-  currentUser = data.user;
-  await loadRooms();
+}
+
+function showRoomNotice(message) {
+  const notice = document.createElement("div");
+  notice.className = "empty-state room-error-notice";
+  notice.setAttribute("role", "alert");
+  notice.textContent = message;
+  $("roomList")?.prepend(notice);
 }
 
 async function loadRooms() {
   const list = $("roomList");
   list.innerHTML = '<div class="empty-state">Đang tải danh sách phòng...</div>';
-  const { data, error } = await supabase.from("voice_rooms").select("id,name,topic,description,host_name,host_id,created_at").eq("is_open", true).order("created_at", { ascending: false }).limit(40);
-  if (error) {
-    list.innerHTML = '<div class="empty-state">Chưa tải được phòng. Hãy chạy phần SQL thiết lập Voice Community trong README.</div>';
-    console.error(error);
-    return;
+  try {
+    const { data, error } = await withRequestTimeout(
+      supabase.from("voice_rooms").select("id,name,topic,description,host_name,host_id,created_at").eq("is_open", true).order("created_at", { ascending: false }).limit(40)
+    );
+    if (error) throw error;
+    renderRooms(data || []);
+  } catch (error) {
+    list.innerHTML = `<div class="empty-state">Không tải được phòng: ${String(error.message || "Lỗi kết nối").replace(/[<>]/g, "")}. Kiểm tra migration 015_voice_avatar_repair_v2.sql.</div>`;
+    console.error("Lỗi tải phòng thoại:", error);
   }
-  renderRooms(data || []);
 }
 
 function renderRooms(rooms) {
@@ -77,59 +155,138 @@ $("topicFilters").addEventListener("click", event => {
   document.querySelectorAll(".topic-filter").forEach(b => b.classList.toggle("active", b === button));
   loadRooms();
 });
-$("showCreateBtn").addEventListener("click", () => { $("createModal").hidden = false; });
+$("showCreateBtn").addEventListener("click", () => {
+  $("createModal").hidden = false;
+  if (!currentUser) $("createMessage").textContent = "Bạn cần đăng nhập trước khi tạo phòng thoại.";
+  else $("createMessage").textContent = "";
+  window.setTimeout(() => $("roomName")?.focus(), 0);
+});
 $("closeCreateBtn").addEventListener("click", () => { $("createModal").hidden = true; });
 $("createModal").addEventListener("click", e => { if (e.target === $("createModal")) $("createModal").hidden = true; });
 
 $("createRoomForm").addEventListener("submit", async event => {
   event.preventDefault();
-  if (!currentUser) return;
-  const button = $("createRoomBtn"); const message = $("createMessage");
-  button.disabled = true; message.textContent = "Đang tạo phòng...";
+  const button = $("createRoomBtn");
+  const message = $("createMessage");
+  if (!currentUser) {
+    message.textContent = "Bạn cần đăng nhập trước khi tạo phòng thoại.";
+    return;
+  }
   const name = $("roomName").value.trim();
   const description = $("roomDescription").value.trim();
   const topic = $("roomTopic").value;
-  const hostName = currentUser.user_metadata?.username || currentUser.email?.split("@")[0] || "Thành viên";
-  const { data, error } = await supabase.from("voice_rooms").insert({ name, topic, description, host_id: currentUser.id, host_name: hostName }).select().single();
-  button.disabled = false;
-  if (error) { message.textContent = `Không tạo được phòng: ${error.message}`; return; }
-  $("createRoomForm").reset(); $("createModal").hidden = true; message.textContent = "";
-  await loadRooms(); await joinRoom(data);
+  if (name.length < 3 || name.length > 55) {
+    message.textContent = "Tên phòng cần có từ 3 đến 55 ký tự.";
+    return;
+  }
+  button.disabled = true;
+  message.textContent = "Đang tạo phòng...";
+  try {
+    const hostName = currentUser.user_metadata?.username || currentUser.email?.split("@")[0] || "Thành viên";
+    const { data, error } = await withRequestTimeout(
+      supabase.from("voice_rooms").insert({ name, topic, description, host_id: currentUser.id, host_name: hostName }).select().single()
+    );
+    if (error) {
+      if (error.code === "42501" || /permission|row-level security/i.test(error.message || "")) {
+        throw new Error("Tài khoản chưa có quyền tạo phòng. Hãy chạy supabase/migrations/015_voice_avatar_repair_v2.sql trong SQL Editor.");
+      }
+      if (error.code === "42P01") throw new Error("Chưa có bảng voice_rooms. Hãy chạy migration 015_voice_avatar_repair_v2.sql.");
+      throw error;
+    }
+    if (!data?.id) throw new Error("Supabase chưa trả về phòng vừa tạo.");
+    $("createRoomForm").reset();
+    $("createModal").hidden = true;
+    message.textContent = "";
+    await loadRooms();
+    await joinRoom(data);
+  } catch (error) {
+    console.error("Lỗi tạo phòng thoại:", error);
+    message.textContent = `Không tạo được phòng: ${error.message || "Lỗi không xác định"}`;
+  } finally {
+    button.disabled = false;
+  }
 });
 
 async function joinRoom(room) {
-  if (activeRoom) return;
+  if (activeRoom || !currentUser) return;
   activeRoom = room;
-  $("callModal").hidden = false; $("activeRoomName").textContent = room.name; $("callStatus").textContent = "Đang xin quyền sử dụng micro...";
-  try {
-    localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true }, video: false });
-  } catch (error) {
-    activeRoom = null; $("callModal").hidden = true;
-    alert("Không thể bật micro. Hãy cho phép trình duyệt sử dụng micro và thử lại."); return;
-  }
-  micEnabled = true;
-  setupAudioProcessing();
+  localStream = null;
+  micEnabled = false;
+  $("callModal").hidden = false;
+  $("activeRoomName").textContent = room.name;
+  $("callStatus").textContent = "Đang kiểm tra chỗ trống...";
   updateMicButton();
+
+  // Giữ chỗ nguyên tử ở PostgreSQL trước khi tham gia Presence để không vượt quá 4 người.
+  roomConnectionId = createConnectionId();
+  try {
+    const { error } = await withRequestTimeout(supabase.rpc("join_voice_room", {
+      p_room_id: room.id,
+      p_connection_id: roomConnectionId
+    }), 12000);
+    if (error) throw error;
+  } catch (error) {
+    roomConnectionId = null;
+    activeRoom = null;
+    $("callModal").hidden = true;
+    const message = ["PGRST202", "42883"].includes(error.code)
+      ? "Chưa bật giới hạn thành viên phía máy chủ. Hãy chạy supabase/migrations/019_voice_room_capacity.sql trong Supabase SQL Editor."
+      : (error.message || "Không thể tham gia phòng.");
+    await loadRooms();
+    showRoomNotice(message);
+    return;
+  }
+
+  // Vào phòng trước, chỉ xin quyền micro khi người dùng chủ động nhấn nút.
+  // Điều này tránh việc hộp thoại cấp quyền của trình duyệt làm treo luồng tham gia.
   roomChannel = supabase.channel(`voice-room-${room.id}`, { config: { presence: { key: currentUser.id }, broadcast: { self: false } } });
   roomChannel.on("presence", { event: "sync" }, handlePresenceSync);
   roomChannel.on("broadcast", { event: "signal" }, ({ payload }) => handleSignal(payload));
   roomChannel.on("broadcast", { event: "gift" }, ({ payload }) => handleGift(payload));
   roomChannel.on("broadcast", { event: "chat" }, ({ payload }) => handleChat(payload));
+  const selfName = currentUser.user_metadata?.username || currentUser.email?.split("@")[0] || "Thành viên";
+  music = new PartyMusic({ channel: roomChannel, selfId: currentUser.id, hostId: room.host_id, selfName });
+  roomChannel.on("broadcast", { event: "music" }, ({ payload }) => music?.handle(payload));
+  roomChannel.on("presence", { event: "join" }, () => music?.onPeerJoin());
   roomChannel.on("broadcast", { event: "room_closed" }, () => { alert("Chủ phòng đã kết thúc phòng thoại."); leaveRoom(false); });
-  const status = await roomChannel.subscribe(async state => {
-    if (state === "SUBSCRIBED") {
-      await roomChannel.track({ user_id: currentUser.id, name: currentUser.user_metadata?.username || currentUser.email?.split("@")[0] || "Thành viên", joined_at: new Date().toISOString() });
-      $("callStatus").textContent = "Đã vào phòng · Micro đang bật";
-      updateParticipants();
-    } else if (state === "CHANNEL_ERROR" || state === "TIMED_OUT") {
-      $("callStatus").textContent = "Kết nối phòng thất bại. Vui lòng thử lại.";
+  try {
+    await withRequestTimeout(new Promise((resolve, reject) => {
+      roomChannel.subscribe(async state => {
+        if (activeRoom?.id !== room.id || !roomChannel) return;
+        if (state === "SUBSCRIBED") {
+          try {
+            await roomChannel.track({ user_id: currentUser.id, name: currentUser.user_metadata?.username || currentUser.email?.split("@")[0] || "Thành viên", joined_at: new Date().toISOString() });
+            startRoomHeartbeat(room.id);
+            $("callStatus").textContent = "Đã vào phòng · Chế độ nghe/chat. Nhấn Bật micro nếu muốn nói chuyện.";
+            updateParticipants();
+            music?.start();
+            resolve(true);
+          } catch (error) { reject(error); }
+        } else if (state === "CHANNEL_ERROR" || state === "TIMED_OUT") {
+          reject(new Error("Không kết nối được Realtime. Kiểm tra cấu hình Supabase Realtime."));
+        }
+      });
+    }), 12000);
+  } catch (error) {
+    console.error("Lỗi tham gia phòng thoại:", error);
+    $("callStatus").textContent = error.message || "Kết nối phòng thất bại.";
+    music?.destroy(); music = null;
+    await releaseRoomSlot(room.id);
+    if (roomChannel) {
+      await supabase.removeChannel(roomChannel).catch(() => {});
+      roomChannel = null;
     }
-  });
+    activeRoom = null;
+    $("callModal").hidden = true;
+    await loadRooms();
+    showRoomNotice(error.message || "Không kết nối được phòng thoại.");
+  }
 }
 
 async function handlePresenceSync() {
+  if (!activeRoom || !roomChannel || !currentUser) return;
   const state = roomChannel.presenceState();
-  const people = Object.entries(state).flatMap(([id, metas]) => metas.map(meta => ({ id, ...meta })));
+  const people = Object.entries(state).flatMap(([id, metas]) => metas.slice(0, 1).map(meta => ({ id, ...meta })));
   people.sort((a, b) => String(a.joined_at || "").localeCompare(String(b.joined_at || "")));
   const admitted = people.slice(0, 4);
   if (people.length > 4 && !admitted.some(person => person.id === currentUser.id)) {
@@ -145,24 +302,73 @@ async function handlePresenceSync() {
 }
 
 async function createPeer(peerId, initiator) {
-  if (peers.has(peerId) || !localStream) return peers.get(peerId);
+  if (peers.has(peerId)) return peers.get(peerId);
+  if (!activeRoom || !roomChannel) return null;
+
   const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
   peers.set(peerId, pc);
-  const outgoingStream = processedStream || localStream;
-  outgoingStream.getAudioTracks().forEach(track => pc.addTrack(track, outgoingStream));
-  pc.onicecandidate = event => { if (event.candidate) sendSignal({ to: peerId, candidate: event.candidate.toJSON() }); };
-  pc.ontrack = event => {
-    const stream = event.streams[0]; remoteStreams.set(peerId, stream);
-    let audio = document.getElementById(`remote-${peerId}`);
-    if (!audio) { audio = document.createElement("audio"); audio.id = `remote-${peerId}`; audio.autoplay = true; $("remoteAudios").append(audio); }
-    audio.srcObject = stream;
+  // Luôn thương lượng một kênh audio hai chiều. Người dùng có thể bật micro sau khi đã vào phòng.
+  const audioTransceiver = pc.addTransceiver("audio", { direction: "sendrecv" });
+  const outgoingTrack = (processedStream || localStream)?.getAudioTracks()[0] || null;
+  if (outgoingTrack) await audioTransceiver.sender.replaceTrack(outgoingTrack);
+
+  pc.onicecandidate = event => {
+    if (event.candidate) sendSignal({ to: peerId, candidate: event.candidate.toJSON() });
   };
-  pc.onconnectionstatechange = () => { if (["failed", "closed", "disconnected"].includes(pc.connectionState)) removePeer(peerId); };
+  pc.ontrack = event => {
+    // replaceTrack trên transceiver không gắn stream ID, vì vậy một số trình duyệt
+    // trả event.streams rỗng. Tạo MediaStream tường minh để audio vẫn phát được.
+    let stream = event.streams?.[0];
+    if (!stream) {
+      stream = remoteStreams.get(peerId) || new MediaStream();
+      if (!stream.getTracks().some(track => track.id === event.track.id)) stream.addTrack(event.track);
+    }
+    remoteStreams.set(peerId, stream);
+    let audio = document.getElementById(`remote-${peerId}`);
+    if (!audio) {
+      audio = document.createElement("audio");
+      audio.id = `remote-${peerId}`;
+      audio.autoplay = true;
+      audio.playsInline = true;
+      $("remoteAudios").append(audio);
+    }
+    audio.srcObject = stream;
+    audio.play?.().catch(() => {
+      $("callStatus").textContent = "Đã kết nối âm thanh. Nếu chưa nghe được, hãy tương tác với trang rồi thử lại.";
+    });
+  };
+  pc.onconnectionstatechange = () => {
+    if (pc.connectionState === "connected") {
+      const timer = peerDisconnectTimers.get(peerId);
+      if (timer) window.clearTimeout(timer);
+      peerDisconnectTimers.delete(peerId);
+    } else if (pc.connectionState === "disconnected") {
+      if (!peerDisconnectTimers.has(peerId)) {
+        peerDisconnectTimers.set(peerId, window.setTimeout(() => {
+          peerDisconnectTimers.delete(peerId);
+          if (pc.connectionState === "disconnected" || pc.connectionState === "failed") removePeer(peerId);
+        }, 10000));
+      }
+    } else if (["failed", "closed"].includes(pc.connectionState)) {
+      removePeer(peerId);
+    }
+  };
+
   if (initiator) {
-    const offer = await pc.createOffer(); await pc.setLocalDescription(offer);
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
     await sendSignal({ to: peerId, description: { type: pc.localDescription.type, sdp: pc.localDescription.sdp } });
   }
   return pc;
+}
+
+async function flushPendingIceCandidates(peerId, pc) {
+  const queued = pendingIceCandidates.get(peerId) || [];
+  pendingIceCandidates.delete(peerId);
+  for (const candidate of queued) {
+    try { await pc.addIceCandidate(candidate); }
+    catch (error) { console.warn("Bỏ qua ICE candidate không hợp lệ:", error); }
+  }
 }
 
 async function sendSignal(payload) {
@@ -171,23 +377,35 @@ async function sendSignal(payload) {
 }
 
 async function handleSignal(payload) {
-  if (!payload || payload.to !== currentUser.id || !payload.from) return;
-  const pc = await createPeer(payload.from, false);
+  if (!payload || payload.to !== currentUser.id || !payload.from || payload.from === currentUser.id) return;
   try {
+    const pc = await createPeer(payload.from, false);
+    if (!pc) return;
     if (payload.description) {
       await pc.setRemoteDescription(payload.description);
+      await flushPendingIceCandidates(payload.from, pc);
       if (payload.description.type === "offer") {
-        const answer = await pc.createAnswer(); await pc.setLocalDescription(answer);
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
         await sendSignal({ to: payload.from, description: { type: pc.localDescription.type, sdp: pc.localDescription.sdp } });
       }
-    } else if (payload.candidate) await pc.addIceCandidate(payload.candidate);
-  } catch (error) { console.error("Lỗi thiết lập kết nối thoại:", error); }
+    } else if (payload.candidate) {
+      if (pc.remoteDescription) await pc.addIceCandidate(payload.candidate);
+      else {
+        const queued = pendingIceCandidates.get(payload.from) || [];
+        if (queued.length < 64) queued.push(payload.candidate);
+        pendingIceCandidates.set(payload.from, queued);
+      }
+    }
+  } catch (error) {
+    console.error("Lỗi thiết lập kết nối thoại:", error);
+  }
 }
 
 function updateParticipants() {
   if (!activeRoom || !roomChannel) return;
   const state = roomChannel.presenceState(); const people = [];
-  Object.values(state).flat().forEach(person => people.push(person));
+  Object.values(state).forEach(metas => { if (metas?.[0]) people.push(metas[0]); });
   const list = $("participantList"); list.replaceChildren();
   people.slice(0, 4).forEach(person => {
     const item = document.createElement("div"); item.className = "participant";
@@ -200,6 +418,10 @@ function updateParticipants() {
 }
 
 function removePeer(peerId) {
+  const timer = peerDisconnectTimers.get(peerId);
+  if (timer) window.clearTimeout(timer);
+  peerDisconnectTimers.delete(peerId);
+  pendingIceCandidates.delete(peerId);
   peers.get(peerId)?.close(); peers.delete(peerId); remoteStreams.delete(peerId);
   document.getElementById(`remote-${peerId}`)?.remove();
 }
@@ -252,15 +474,50 @@ function applyVoiceEffect(effect) {
   }
 }
 
-function updateMicButton() { $("micBtn").textContent = micEnabled ? "🎙️ Tắt micro" : "🔇 Bật micro"; }
+function updateMicButton() {
+  const button = $("micBtn");
+  if (button) button.textContent = !localStream ? "🎙️ Bật micro" : micEnabled ? "🎙️ Tắt micro" : "🔇 Bật micro";
+}
+
+async function requestMicrophone() {
+  if (!activeRoom || localStream) return;
+  if (!navigator.mediaDevices?.getUserMedia) {
+    $("callStatus").textContent = "Trình duyệt cần HTTPS hoặc localhost để cấp quyền micro. Bạn vẫn có thể nghe và chat trong phòng.";
+    return;
+  }
+  const button = $("micBtn");
+  if (button) button.disabled = true;
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true }, video: false });
+    micEnabled = true;
+    setupAudioProcessing();
+    updateMicButton();
+    const outgoingTrack = (processedStream || localStream).getAudioTracks()[0] || null;
+    const ids = presenceList().map(person => person.id).filter(id => id !== currentUser.id);
+    for (const peerId of ids) {
+      let pc = peers.get(peerId);
+      if (!pc && currentUser.id.localeCompare(peerId) < 0) pc = await createPeer(peerId, true);
+      if (pc) {
+        const sender = pc.getTransceivers().find(item => item.receiver?.track?.kind === "audio")?.sender;
+        if (sender) await sender.replaceTrack(outgoingTrack);
+      }
+    }
+    $("callStatus").textContent = "Micro đã bật. Bạn có thể trò chuyện bằng giọng nói.";
+  } catch (error) {
+    console.warn("Không thể bật micro:", error);
+    $("callStatus").textContent = "Chưa bật được micro. Hãy kiểm tra quyền Microphone của trình duyệt và thử lại.";
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
 $("voiceEffect")?.addEventListener("change", event => {
   if (!activeRoom) return;
   if (audioContext?.state === "suspended") audioContext.resume();
   applyVoiceEffect(event.target.value);
   $("callStatus").textContent = `Đang dùng hiệu ứng: ${event.target.selectedOptions[0].textContent}`;
 });
-$("micBtn").addEventListener("click", () => {
-  if (!localStream) return;
+$("micBtn").addEventListener("click", async () => {
+  if (!localStream) { await requestMicrophone(); return; }
   micEnabled = !micEnabled;
   if (voiceNodes?.output) voiceNodes.output.gain.setTargetAtTime(micEnabled ? 1 : 0, audioContext.currentTime, 0.025);
   else localStream.getAudioTracks().forEach(track => { track.enabled = micEnabled; });
@@ -306,6 +563,7 @@ document.querySelectorAll("[data-sound]").forEach(button => button.addEventListe
 /* ---------- Quà tặng ảo & chat phòng (gửi qua kênh Realtime, không lưu vào cơ sở dữ liệu) ---------- */
 const GIFT_COOLDOWN_MS = 4000, CHAT_COOLDOWN_MS = 600, MAX_CHAT_LINES = 80;
 let giftReadyAt = 0, chatReadyAt = 0;
+let music = null;
 
 function presenceList() {
   return roomChannel ? Object.entries(roomChannel.presenceState()).map(([id, metas]) => ({ id, name: metas[0]?.name || "Thành viên" })) : [];
@@ -390,7 +648,11 @@ async function leaveRoom(notifyHost = true) {
     await roomChannel.send({ type: "broadcast", event: "room_closed", payload: {} });
     await supabase.from("voice_rooms").update({ is_open: false }).eq("id", room.id).eq("host_id", currentUser.id);
   }
+  music?.destroy(); music = null;
+  await releaseRoomSlot(room.id);
   for (const id of [...peers.keys()]) removePeer(id);
+  for (const timer of peerDisconnectTimers.values()) window.clearTimeout(timer);
+  peerDisconnectTimers.clear(); pendingIceCandidates.clear();
   if (localStream) localStream.getTracks().forEach(track => track.stop());
   localStream = null; micEnabled = true;
   if (voiceLfo) { try { voiceLfo.stop(); } catch {} voiceLfo.disconnect(); voiceLfo = null; }

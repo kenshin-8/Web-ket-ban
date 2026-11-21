@@ -41,8 +41,51 @@ $("recBtn").addEventListener("click", async () => {
     } catch { $("postMessage").textContent = "Không truy cập được micro. Hãy cho phép quyền micro."; }
 });
 
+
+// ---- Bình chọn (poll) ----
+let pollOn = false;
+const pollInputs = () => [...document.querySelectorAll("#pollOptions input")];
+function addPollOption(value = "") {
+    if (pollInputs().length >= 4) return;
+    const row = el("div", "sq-row poll-opt-row", null, $("pollOptions"));
+    const inp = el("input", null, null, row); inp.maxLength = 60; inp.value = value;
+    inp.placeholder = `Lựa chọn ${pollInputs().length}`; inp.setAttribute("aria-label", inp.placeholder);
+    const rm = el("button", "btn btn-light poll-opt-remove", "✕", row); rm.type = "button"; rm.setAttribute("aria-label", "Xóa lựa chọn");
+    rm.onclick = () => { if (pollInputs().length <= 2) return; row.remove(); syncPollUi(); };
+    syncPollUi();
+}
+function syncPollUi() {
+    const n = pollInputs().length;
+    $("pollAddOpt").disabled = n >= 4;
+    document.querySelectorAll("#pollOptions input").forEach((i, k) => { i.placeholder = `Lựa chọn ${k + 1}`; i.setAttribute("aria-label", i.placeholder); });
+    document.querySelectorAll(".poll-opt-remove").forEach(b => b.hidden = n <= 2);
+}
+function setPoll(on) {
+    pollOn = on; $("pollBuilder").hidden = !on; $("pollToggle").setAttribute("aria-expanded", String(on));
+    $("pollToggle").classList.toggle("on", on);
+    if (on) { setMedia(null); $("momentFile").value = ""; if (!pollInputs().length) { addPollOption(); addPollOption(); } }
+}
+$("pollToggle").addEventListener("click", () => setPoll(!pollOn));
+$("pollAddOpt").addEventListener("click", () => addPollOption());
+function resetPoll() { $("pollOptions").replaceChildren(); $("pollHours").value = ""; setPoll(false); }
+
 $("postBtn").addEventListener("click", async () => {
     const body = $("momentBody").value.trim();
+    if (pollOn) {
+        const options = pollInputs().map(i => i.value.trim()).filter(Boolean);
+        if (body.length < 3) { $("postMessage").textContent = "Hãy viết câu hỏi cho bình chọn (ít nhất 3 ký tự)."; return; }
+        if (options.length < 2) { $("postMessage").textContent = "Bình chọn cần ít nhất 2 lựa chọn."; return; }
+        if (new Set(options.map(o => o.toLocaleLowerCase("vi-VN"))).size !== options.length) { $("postMessage").textContent = "Các lựa chọn không được trùng nhau."; return; }
+        $("postBtn").disabled = true; $("postMessage").textContent = "Đang đăng bình chọn...";
+        try {
+            const hours = $("pollHours").value ? Number($("pollHours").value) : null;
+            const { error } = await supabase.rpc("create_moment_poll", { p_alias: alias, p_body: body, p_tags: parseTags(body), p_options: options, p_hours: hours });
+            if (error) throw error;
+            $("momentBody").value = ""; resetPoll(); $("postMessage").textContent = "Đã đăng bình chọn!";
+            loadFeed(); loadTrending();
+        } catch (e) { console.error(e); $("postMessage").textContent = "Đăng thất bại: " + e.message; }
+        $("postBtn").disabled = false; return;
+    }
     if (!body && !file) { $("postMessage").textContent = "Hãy viết gì đó hoặc thêm tệp."; return; }
     $("postBtn").disabled = true; $("postMessage").textContent = "Đang đăng...";
     try {
@@ -56,6 +99,40 @@ $("postBtn").addEventListener("click", async () => {
     $("postBtn").disabled = false;
 });
 
+
+function closesLabel(o) {
+    if (o.is_closed) return "Đã kết thúc";
+    if (!o.closes_at) return "Không giới hạn thời gian";
+    const h = Math.max(1, Math.ceil((new Date(o.closes_at) - Date.now()) / 3600000));
+    return h < 48 ? `Còn khoảng ${h} giờ` : `Còn khoảng ${Math.ceil(h / 24)} ngày`;
+}
+function renderPoll(m, parent) {
+    const box = el("div", "poll", null, parent); box.setAttribute("role", "group"); box.setAttribute("aria-label", "Bình chọn");
+    const paint = opts => {
+        box.replaceChildren();
+        const total = opts.reduce((a, o) => a + Number(o.vote_count), 0);
+        const mine = opts.find(o => o.voted_by_me), closed = opts[0].is_closed;
+        const showResults = !!mine || closed || m.is_mine;
+        opts.forEach(o => {
+            const pct = total ? Math.round(Number(o.vote_count) * 100 / total) : 0;
+            const b = el("button", "poll-option" + (o.voted_by_me ? " on" : ""), null, box); b.type = "button";
+            b.disabled = closed;
+            if (showResults) { const bar = el("span", "poll-bar", null, b); bar.style.width = pct + "%"; }
+            const label = el("span", "poll-label", (o.voted_by_me ? "✓ " : "") + o.label, b);
+            if (showResults) el("span", "poll-pct", `${pct}% · ${o.vote_count}`, b);
+            b.onclick = async () => {
+                if (o.voted_by_me) return;
+                box.setAttribute("aria-busy", "true");
+                const { error } = await supabase.rpc("vote_moment_poll", { p_moment_id: m.id, p_option_id: o.id });
+                if (error) { el("p", "privacy-note", "Không bỏ phiếu được: " + error.message, box); box.removeAttribute("aria-busy"); return; }
+                const { data } = await supabase.from("moment_poll_options_feed").select("*").eq("moment_id", m.id).order("position");
+                box.removeAttribute("aria-busy"); if (data?.length) paint(data);
+            };
+        });
+        el("p", "poll-meta", `${total} phiếu · ${closesLabel(opts[0])}${mine && !closed ? " · bấm lựa chọn khác để đổi phiếu" : ""}${!showResults ? " · bỏ phiếu để xem kết quả" : ""}`, box);
+    };
+    paint(m.poll);
+}
 function renderMoment(m) {
     const c = el("article", "moment");
     const h = el("header", null, null, c); el("strong", null, m.alias, h); el("span", null, ago(m.created_at), h);
@@ -64,6 +141,7 @@ function renderMoment(m) {
         const t = { image: "img", video: "video", audio: "audio" }[m.media_kind];
         if (t) { const x = el(t, null, null, c); x.src = m.media_url; if (t !== "img") x.controls = true; else x.loading = "lazy"; }
     }
+    if (m.poll?.length) renderPoll(m, c);
     const tags = el("div", "sq-tags", null, c);
     (m.tags || []).forEach(t => { const b = el("button", "tag-chip", "#" + t, tags); b.type = "button"; b.onclick = () => setTag(t); });
     const act = el("div", "moment-actions", null, c);
@@ -108,6 +186,11 @@ async function loadFeed() {
     $("feed").replaceChildren();
     if (error) { console.error(error); el("p", "empty-message", "Không tải được bài viết. Hãy kiểm tra schema Supabase.", $("feed")); return; }
     if (!data.length) { el("p", "empty-message", tagFilter ? `Chưa có bài nào với #${tagFilter}.` : "Chưa có bài viết nào. Hãy là người đầu tiên!", $("feed")); return; }
+    // Bình chọn: tải lựa chọn + kết quả tổng hợp cho các bài đang hiển thị (không làm hỏng bảng tin nếu chưa chạy migration).
+    try {
+        const { data: po, error: pe } = await supabase.from("moment_poll_options_feed").select("*").in("moment_id", data.map(m => m.id)).order("position");
+        if (!pe && po?.length) { const by = {}; po.forEach(o => (by[o.moment_id] ||= []).push(o)); data.forEach(m => { if (by[m.id]) m.poll = by[m.id]; }); }
+    } catch (e) { console.warn("Chưa có bảng bình chọn:", e.message); }
     data.forEach(m => $("feed").appendChild(renderMoment(m)));
 }
 function setTag(t) { tagFilter = t.replace(/^#/, "").trim().toLocaleLowerCase("vi-VN"); $("tagSearch").value = tagFilter; loadFeed(); loadTrending(); }

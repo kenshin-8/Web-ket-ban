@@ -105,7 +105,7 @@ export async function openBlockedDialog() {
     const { data, error } = await supabase.rpc("my_blocks");
     return openDialog((dialog, finish) => {
         el("h2", null, "Danh sách đã chặn", dialog);
-        if (error) el("p", null, "Chưa tải được danh sách. Hãy chắc chắn đã chạy supabase/safety_hardening.sql.", dialog);
+        if (error) el("p", null, "Chưa tải được danh sách. Hãy chắc chắn đã chạy supabase/migrations/010_safety_hardening.sql.", dialog);
         else if (!data?.length) el("p", null, "Bạn chưa chặn ai.", dialog);
         else {
             const ul = el("ul", "safety-block-list", null, dialog);
