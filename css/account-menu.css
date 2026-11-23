@@ -8,3 +8,15 @@
 .account-menu[hidden]{display:none}.account-menu-head{padding:10px 11px 13px;border-bottom:1px solid rgba(190,176,255,.16);display:grid;gap:3px}.account-menu-head strong{font-size:15px}.account-menu-head>span{font-size:11px;color:#c0bdd5}.account-menu-head small{margin-top:5px;color:#a9e8d0;font-size:10px}.account-menu-head small i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#54d6a4;margin-right:4px}
 .account-menu-section{padding:10px 2px 7px;border-bottom:1px solid rgba(190,176,255,.12)}.account-menu-section>span{display:block;padding:0 9px 5px;color:#a99adf;font-size:9px;font-weight:800;letter-spacing:1.15px}.account-menu-section a{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;color:#f0edff;text-decoration:none;font-size:12px;transition:.18s}.account-menu-section a:hover{background:rgba(153,126,255,.17);color:#fff}.account-logout{width:100%;margin-top:8px;padding:10px;border:1px solid rgba(255,133,167,.25);border-radius:10px;background:rgba(190,65,113,.13);color:#ffc5d5;font:700 12px 'DM Sans',sans-serif;cursor:pointer}.account-logout:hover{background:rgba(190,65,113,.24)}
 @media(max-width:560px){.account-trigger{min-height:38px;gap:6px;padding-right:8px}.account-avatar{width:30px;height:30px}.account-name{max-width:65px}.account-menu{right:-3px;min-width:245px}}
+
+/* Modern Cosmic refinements for the account popover. */
+.account-trigger{min-height:42px;padding-right:11px;border-color:color-mix(in srgb,var(--primary) 36%,transparent);background:linear-gradient(115deg,rgba(119,91,210,.30),rgba(61,91,166,.20));transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.account-trigger:hover,.account-trigger[aria-expanded=true]{transform:translateY(-1px);border-color:#bba7ff;box-shadow:0 0 0 3px rgba(160,126,255,.09),0 0 20px rgba(160,126,255,.25)}
+.account-trigger:focus-visible,.account-logout:focus-visible,.account-menu a:focus-visible{outline:2px solid #bba7ff;outline-offset:3px}
+.account-menu{min-width:276px;padding:11px;border-color:rgba(177,157,255,.40);background:linear-gradient(155deg,rgba(25,28,67,.985),rgba(12,18,44,.985));box-shadow:0 22px 60px rgba(3,7,25,.48),0 0 28px rgba(117,88,220,.17);animation:accountMenuIn .16s ease-out}
+.account-menu-section a{min-height:36px;gap:11px;padding:8px 10px;font-size:12px}
+.account-menu-section a>span{display:inline-grid;place-items:center;width:18px;flex:0 0 18px;color:#bba7ff;font-size:15px}
+.account-logout{display:flex;align-items:center;justify-content:center;gap:8px;min-height:39px}
+.account-logout>span{font-size:15px}
+@keyframes accountMenuIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.account-trigger,.account-menu{transition:none;animation:none}}
