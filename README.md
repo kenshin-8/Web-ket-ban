@@ -55,6 +55,7 @@ Connect/
 | 17 | `supabase/migrations/017_square_polls.sql` | Bình chọn ẩn danh ở Quảng trường; cần `010_safety_hardening.sql` |
 | 18 | `supabase/migrations/018_match_chat.sql` | Nhắn tin và gọi thoại 1-1 cho cặp ghép đôi; cần `013_block_visibility_fix.sql` và `009_notification_presence.sql` |
 | 19 | `supabase/migrations/019_voice_room_capacity.sql` | Giới hạn tối đa 4 tài khoản trong phòng thoại ở PostgreSQL; tự giải phóng chỗ khi tab mất kết nối |
+| 20 | `supabase/migrations/020_admin_dashboard.sql` | Admin Dashboard: quản lý người dùng, khóa/mở khóa, phân quyền owner/admin, thống kê, nhật ký; cần `012_admin_moderation.sql` và `007_profile_social_identity.sql` |
 
 **Tùy chọn (chạy sau cùng, khi đã bật "Confirm email" ở mục 4a):** `supabase/optional/email_verification.sql` — chặn tài khoản chưa xác minh email ghi dữ liệu ở phía máy chủ.
 
@@ -73,6 +74,8 @@ on conflict (user_id) do nothing;
 ```
 
 Không cấp quyền quản trị cho tài khoản không đáng tin cậy.
+
+Sau khi chạy `020_admin_dashboard.sql`, quản trị viên đầu tiên trong `public.admins` tự động thành **owner** (chỉ owner cấp/gỡ được quyền Admin cho người khác, trong `admin.html#users`). Admin thường quản lý người dùng và kiểm duyệt nhưng không đổi được quyền. Sau này nếu thêm bảng public mới có RLS, chạy lại khối `block_locked_*` ở mục 2 của migration 020 để tài khoản bị khóa cũng bị chặn ghi vào bảng đó.
 
 ## 3. Cấu hình và chạy website
 
@@ -145,7 +148,7 @@ Chạy `supabase/migrations/018_match_chat.sql` (mục 18 ở bảng trên).
 - **Bạn bè / DM:** gửi, chấp nhận, từ chối lời mời; nhắn tin giữa hai tài khoản đã kết bạn.
 - **Hồ sơ:** cập nhật thông tin, ảnh bìa, bài đăng; mở hồ sơ công khai bằng tài khoản khác.
 - **An toàn:** báo cáo nội dung, chặn/bỏ chặn hai tài khoản và xác nhận hai bên không xem được hồ sơ, bài đăng, bình luận hoặc tin nhắn của nhau.
-- **Quản trị:** đăng nhập bằng tài khoản đã thêm vào `public.admins`, mở `admin.html`, kiểm tra hàng đợi và thao tác xử lý báo cáo.
+- **Quản trị:** đăng nhập bằng tài khoản đã thêm vào `public.admins`, mở `admin.html`, kiểm tra hàng đợi báo cáo, tìm tài khoản, khóa/mở khóa (đăng nhập bằng tài khoản bị khóa phải bị từ chối), phân quyền và đối chiếu nhật ký hoạt động.
 
 ## 6. Xử lý lỗi thường gặp
 

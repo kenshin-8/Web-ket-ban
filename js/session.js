@@ -13,6 +13,7 @@ async function renderAuthUI(user) {
         trigger.className = "account-trigger";
         trigger.setAttribute("aria-haspopup", "true");
         trigger.setAttribute("aria-expanded", "false");
+        trigger.setAttribute("aria-controls", "connectAccountMenu");
         trigger.setAttribute("aria-label", `Mở cài đặt tài khoản ${name}`);
 
         const avatar = document.createElement("span");
@@ -25,17 +26,20 @@ async function renderAuthUI(user) {
         const label = document.createElement("span");
         label.className = "account-name";
         label.textContent = name;
-        trigger.append(avatar, label, Object.assign(document.createElement("span"), {className:"account-chevron", textContent:"⌄"}));
+        const chevron = Object.assign(document.createElement("span"), {className:"account-chevron", textContent:"⌄"});
+        chevron.setAttribute("aria-hidden", "true");
+        trigger.append(avatar, label, chevron);
 
         const menu = document.createElement("div");
         menu.className = "account-menu";
+        menu.id = "connectAccountMenu";
         menu.hidden = true;
         menu.innerHTML = `<div class="account-menu-head"><strong></strong><span>Quản lý tài khoản Connect</span><small><i></i> Đang hoạt động</small></div>
-          <div class="account-menu-section"><span>CÁ NHÂN</span><a href="avatar.html">✦ Tạo ảnh đại diện</a><a href="profile.html">♙ Thông tin cá nhân</a></div>
-          <div class="account-menu-section"><span>TÙY CHỈNH</span><a href="account-settings.html#preferences">☼ Ngôn ngữ & thông báo</a></div>
-          <div class="account-menu-section"><span>QUYỀN RIÊNG TƯ</span><a href="account-settings.html#privacy">◈ Dữ liệu & quyền riêng tư</a><a href="account-settings.html#blocked">⊘ Danh sách chặn</a></div>
-          <div class="account-menu-section"><span>TÀI KHOẢN CỦA TÔI</span><a href="account-settings.html#security">⌑ Mật khẩu & email</a><a href="account-settings.html#delete">⚠ Xóa tài khoản</a></div>
-          <button type="button" class="account-logout">↪ Đăng xuất</button>`;
+          <div class="account-menu-section"><span>CÁ NHÂN</span><a href="avatar.html"><span aria-hidden="true">✧</span>Tạo ảnh đại diện</a><a href="profile.html"><span aria-hidden="true">♙</span>Thông tin cá nhân</a></div>
+          <div class="account-menu-section"><span>TÙY CHỈNH</span><a href="account-settings.html#preferences"><span aria-hidden="true">☼</span>Ngôn ngữ & thông báo</a></div>
+          <div class="account-menu-section"><span>QUYỀN RIÊNG TƯ</span><a href="account-settings.html#privacy"><span aria-hidden="true">◈</span>Dữ liệu & quyền riêng tư</a><a href="account-settings.html#blocked"><span aria-hidden="true">⊘</span>Danh sách chặn</a></div>
+          <div class="account-menu-section"><span>TÀI KHOẢN CỦA TÔI</span><a href="account-settings.html#security"><span aria-hidden="true">⌑</span>Mật khẩu & email</a><a href="account-settings.html#delete"><span aria-hidden="true">⚠</span>Xóa tài khoản</a></div>
+          <button type="button" class="account-logout"><span aria-hidden="true">↪</span>Đăng xuất</button>`;
         menu.querySelector('.account-menu-head strong').textContent = name;
         const logoutButton = menu.querySelector('.account-logout');
         logoutButton.addEventListener('click', logout);
@@ -66,6 +70,15 @@ async function renderAuthUI(user) {
             document.documentElement.dataset.accountMenuEvents = 'true';
         }
         authArea.append(trigger, menu);
+        // Lối vào trang quản trị: chỉ là tiện lợi giao diện; quyền thật được kiểm tra ở máy chủ.
+        supabase.rpc('admin_my_role').then(({ data: role }) => {
+            if (!role || menu.querySelector('.account-admin-link')) return;
+            const link = document.createElement('a');
+            link.className = 'account-admin-link'; link.href = 'admin.html';
+            link.innerHTML = '<span aria-hidden="true">♛</span>Quản trị Connect';
+            menu.querySelector('.account-menu-section')?.before(Object.assign(document.createElement('div'), { className: 'account-menu-section', innerHTML: '<span>QUẢN TRỊ</span>' })) ;
+            menu.querySelector('.account-menu-section').appendChild(link);
+        }).catch(() => {});
 
         // Avatar dùng đúng dữ liệu đã lưu trong profiles.avatar_data.
         try {

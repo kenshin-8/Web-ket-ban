@@ -3,61 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/png" href="images/favicon.png">
-    <title>Quản trị báo cáo | Connect</title>
+    <title>Connect Admin</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&family=Playfair+Display:wght@600;700&display=swap">
     <link rel="stylesheet" href="css/admin.css">
-    <link rel="stylesheet" href="css/compact-ui.css">
-    <link rel="stylesheet" href="css/quality.css">
-    <link rel="stylesheet" href="css/connect-refine.css">
-    <link rel="stylesheet" href="css/header-compact.css">
-    <link rel="stylesheet" href="css/account-menu.css">
-    <link rel="stylesheet" href="css/page-themes.css">
-    <link rel="stylesheet" href="css/zodiac-universe.css">
-    <link rel="stylesheet" href="css/cosmic-color-restore.css">
-    <link rel="stylesheet" href="css/cosmic-final.css">
 </head>
-<body class="zodiac-page zodiac-page-admin" data-zodiac-mark="♑">
-    <header class="site-header">
-        <nav class="navbar" aria-label="Điều hướng chính">
-            <a href="index.html" class="logo">Connect<span>.</span></a>
-            <button class="menu-btn" id="menuBtn" type="button" aria-label="Mở menu điều hướng" aria-controls="navLinks" aria-expanded="false">☰</button>
-            <div class="nav-links" id="navLinks"><a href="index.html">Trang chủ</a><a href="discover.html">Khám phá</a><a href="friends.html">Bạn bè</a><a href="profile.html">Hồ sơ</a><a href="match.html">Soul Match</a><a href="square.html">Quảng trường</a><a href="voice.html">Phòng thoại</a><a href="avatar.html">Tạo Avatar</a><a href="icebreaker.html">Mini-games</a><a href="quiz.html">Trắc nghiệm</a></div>
-            <div class="nav-actions">
-                <button id="themeToggle" class="theme-btn" type="button" aria-label="Đổi giao diện">🌙</button>
-                <div id="authArea" class="auth-area"></div>
+<body class="adm">
+    <div id="gate" class="adm-gate" aria-live="polite">Đang kiểm tra quyền truy cập...</div>
+    <div id="adminApp" class="adm-shell" hidden>
+        <aside class="adm-side" id="side">
+            <div class="adm-brand"><strong>Connect<i>.</i> Admin</strong><span>ADMIN PANEL</span></div>
+            <nav class="adm-nav" aria-label="Danh mục quản trị">
+                <a href="#overview"><b>✦</b>Tổng quan</a>
+                <span class="adm-nav-label">QUẢN LÝ NGƯỜI DÙNG</span>
+                <a href="#users"><b>♙</b>Tìm kiếm tài khoản</a>
+                <a href="#admins"><b>♛</b>Phân quyền Admin</a>
+                <a href="#locked"><b>⊘</b>Tài khoản bị khóa</a>
+                <span class="adm-nav-label">HỆ THỐNG</span>
+                <a href="#reports"><b>⚑</b>Báo cáo nội dung</a>
+                <a href="#stats"><b>◈</b>Thống kê hệ thống</a>
+                <a href="#logs"><b>☰</b>Nhật ký hoạt động</a>
+            </nav>
+            <div class="adm-side-foot"><b id="meName">—</b><span id="meRole"></span><br><a href="index.html">← Về trang Connect</a></div>
+        </aside>
+        <main class="adm-main" id="main">
+            <div class="adm-top">
+                <div><button class="adm-menu" id="menuBtn" type="button" aria-label="Mở danh mục">☰</button><h1 id="viewTitle">Tổng quan</h1><p id="viewSub"></p></div>
             </div>
-        </nav>
-    </header>
-    <main class="admin-wrap">
-        <span class="eyebrow">QUẢN TRỊ</span>
-        <h1>Báo cáo nội dung</h1>
-        <p id="adminNotice" class="privacy-note" aria-live="polite">Đang kiểm tra quyền truy cập...</p>
-        <section id="adminApp" hidden>
-            <div class="admin-toolbar">
-                <label for="statusFilter">Trạng thái</label>
-                <select id="statusFilter">
-                    <option value="open">Đang chờ xử lý</option>
-                    <option value="actioned">Đã xử lý</option>
-                    <option value="dismissed">Đã bỏ qua</option>
-                </select>
-                <button type="button" id="reloadBtn" class="btn btn-light">Tải lại</button>
-                <span id="adminCount" class="privacy-note"></span>
-            </div>
-            <p id="adminMessage" class="privacy-note" aria-live="polite"></p>
-            <div id="reportList" class="admin-list"></div>
-        </section>
-    </main>
-    <script type="module" src="js/session.js"></script>
-    <script src="js/script.js"></script>
-<script src="js/nav-compact.js"></script>
-    <script src="js/theme.js"></script>
+            <section class="adm-stats" aria-label="Chỉ số chính">
+                <div class="adm-stat"><span>Người dùng</span><strong id="stTotal">—</strong><small id="stNew"></small></div>
+                <div class="adm-stat is-ok"><span>Đang hoạt động</span><strong id="stActive">—</strong><small>đăng nhập trong 7 ngày</small></div>
+                <div class="adm-stat"><span>Email xác minh</span><strong id="stVerified">—</strong><small id="stVerPct"></small></div>
+                <div class="adm-stat is-bad"><span>Tài khoản bị khóa</span><strong id="stLocked">—</strong><small id="stAdmins"></small></div>
+            </section>
+            <div id="view"></div>
+        </main>
+    </div>
+    <dialog id="dlg" class="adm-dialog"></dialog>
     <script type="module" src="js/admin.js"></script>
-<script src="js/cosmic-bg.js" defer></script>
 </body>
 </html>
