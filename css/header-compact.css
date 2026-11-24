@@ -39,3 +39,13 @@
 .nav-more-panel{overscroll-behavior:contain;scrollbar-width:thin}
 @media(max-width:820px){.nav-links.active{overscroll-behavior:contain}.nav-links.active>.nav-more{order:5}.nav-more-panel a{min-height:42px}}
 @media(prefers-reduced-motion:reduce){.nav-links>a,.nav-more-toggle,.nav-more-chevron,.nav-more-panel a,.theme-btn{transition:none}.nav-more.is-open .nav-more-panel{animation:none}}
+
+/* Area navigation: four small groups, each with at most two destinations. */
+.nav-area .nav-more-toggle{gap:8px}
+.nav-area .nav-more-panel{width:226px}
+.nav-area .nav-more-heading{font-size:9px}
+.nav-area .nav-more-panel a{min-height:40px}
+@media(max-width:820px){
+  .nav-area .nav-more-toggle{justify-content:flex-start}
+  .nav-area .nav-more-panel{width:auto}
+}

@@ -125,3 +125,6 @@
 .community-chat-compose button:disabled{opacity:.45;cursor:not-allowed}
 .community-chat-form small{display:block;margin-top:8px;color:#8391b1;font-size:.7rem}
 @media(max-width:620px){.community-chat{padding:14px}.community-chat-heading{flex-direction:column}.community-chat-presence{justify-content:flex-start}.community-chat-messages{height:260px;padding:10px}.community-chat-message{max-width:96%}.community-chat-compose button{padding:0 14px}}
+
+.universe-member-avatar{display:inline-grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:50%;overflow:hidden;background:#29234f;border:1px solid rgba(139,251,255,.55)}
+.universe-member-avatar svg{display:block;width:100%;height:100%}

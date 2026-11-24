@@ -1,0 +1,97 @@
+/* Connect homepage: shorter first view while keeping every existing feature reachable. */
+body.zodiac-page-home > main { display: block; }
+body.zodiac-page-home .hero {
+  min-height: 350px !important;
+  height: auto;
+  margin: 12px auto 18px;
+  padding: clamp(24px, 3.4vw, 42px) !important;
+  gap: 14px;
+}
+body.zodiac-page-home .hero-art { min-height: 250px; transform: scale(.78); }
+body.zodiac-page-home .hero-content h1 { font-size: clamp(30px, 3.8vw, 48px); }
+body.zodiac-page-home .hero-content .description { max-width: 560px; }
+body.zodiac-page-home .universe-section { padding: 42px clamp(14px, 3vw, 36px) 46px; }
+body.zodiac-page-home .universe-heading { margin-bottom: 22px; }
+body.zodiac-page-home .universe-heading h2 { margin: 7px 0; font-size: clamp(24px, 3vw, 34px); }
+body.zodiac-page-home .universe-heading p { margin: 0; font-size: 13px; }
+body.zodiac-page-home .universe-grid { gap: 12px; }
+body.zodiac-page-home .universe-planet-card { min-height: 150px; }
+body.zodiac-page-home .planet3d-section {
+  min-height: unset !important;
+  padding: 24px clamp(14px, 3vw, 34px) 28px;
+}
+body.zodiac-page-home .planet3d-heading { margin-bottom: 12px; }
+body.zodiac-page-home .planet3d-wrap canvas { max-height: 460px; }
+body.zodiac-page-home .planet3d-info,
+body.zodiac-page-home .planet3d-radar { min-height: 138px; padding: 14px; }
+body.zodiac-page-home .planet3d-disclaimer { margin-top: 14px; }
+
+.home-extra-details {
+  width: min(1160px, calc(100% - 32px));
+  margin: 22px auto 30px;
+  overflow: clip;
+  border: 1px solid rgba(143, 153, 218, .28);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(17, 22, 55, .96), rgba(20, 14, 48, .96));
+  color: #f3f4ff;
+  box-shadow: 0 14px 40px rgba(5, 7, 25, .16);
+}
+.home-extra-details > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 64px;
+  padding: 14px 20px;
+  cursor: pointer;
+  list-style: none;
+}
+.home-extra-details > summary::-webkit-details-marker { display: none; }
+.home-extra-details > summary::after {
+  content: '＋';
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border: 1px solid rgba(154, 167, 255, .35);
+  border-radius: 50%;
+  color: #a9eaff;
+  font-size: 18px;
+}
+.home-extra-details[open] > summary::after { content: '−'; }
+.home-extra-summary-title { color: #fff; font-size: 15px; font-weight: 800; }
+.home-extra-summary-note { margin-left: auto; color: #aeb8db; font-size: 11px; text-align: right; }
+.home-extra-content { padding: 0 18px 18px; border-top: 1px solid rgba(143, 153, 218, .16); }
+.home-extra-content > .section { width: 100%; max-width: 100%; padding: 28px 8px; }
+.home-extra-content > .section + .section { border-top: 1px solid rgba(143, 153, 218, .16); }
+.home-extra-content .feature-container { gap: 12px; margin-top: 18px; }
+.home-extra-content .feature-card { padding: 16px; }
+.home-extra-content .feature-card h3 { font-size: 14px; }
+.home-extra-content .feature-card p { font-size: 12px; }
+.home-extra-content #zodiac { color: #f3f4ff; }
+.home-extra-content #zodiac .section-intro { color: #c2c8e2; }
+.home-extra-content .zd-finder { margin-top: 12px; }
+.home-extra-content .contact-form { max-width: 620px; }
+.home-extra-details:focus-within { border-color: rgba(117, 216, 255, .55); }
+@media (max-width: 760px) {
+  body.zodiac-page-home .hero { min-height: unset !important; padding: 25px 18px !important; }
+  body.zodiac-page-home .hero-art { min-height: 190px; transform: scale(.68); margin: -12px 0; }
+  body.zodiac-page-home .universe-section { padding: 30px 14px 34px; }
+  body.zodiac-page-home .universe-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  body.zodiac-page-home .universe-planet-card { min-height: 132px; }
+  body.zodiac-page-home .planet3d-section { padding: 20px 12px 24px; }
+  body.zodiac-page-home .planet3d-wrap canvas { max-height: 360px; }
+  .home-extra-details { width: calc(100% - 24px); margin: 16px auto 22px; }
+  .home-extra-details > summary { padding: 12px 14px; flex-wrap: wrap; }
+  .home-extra-summary-note { order: 2; width: calc(100% - 44px); margin: -6px 0 0; text-align: left; }
+  .home-extra-details > summary::after { order: 1; margin-left: auto; }
+  .home-extra-content { padding: 0 12px 12px; }
+  .home-extra-content > .section { padding: 22px 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-extra-details > summary::after { transition: none; }
+}
+
+body.zodiac-page-home .home-extra-details :is(h2,h3,h4,strong,b,label) { color: #fff !important; }
+body.zodiac-page-home .home-extra-details :is(p,small,.section-intro) { color: #c8cde4 !important; }

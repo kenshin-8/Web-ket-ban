@@ -62,3 +62,5 @@
 .person-presence.is-online { color:#269b73 !important; }
 .person-presence.is-offline { color:var(--muted) !important; }
 @media(max-width:520px) { .notification-item { align-items:flex-start; flex-wrap:wrap; }.notification-copy { min-width:calc(100% - 55px); }.notification-open { margin-left:50px; }.notification-mark-all { padding:8px; } }
+
+.person-avatar svg{display:block;width:100%;height:100%;border-radius:50%}
