@@ -173,3 +173,91 @@ Nếu vẫn lỗi, mở DevTools bằng `F12`, xem tab **Console** và **Network
 
 - Phòng thoại cần chạy website qua HTTPS hoặc `localhost` để trình duyệt cấp quyền micro. Nếu chưa cấp quyền, bản sửa vẫn cho vào phòng ở chế độ nghe và chat; nhấn **Bật micro** sau khi cấp quyền.
 - Avatar được lưu trong `public.profiles.avatar_data`. Nếu lưu thất bại, mở Console (F12) để xem lỗi Supabase và kiểm tra đã chạy `015_voice_avatar_repair_v2.sql` và xem thông báo cụ thể trên trang. Nếu yêu cầu lưu kéo dài, phiên bản mới sẽ tự báo timeout thay vì giữ nút ở trạng thái đang lưu mãi.
+
+## 8. Connect Test Bot (kiểm thử tự động)
+
+Bộ kiểm thử dùng Playwright để mở website trong Chromium, kiểm tra trang có tải, biểu mẫu cơ bản, liên kết nội bộ và trải bài Tarot. Các bài smoke test không tạo bài đăng, tin nhắn, lời mời kết bạn hoặc thay đổi dữ liệu người dùng.
+
+### Cài đặt trên Windows
+
+Cài Node.js 18+ trước, mở PowerShell tại thư mục `Connect`, sau đó chạy:
+
+```powershell
+npm install
+npx playwright install chromium
+npm test
+```
+
+- `npm test`: chạy toàn bộ kiểm thử ở chế độ nền.
+- `npm run test:headed`: mở cửa sổ Chromium để quan sát bot thao tác.
+- `npm run test:ui`: mở giao diện Playwright để chọn từng bài kiểm thử.
+- `npm run test:report`: xem báo cáo HTML sau khi chạy.
+
+Bot tự khởi động máy chủ kiểm thử cục bộ tại `http://127.0.0.1:4173`, không cần mở Live Server riêng. Máy cần kết nối Internet để các trang tải thư viện CDN và Supabase.
+
+### Kiểm thử hai tài khoản cùng lúc (tùy chọn)
+
+Dùng hai tài khoản thử nghiệm đã tạo bằng `create-test-accounts.mjs`. Trong PowerShell, khai báo thông tin hai tài khoản rồi chạy `npm test`:
+
+```powershell
+$env:TEST_USER_1_EMAIL="connect-test-...-01@example.com"
+$env:TEST_USER_1_PASSWORD="mat-khau-tai-khoan-01"
+$env:TEST_USER_2_EMAIL="connect-test-...-02@example.com"
+$env:TEST_USER_2_PASSWORD="mat-khau-tai-khoan-02"
+npm test
+```
+
+Nếu không khai báo hai tài khoản, bài kiểm thử đa tài khoản sẽ tự bỏ qua; các bài smoke test còn lại vẫn chạy. Mỗi tài khoản được đăng nhập trong một browser context riêng để kiểm tra phiên không bị dùng chung. Bài kiểm thử này chỉ mở hồ sơ, không tự gửi lời mời hoặc nhắn tin.
+
+### Tạo tài khoản ảo
+
+Script `create-test-accounts.mjs` hiện tạo 20 tài khoản Auth đã xác minh và hồ sơ cơ bản. Chỉ chạy trên dự án Supabase staging/kiểm thử mà bạn quản lý. Cần `SUPABASE_URL` và `SUPABASE_SERVICE_ROLE_KEY` trong PowerShell như mục 4; tuyệt đối không đưa service-role key vào website hoặc gửi key cho người khác. CSV sinh ra chứa mật khẩu nên cần giữ riêng tư. Script không tự xóa tài khoản đã tạo.
+
+### Phạm vi và giới hạn
+
+- Bot hiện kiểm tra tải trang, form, đường dẫn và Tarot; bài đa tài khoản kiểm tra đăng nhập độc lập nếu bạn cung cấp hai tài khoản thử nghiệm.
+- Các luồng có tác động dữ liệu như đăng bài, gửi tin nhắn, kết bạn, bình chọn, upload Avatar, gọi thoại và thao tác quản trị chưa được tự động hóa trong bộ smoke test này.
+- Kết quả chạy phụ thuộc cấu hình Supabase, migration, mạng và dữ liệu hiện có. Báo cáo Playwright nằm trong `playwright-report/`; ảnh/video/trace lỗi nằm trong `test-results/`.
+
+## Kiểm thử tương tác sâu bằng hai bot độc lập
+
+Bộ test `tests/two-account-interactions.spec.js` kiểm tra qua giao diện thật và hai browser context tách biệt:
+
+1. Hai tài khoản đăng nhập độc lập và có `user_id` khác nhau.
+2. Bot A tìm Bot B, gửi lời mời kết bạn; Bot B nhận và chấp nhận.
+3. Hai bot gửi tin nhắn riêng hai chiều; bên nhận phải đọc được nội dung đã gửi.
+4. Bot B đăng bài ở Quảng trường; Bot A nhìn thấy, thả cảm xúc và bình luận; Bot B tải lại và xác nhận dữ liệu vẫn còn.
+
+### Tạo cặp tài khoản dùng riêng cho kiểm thử
+
+Chỉ chạy trên máy cục bộ với Supabase project thử nghiệm hoặc dữ liệu thử nghiệm đã được cho phép. Không dùng tài khoản khách hàng thật.
+
+**PowerShell:**
+
+```powershell
+$env:SUPABASE_URL="https://YOUR_PROJECT.supabase.co"
+$env:SUPABASE_SERVICE_ROLE_KEY="YOUR_SERVICE_ROLE_KEY"
+npm run create:two
+```
+
+Script tạo đúng 2 tài khoản Auth đã xác minh và hồ sơ công khai. Thông tin đăng nhập được ghi vào `connect-two-test-accounts.csv`; giữ file này riêng tư, không gửi lên Git, không đưa `service_role` vào `.env` frontend hoặc mã trình duyệt. Xóa biến nhạy cảm khỏi phiên PowerShell sau khi tạo xong:
+
+```powershell
+Remove-Item Env:SUPABASE_SERVICE_ROLE_KEY
+```
+
+Sau đó lấy email, mật khẩu và tên hiển thị trong CSV để đặt biến môi trường (chỉ trong terminal đang chạy test):
+
+```powershell
+$env:TEST_USER_1_EMAIL="..."
+$env:TEST_USER_1_PASSWORD="..."
+$env:TEST_USER_1_NAME="..."
+$env:TEST_USER_2_EMAIL="..."
+$env:TEST_USER_2_PASSWORD="..."
+$env:TEST_USER_2_NAME="..."
+npm run test:interactions
+```
+
+Mỗi lần chạy đầy đủ luồng kết bạn cần một cặp tài khoản mới, vì test xác nhận trạng thái ban đầu chưa kết bạn. Không tự động xóa tài khoản, lời mời, tin nhắn hoặc bài thử nghiệm để tránh xóa nhầm dữ liệu. Hãy quản lý các tài khoản có tiền tố `connect-e2e-` trong Supabase sau khi kiểm tra.
+
+Test này cần các migration chức năng hiện có đã được áp dụng trong Supabase, tối thiểu `001_schema.sql`, `003_friend_system.sql` và `009_notification_presence.sql`. Test không tự chạy migration và không thay đổi schema.

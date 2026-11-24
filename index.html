@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="css/zodiac-universe.css">
     <link rel="stylesheet" href="css/cosmic-color-restore.css">
     <link rel="stylesheet" href="css/cosmic-final.css">
+    <link rel="stylesheet" href="css/home-compact.css">
 </head>
 <body class="zodiac-page zodiac-page-home" data-zodiac-mark="♈">
     <header class="site-header">
@@ -133,8 +134,11 @@
             <aside class="planet3d-member-card glass-panel" id="planet3dMemberCard" hidden aria-live="polite"><button class="planet3d-card-close" id="planet3dCardClose" type="button" aria-label="Đóng">×</button><div class="planet3d-card-avatar" id="planet3dCardAvatar"></div><h3 id="planet3dCardName">Thành viên Connect</h3><div class="planet3d-card-score" id="planet3dCardScore">✦ —% tương hợp</div><div class="planet3d-card-tags" id="planet3dCardTags"></div><div class="planet3d-card-actions" id="planet3dCardActions"></div></aside>
             <p class="planet3d-disclaimer">Chỉ hiển thị hồ sơ công khai. Connect không tự suy đoán trạng thái trực tuyến; trạng thái online chỉ xuất hiện khi có Presence thực tế.</p>
         </section>
-        <section class="section" id="about">
-            <span class="eyebrow">VỀ CONNECT</span>
+        <details class="home-extra-details" id="homeExtras">
+            <summary><span class="home-extra-summary-title">Khám phá thêm về Connect</span><span class="home-extra-summary-note">Tính năng · 12 cung hoàng đạo · Liên hệ</span></summary>
+            <div class="home-extra-content">
+            <section class="section" id="about">
+                <span class="eyebrow">VỀ CONNECT</span>
             <h2>Một không gian để cùng khám phá</h2>
             <p class="section-intro">Tạo hồ sơ theo cách của bạn, thiết kế Avatar hoạt hình và tìm những người có chung mối quan tâm.</p>
             <div class="feature-container">
@@ -154,10 +158,6 @@
             <p class="zd-result" id="zdResult" aria-live="polite"></p>
             <div class="zd-grid" id="zodiacGrid"></div>
         </section>
-        <section class="cta-section">
-            <div><span class="eyebrow">BẮT ĐẦU NGAY</span><h2>Tìm cộng đồng phù hợp với bạn.</h2><p>Hoàn thiện hồ sơ và khám phá những sở thích mới.</p></div>
-            <a href="discover.html" class="btn">Đi đến Khám phá →</a>
-        </section>
         <section class="section contact" id="contact">
             <span class="eyebrow">LIÊN HỆ</span><h2>Gửi lời nhắn cho Connect</h2>
             <p class="section-intro">Có góp ý hay câu hỏi? Hãy cho chúng tôi biết.</p>
@@ -169,6 +169,8 @@
                 <button type="submit" class="btn">Gửi lời nhắn</button><p id="formMessage" aria-live="polite"></p>
             </form>
         </section>
+            </div>
+        </details>
     </main>
     <footer class="site-footer"><p>© 2026 Connect. Kết nối từ những sở thích chung.</p></footer>
     <script src="js/script.js"></script>

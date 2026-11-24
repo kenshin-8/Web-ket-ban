@@ -36,15 +36,30 @@
 <div class="game-question" id="promptText">Nếu có một ngày rảnh hoàn toàn, bạn muốn làm gì?</div>
 <button class="btn" id="newPrompt" type="button">Câu hỏi khác</button>
 <button class="btn btn-outline" id="copyPrompt" type="button">Sao chép câu hỏi</button><p class="game-feedback" id="promptFeedback" aria-live="polite"></p></section>
-<section class="game-card tarot-card"><div class="game-icon">🃏</div><h2>Lá bài gợi ý</h2><p>Rút một lá bài mang thông điệp tích cực để suy ngẫm — chỉ mang tính giải trí, không dự đoán tương lai.</p>
-<div class="tarot-result" id="tarotResult"><span>✦</span><strong>Chưa rút bài</strong><small>Hãy thử một lá bài ngẫu nhiên.</small></div>
-<button class="btn" id="drawTarot" type="button">Rút một lá bài</button></section>
+<section class="game-card tarot-card tarot-game" aria-labelledby="tarotTitle">
+<div class="tarot-heading"><div><span class="eyebrow">THE COSMIC ARCANA</span><h2 id="tarotTitle">Thông điệp từ vũ trụ</h2><p>Chọn một trải bài, tập trung vào điều bạn muốn chiêm nghiệm và để những biểu tượng dẫn lối suy nghĩ.</p></div><span class="tarot-heading-orb" aria-hidden="true">✧</span></div>
+<div class="tarot-controls">
+ <div class="tarot-control-group"><label for="tarotSpread">Kiểu trải bài</label><select id="tarotSpread"><option value="single">Một lá · Thông điệp hôm nay</option><option value="three">Ba lá · Hành trình của bạn</option></select></div>
+ <div class="tarot-control-group"><label for="tarotTopic">Chủ đề chiêm nghiệm</label><select id="tarotTopic"><option value="general">Tổng quan</option><option value="love">Tình cảm & kết nối</option><option value="work">Công việc & mục tiêu</option><option value="self">Bản thân & phát triển</option></select></div>
+</div>
+<div class="tarot-deck-stage" id="tarotDeckStage" aria-label="Bộ bài Tarot vũ trụ">
+ <div class="tarot-deck-card tarot-deck-card-back tarot-back-one" aria-hidden="true"><span>✦</span></div><div class="tarot-deck-card tarot-deck-card-back tarot-back-two" aria-hidden="true"><span>☾</span></div>
+ <div class="tarot-deck-card tarot-deck-card-main" aria-hidden="true"><span class="tarot-card-corner">✧</span><span class="tarot-card-mandala">☼</span><strong>THE<br>UNKNOWN</strong><small>CONNECT · ARCANA</small><span class="tarot-card-corner bottom">✧</span></div>
+</div>
+<p class="tarot-instruction" id="tarotInstruction">Hít thở chậm, nghĩ về điều bạn muốn khám phá rồi bắt đầu rút bài.</p>
+<div class="tarot-actions"><button class="btn" id="drawTarot" type="button">✦ Xáo bài & rút bài</button><button class="btn btn-outline" id="resetTarot" type="button">Làm mới</button></div>
+<div class="tarot-reading" id="tarotReading" aria-live="polite" hidden></div>
+<div class="tarot-history-panel"><div class="tarot-history-heading"><div><span class="eyebrow">YOUR JOURNAL</span><h3>Lịch sử chiêm nghiệm</h3></div><button type="button" class="tarot-clear-history" id="clearTarotHistory">Xóa lịch sử</button></div>
+ <p class="tarot-history-note" id="tarotStorageNote">Lịch sử được lưu riêng tư trên thiết bị này.</p><div class="tarot-history-list" id="tarotHistoryList"><p class="tarot-history-empty">Những lá bài bạn đã rút sẽ xuất hiện tại đây.</p></div>
+</div>
+<p class="tarot-disclaimer">Tarot tại Connect chỉ phục vụ giải trí và tự suy ngẫm, không dự đoán tương lai hay thay thế lời khuyên chuyên môn.</p>
+</section>
 </div>
 <p class="games-note">Hãy tôn trọng lượt chia sẻ của mọi người. Không ép ai trả lời câu hỏi hoặc tiết lộ thông tin cá nhân.</p>
 </main>
 <footer class="site-footer"><p>© 2026 Connect. Kết nối từ những sở thích chung.</p></footer>
 <script src="js/script.js"></script>
-<script src="js/nav-compact.js"></script><script src="js/theme.js"></script><script type="module" src="js/session.js"></script><script src="js/games.js"></script>
+<script src="js/nav-compact.js"></script><script src="js/theme.js"></script><script type="module" src="js/session.js"></script><script src="js/games.js"></script><script type="module" src="js/tarot.js"></script>
   <script type="module" src="js/presence.js"></script>
 <script src="js/cosmic-bg.js" defer></script>
 </body></html>

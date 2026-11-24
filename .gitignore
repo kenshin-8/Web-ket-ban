@@ -5,3 +5,10 @@ node_modules/
 connect-test-accounts.csv
 .DS_Store
 Thumbs.db
+playwright-report/
+test-results/
+
+connect-two-test-accounts.csv
+.env.test.local
+
+!.env.test.example

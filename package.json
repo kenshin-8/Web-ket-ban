@@ -1,7 +1,20 @@
 {
-  "name": "connect-test-account-generator",
+  "name": "connect-test-suite",
   "private": true,
   "type": "module",
-  "scripts": { "create": "node create-test-accounts.mjs" },
-  "dependencies": { "@supabase/supabase-js": "2.45.4" }
+  "scripts": {
+    "create": "node create-test-accounts.mjs",
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:report": "playwright show-report playwright-report",
+    "test:interactions": "playwright test tests/two-account-interactions.spec.js --workers=1 --timeout=120000",
+    "create:two": "node create-two-test-accounts.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.45.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1"
+  }
 }

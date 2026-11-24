@@ -37,55 +37,214 @@ const people = [
   ["Phúc An", "Hà Nội", "Yêu chó, chạy bộ và hoạt động cộng đồng", ["thú cưng","chạy bộ","cộng đồng"], "Sư Tử"]
 ];
 
+
+const TARGET_TOTAL = 20;
 const runTag = Date.now().toString(36);
+
 const rows = [];
 const errors = [];
 
-for (let i = 0; i < people.length; i++) {
-  const [name, city, bio, interests, zodiac] = people[i];
-  const number = String(i + 1).padStart(2, "0");
-  const email = `connect-test-${runTag}-${number}@example.com`;
-  const password = `Ct!${randomBytes(9).toString("base64url")}9a`;
-  try {
+async function getExistingBots() {
+  const allUsers = [];
+  let page = 1;
+
+  while (true) {
+    const { data, error } = await supabase.auth.admin.listUsers({
+      page,
+      perPage: 1000,
+    });
+
+    if (error) {
+      throw new Error(`Không đọc được danh sách tài khoản: ${error.message}`);
+    }
+
+    const batch = data.users || [];
+    allUsers.push(...batch);
+
+    if (batch.length < 1000) break;
+    page++;
+  }
+
+  return allUsers.filter((user) => {
+    const email = user.email || "";
+    const isConnectBot =
+      email.startsWith("connect-e2e-") ||
+      email.startsWith("connect-test-");
+
+    return isConnectBot && user.user_metadata?.test_account === true;
+  });
+}
+
+async function ensureProfile(user) {
+  const { data: profile, error: checkError } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (checkError) {
+    throw new Error(`Không kiểm tra được profile: ${checkError.message}`);
+  }
+
+  if (profile) return;
+
+  const name =
+    user.user_metadata?.username ||
+    user.email?.split("@")[0] ||
+    "Connect Bot";
+
+  const { error } = await supabase.from("profiles").upsert(
+    {
+      id: user.id,
+      display_name: name,
+      city: "Việt Nam",
+      bio: "Tài khoản tự động kiểm thử Connect",
+      interests: ["kiểm thử", "công nghệ"],
+      zodiac: "Bảo Bình",
+      is_visible: true,
+    },
+    { onConflict: "id" }
+  );
+
+  if (error) {
+    throw new Error(`Không tạo được profile cho ${name}: ${error.message}`);
+  }
+}
+
+async function main() {
+  const bots = await getExistingBots();
+
+  console.log(`Đã tìm thấy ${bots.length}/20 bot hiện có.`);
+
+  // Bảo đảm các bot cũ cũng có hồ sơ.
+  for (const bot of bots) {
+    try {
+      await ensureProfile(bot);
+    } catch (error) {
+      errors.push(`${bot.email}: ${error.message}`);
+    }
+  }
+
+  if (bots.length >= TARGET_TOTAL) {
+    console.log("Đã đủ 20 bot. Không tạo thêm tài khoản.");
+    return;
+  }
+
+  while (bots.length < TARGET_TOTAL) {
+    const slot = bots.length + 1;
+    const [baseName, city, bio, interests, zodiac] = people[slot - 1];
+
+    const number = String(slot).padStart(2, "0");
+    const name = `Bot ${number} - ${baseName}`;
+    const email = `connect-test-${runTag}-${number}@example.com`;
+    const password = `Ct!${randomBytes(12).toString("base64url")}9a`;
+
+    console.log(`Đang tạo bot ${number}/20: ${name}`);
+
     const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
-      user_metadata: { username: name, test_account: true }
+      user_metadata: {
+        username: name,
+        test_account: true,
+      },
     });
-    if (error) throw error;
 
-    const { error: profileError } = await supabase.from("profiles").upsert({
-      id: data.user.id,
-      display_name: name,
-      bio,
-      interests,
-      city,
-      zodiac,
-      is_visible: true
-    }, { onConflict: "id" });
+    if (error) {
+      errors.push(`${email}: ${error.message}`);
+      console.error(`Không tạo được ${email}: ${error.message}`);
+      break;
+    }
+
+    // Ghi nhận tài khoản ngay sau khi Auth tạo thành công.
+    bots.push(data.user);
+
+    const { error: profileError } = await supabase.from("profiles").upsert(
+      {
+        id: data.user.id,
+        display_name: name,
+        city,
+        bio,
+        interests,
+        zodiac,
+        is_visible: true,
+      },
+      { onConflict: "id" }
+    );
+
+    const status = profileError
+      ? `AUTH_CREATED_PROFILE_ERROR: ${profileError.message}`
+      : "created";
+
+    rows.push({
+      number,
+      name,
+      email,
+      password,
+      user_id: data.user.id,
+      status,
+    });
 
     if (profileError) {
-      // Auth user was created; record it so it can be cleaned up manually if profile setup fails.
-      rows.push({ number, name, email, password, user_id: data.user.id, status: `AUTH_CREATED_PROFILE_ERROR: ${profileError.message}` });
-      errors.push(`${email}: profile: ${profileError.message}`);
+      errors.push(`${email}: lỗi tạo profile: ${profileError.message}`);
+      console.error(`Auth đã tạo nhưng profile lỗi: ${email}`);
     } else {
-      rows.push({ number, name, email, password, user_id: data.user.id, status: "created" });
-      console.log(`OK ${number}/20 ${email}`);
+      console.log(`OK ${bots.length}/20 - ${email}`);
     }
-  } catch (e) {
-    errors.push(`${email}: ${e.message}`);
-    rows.push({ number, name, email, password, user_id: "", status: `ERROR: ${e.message}` });
-    console.error(`Lỗi ${number}/20: ${e.message}`);
+  }
+
+  // Xuất riêng thông tin các tài khoản vừa tạo.
+  if (rows.length > 0) {
+    const headers = [
+      "number",
+      "display_name",
+      "email",
+      "password",
+      "user_id",
+      "status",
+    ];
+
+    const csv = [
+      headers.join(","),
+      ...rows.map((row) =>
+        headers
+          .map((key) =>
+            `"${String(row[key] ?? "").replaceAll('"', '""')}"`
+          )
+          .join(",")
+      ),
+    ].join("\n");
+
+    const fileName = `connect-remaining-bots-${runTag}.csv`;
+
+    writeFileSync(fileName, "\uFEFF" + csv, {
+      encoding: "utf8",
+      mode: 0o600,
+    });
+
+    console.log(`Đã lưu thông tin tài khoản mới vào ${fileName}`);
+  }
+
+  console.log("\n========== KẾT QUẢ ==========");
+  console.log(`Tổng số bot Auth: ${bots.length}/20`);
+  console.log(`Số bot vừa tạo: ${rows.length}`);
+  console.log(
+    `Số bot tạo đủ Auth và profile: ${
+      rows.filter((row) => row.status === "created").length
+    }`
+  );
+
+  if (errors.length) {
+    console.error("\nCác lỗi cần xử lý:");
+    errors.forEach((error) => console.error("- " + error));
+    process.exitCode = 1;
+  } else {
+    console.log("Hoàn tất, không phát hiện lỗi.");
   }
 }
 
-const headers = ["number","display_name","email","password","user_id","status"];
-const csv = [headers.join(","), ...rows.map(r => headers.map(k => `"${String(r[k] ?? "").replaceAll('"','""')}"`).join(","))].join("\n");
-writeFileSync("connect-test-accounts.csv", "\uFEFF" + csv, "utf8");
-console.log(`\nHoàn tất: ${rows.filter(r => r.status === "created").length}/20 tài khoản tạo đủ cả Auth và profile.`);
-console.log("Đã ghi connect-test-accounts.csv trong thư mục chạy script.");
-if (errors.length) {
-  console.error("\nCần xử lý các lỗi sau:\n" + errors.join("\n"));
-  process.exitCode = 2;
-}
+main().catch((error) => {
+  console.error("Lỗi:", error.message);
+  process.exitCode = 1;
+});
