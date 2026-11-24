@@ -50,6 +50,23 @@ export const defaultAvatar = {
     bg: "aurora"
 };
 
+/** Tạo Avatar mặc định ổn định theo ID cho hồ sơ chưa tự thiết kế Avatar. */
+export function createAvatarForProfile(profile) {
+    if (profile?.avatar_data) return sanitizeAvatar(profile.avatar_data);
+    const seedText = String(profile?.id || profile?.display_name || "connect");
+    let seed = 7;
+    for (const char of seedText) seed = (Math.imul(seed, 31) + char.charCodeAt(0)) >>> 0;
+    const result = { ...defaultAvatar };
+    for (const option of OPTIONS) {
+        const values = option.values.map(item => item[0]);
+        if (values.length) {
+            seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+            result[option.key] = values[seed % values.length];
+        }
+    }
+    return sanitizeAvatar(result);
+}
+
 const hairstyles = {
     short: { back: "M65 95 Q55 20 120 25 Q185 20 175 95 L170 160 L70 160 Z", front: "M68 95 Q75 35 120 45 Q165 35 172 95 Q150 70 130 80 Q100 60 68 95" },
     long: { back: "M65 90 Q55 20 120 25 Q185 20 175 90 L190 235 L50 235 Z", front: "M68 95 Q75 35 120 45 Q165 35 172 95 Q150 70 130 80 Q100 60 68 95" },

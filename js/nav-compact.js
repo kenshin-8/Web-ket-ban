@@ -1,75 +1,60 @@
-/* Connect shared navigation: clear primary destinations + grouped cosmic utilities. */
+/* Connect shared navigation: home + Soul Match + three compact areas.
+   Existing HTML routes and feature scripts stay intact; this only reorganizes navigation. */
 (() => {
   const nav = document.getElementById('navLinks');
   if (!nav || nav.dataset.compactReady === 'true') return;
 
-  const primary = ['index.html', 'discover.html', 'friends.html'];
-  const accountDestination = 'profile.html';
+  const primary = ['index.html', 'match.html'];
   const groups = [
-    { title: 'KẾT NỐI', links: ['match.html', 'voice.html'] },
-    { title: 'KHÁM PHÁ & GIẢI TRÍ', links: ['square.html', 'avatar.html', 'icebreaker.html', 'quiz.html'] }
+    { title: 'KẾT NỐI', label: 'Kết nối', links: ['discover.html', 'friends.html'] },
+    { title: 'CỘNG ĐỒNG', label: 'Cộng đồng', links: ['square.html', 'voice.html'] },
+    { title: 'GIẢI TRÍ & KHÁM PHÁ', label: 'Giải trí', links: ['icebreaker.html', 'quiz.html'] }
   ];
   const hrefOf = (a) => (a.getAttribute('href') || '').split('#')[0].replace(/^\.\//, '');
-  const links = [...nav.querySelectorAll(':scope > a')];
+  const allLinks = [...nav.querySelectorAll(':scope > a')];
+  // Hồ sơ và Avatar đã nằm trong menu tài khoản / trang Hồ sơ, không lặp ở menu chính.
+  allLinks.filter(a => ['profile.html', 'avatar.html'].includes((a.getAttribute('href') || '').split('#')[0].replace(/^\.\//, ''))).forEach(a => a.remove());
+  const links = allLinks.filter(a => !['profile.html', 'avatar.html'].includes((a.getAttribute('href') || '').split('#')[0].replace(/^\.\//, '')));
+  const byHref = new Map(links.map(a => [hrefOf(a), a]));
 
-  // Keep three primary destinations in a predictable order.
-  // Profile is intentionally accessed from the account menu to avoid duplicate navigation.
-  links.filter(a => hrefOf(a) === accountDestination).forEach(a => a.remove());
-  links.sort((a, b) => {
-    const ai = primary.indexOf(hrefOf(a));
-    const bi = primary.indexOf(hrefOf(b));
-    return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
-  });
-  links.filter(a => primary.includes(hrefOf(a))).forEach(a => nav.appendChild(a));
+  // Keep the two most frequently used destinations visible.
+  links.filter(a => primary.includes(hrefOf(a)))
+    .sort((a, b) => primary.indexOf(hrefOf(a)) - primary.indexOf(hrefOf(b)))
+    .forEach(a => nav.appendChild(a));
 
-  const extras = links.filter(a => !primary.includes(hrefOf(a)) && hrefOf(a) !== accountDestination);
-  if (extras.length) {
+  // Group every other existing destination into areas of two pages.
+  groups.forEach((group, index) => {
+    const groupLinks = group.links.map(href => byHref.get(href)).filter(Boolean);
+    if (!groupLinks.length) return;
+
     const menu = document.createElement('div');
-    menu.className = 'nav-more';
+    menu.className = 'nav-more nav-area';
 
     const toggle = document.createElement('button');
     toggle.type = 'button';
     toggle.className = 'nav-more-toggle';
-    toggle.innerHTML = '<span class="nav-more-icon" aria-hidden="true">⠿</span><span>Tiện ích</span><span class="nav-more-chevron" aria-hidden="true">⌄</span>';
+    toggle.innerHTML = `<span>${group.label}</span><span class="nav-more-chevron" aria-hidden="true">⌄</span>`;
     toggle.setAttribute('aria-expanded', 'false');
     toggle.setAttribute('aria-haspopup', 'true');
+    toggle.setAttribute('aria-label', `${group.label}, mở danh mục`);
 
     const panel = document.createElement('div');
     panel.className = 'nav-more-panel';
-    panel.id = `navMorePanel-${Math.random().toString(36).slice(2, 8)}`;
-    panel.setAttribute('aria-label', 'Các tiện ích Connect');
+    panel.id = `navAreaPanel${index}`;
+    panel.setAttribute('aria-label', group.title);
     toggle.setAttribute('aria-controls', panel.id);
 
-    groups.forEach(group => {
-      const groupLinks = extras.filter(a => group.links.includes(hrefOf(a)));
-      if (!groupLinks.length) return;
-      const section = document.createElement('section');
-      section.className = 'nav-more-group';
-      const heading = document.createElement('h3');
-      heading.className = 'nav-more-heading';
-      heading.textContent = group.title;
-      section.appendChild(heading);
-      groupLinks.forEach(a => {
-        a.classList.add('nav-utility-link');
-        section.appendChild(a);
-      });
-      panel.appendChild(section);
+    const section = document.createElement('section');
+    section.className = 'nav-more-group';
+    const heading = document.createElement('h3');
+    heading.className = 'nav-more-heading';
+    heading.textContent = group.title;
+    section.appendChild(heading);
+    groupLinks.forEach(a => {
+      a.classList.add('nav-utility-link');
+      section.appendChild(a);
     });
-
-    // Preserve any future utility links even if they are not in a named group yet.
-    const grouped = new Set(groups.flatMap(group => group.links));
-    const ungrouped = extras.filter(a => !grouped.has(hrefOf(a)));
-    if (ungrouped.length) {
-      const section = document.createElement('section');
-      section.className = 'nav-more-group';
-      const heading = document.createElement('h3');
-      heading.className = 'nav-more-heading';
-      heading.textContent = 'TIỆN ÍCH KHÁC';
-      section.appendChild(heading);
-      ungrouped.forEach(a => section.appendChild(a));
-      panel.appendChild(section);
-    }
-
+    panel.appendChild(section);
     menu.append(toggle, panel);
     nav.appendChild(menu);
 
@@ -80,18 +65,58 @@
     };
     toggle.addEventListener('click', () => {
       const open = !menu.classList.contains('is-open');
+      nav.querySelectorAll('.nav-area.is-open').forEach(other => {
+        other.classList.remove('is-open');
+        other.querySelector('.nav-more-toggle')?.setAttribute('aria-expanded', 'false');
+      });
       menu.classList.toggle('is-open', open);
       toggle.setAttribute('aria-expanded', String(open));
       if (open) panel.querySelector('a')?.focus();
     });
     document.addEventListener('click', e => { if (!menu.contains(e.target)) close(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && menu.classList.contains('is-open')) close(true); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && menu.classList.contains('is-open')) close(true);
+    });
     panel.addEventListener('click', e => { if (e.target.closest('a')) close(); });
 
     if (panel.querySelector('[aria-current="page"]')) {
       toggle.classList.add('has-current');
-      toggle.setAttribute('aria-label', 'Tiện ích, có trang hiện tại');
+      toggle.setAttribute('aria-label', `${group.label}, đang ở trong danh mục này`);
     }
+  });
+
+  // Keep any unrecognized future links accessible rather than silently dropping them.
+  const known = new Set([...primary, ...groups.flatMap(group => group.links)]);
+  const ungrouped = links.filter(a => !known.has(hrefOf(a)));
+  if (ungrouped.length) {
+    const menu = document.createElement('div');
+    menu.className = 'nav-more nav-area';
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'nav-more-toggle';
+    toggle.textContent = 'Khác';
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-haspopup', 'true');
+    const panel = document.createElement('div');
+    panel.className = 'nav-more-panel';
+    const section = document.createElement('section');
+    section.className = 'nav-more-group';
+    ungrouped.forEach(a => section.appendChild(a));
+    panel.appendChild(section);
+    menu.append(toggle, panel);
+    nav.appendChild(menu);
+    toggle.addEventListener('click', () => {
+      const open = !menu.classList.contains('is-open');
+      menu.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('click', e => {
+      if (!menu.contains(e.target)) {
+        menu.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
   }
+
   nav.dataset.compactReady = 'true';
 })();

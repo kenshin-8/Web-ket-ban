@@ -1,5 +1,5 @@
 import { supabase } from "./supabase.js";
-import { createAvatarSvg } from "./avatar-data.js";
+import { createAvatarSvg, createAvatarForProfile } from "./avatar-data.js";
 import { signByName } from "./zodiac.js";
 import { PLANETS, compat } from "./soul.js";
 import { initSoulConnections, createSoulLikeButton, sharedInterests } from "./soul-connection.js";
@@ -13,15 +13,10 @@ const searchBtn = document.getElementById("searchBtn");
 const clearFilters = document.getElementById("clearFilters");
 let searchTimer = null, currentUser = null, myProfile = null;
 
-function makeAvatar(avatarData, displayName) {
+function makeAvatar(member) {
     const wrapper = document.createElement("div");
     wrapper.className = "member-avatar";
-    if (!avatarData) {
-        wrapper.classList.add("member-avatar-fallback");
-        wrapper.textContent = (displayName || "T").trim().charAt(0).toLocaleUpperCase("vi-VN");
-        return wrapper;
-    }
-    wrapper.appendChild(createAvatarSvg(avatarData, `Avatar của ${displayName || "thành viên"}`));
+    wrapper.appendChild(createAvatarSvg(createAvatarForProfile(member), `Avatar của ${member.display_name || "thành viên"}`));
     return wrapper;
 }
 
@@ -37,7 +32,7 @@ function renderMember(member) {
     const card = document.createElement("article");
     card.className = "member-card";
     card.dataset.memberId = member.id;
-    card.appendChild(makeAvatar(member.avatar_data, member.display_name));
+    card.appendChild(makeAvatar(member));
     const planet = PLANETS[member.planet];
     if (planet) addText(card, "div", "planet-orb-mini", `${planet.icon} Tinh cầu ${planet.name}`);
     addText(card, "h3", "member-name", member.display_name || "Thành viên Connect");

@@ -1,5 +1,6 @@
 import { supabase } from "./supabase.js";
 import { openBlockedDialog } from "./safety.js";
+import { createAvatarSvg, createAvatarForProfile } from "./avatar-data.js";
 
 const $ = (id) => document.getElementById(id);
 const searchForm = $("friendSearchForm");
@@ -29,11 +30,11 @@ function safeText(value, fallback = "Thành viên Connect") {
   return typeof value === "string" && value.trim() ? value.trim() : fallback;
 }
 
-function makeAvatar(name) {
+function makeAvatar(profile) {
   const avatar = document.createElement("span");
   avatar.className = "person-avatar";
   avatar.setAttribute("aria-hidden", "true");
-  avatar.textContent = safeText(name, "C").slice(0, 1).toLocaleUpperCase("vi");
+  avatar.appendChild(createAvatarSvg(createAvatarForProfile(profile), `Avatar của ${safeText(profile?.display_name)}`));
   return avatar;
 }
 
@@ -42,7 +43,7 @@ function makePersonCard(profile, actionLabel, onAction, note = "") {
   card.className = "person-card";
   const identity = document.createElement("div");
   identity.className = "person-identity";
-  identity.append(makeAvatar(profile.display_name));
+  identity.append(makeAvatar(profile));
   const copy = document.createElement("div");
   copy.className = "person-copy";
   const name = document.createElement("strong");
@@ -81,7 +82,7 @@ async function loadProfiles(ids) {
   const uniqueIds = [...new Set(ids.filter(Boolean))];
   if (!uniqueIds.length) return new Map();
   const { data, error } = await supabase.from("profiles")
-    .select("id, display_name, city, interests")
+    .select("id, display_name, city, interests, avatar_data")
     .in("id", uniqueIds);
   if (error) throw error;
   return new Map((data || []).map(profile => [profile.id, profile]));
@@ -97,7 +98,7 @@ async function runSearch(term) {
   searchStatus.textContent = "Đang tìm thành viên…";
   searchResults.replaceChildren();
   const { data, error } = await supabase.from("profiles")
-    .select("id, display_name, city, interests")
+    .select("id, display_name, city, interests, avatar_data")
     .eq("is_visible", true)
     .ilike("display_name", `%${query.replace(/[,%()]/g, " ")}%`)
     .neq("id", currentUser.id)
@@ -194,7 +195,7 @@ async function loadNetwork() {
     const card = document.createElement("article");
     card.className = "person-card request-card";
     const identity = document.createElement("div"); identity.className = "person-identity";
-    identity.append(makeAvatar(profile.display_name));
+    identity.append(makeAvatar(profile));
     const copy = document.createElement("div"); copy.className = "person-copy";
     const name = document.createElement("strong"); name.textContent = safeText(profile.display_name);
     const meta = document.createElement("small"); meta.textContent = "Muốn kết nối với bạn";

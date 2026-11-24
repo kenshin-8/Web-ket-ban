@@ -1,6 +1,6 @@
 import { supabase } from "./supabase.js";
 import { PLANETS, compat } from "./soul.js";
-import { createAvatarSvg } from "./avatar-data.js";
+import { createAvatarSvg, createAvatarForProfile } from "./avatar-data.js";
 import { signByName } from "./zodiac.js";
 import { initSoulConnections, createSoulLikeButton, sharedInterests } from "./soul-connection.js";
 import { loadMatchedIds, addMatchActions } from "./match-chat.js";
@@ -13,8 +13,7 @@ function card(p, badge, note, score = 0) {
     const c = el("article", `member-card${score >= 80 ? " soul-lit" : ""}`);
     c.dataset.memberId = p.id;
     const av = el("div", "member-avatar", null, c);
-    if (p.avatar_data) av.appendChild(createAvatarSvg(p.avatar_data, `Avatar của ${p.display_name}`));
-    else { av.classList.add("member-avatar-fallback"); av.textContent = (p.display_name || "T").charAt(0).toLocaleUpperCase("vi-VN"); }
+    av.appendChild(createAvatarSvg(createAvatarForProfile(p), `Avatar của ${p.display_name || "thành viên"}`));
     el("h3", "member-name", p.display_name || "Thành viên Connect", c);
     const sg = signByName(p.zodiac);
     if (sg) el("span", "zodiac-badge", `${sg.g} ${sg.n} · Cung ${sg.el}`, c);

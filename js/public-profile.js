@@ -1,5 +1,5 @@
 import { supabase } from "./supabase.js";
-import { applyAvatar } from "./avatar-data.js";
+import { applyAvatar, createAvatarForProfile } from "./avatar-data.js";
 import { renderAvatarHologram } from "./avatar-hologram.js";
 import { PLANETS } from "./soul.js";
 import { reportContent, blockUser, safetyButton } from "./safety.js";
@@ -29,13 +29,11 @@ function addAchievement(container, icon, title, detail, unlocked) {
   item.append(node("span", "achievement-icon", icon), node("strong", "", title), node("small", "", detail));
   container.append(item);
 }
-function renderAvatar(host, data, name) {
+function renderAvatar(host, data, name, profileId) {
   host.replaceChildren();
-  if (data) {
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("viewBox", "0 0 240 240"); svg.setAttribute("role", "img"); svg.setAttribute("aria-label", `Avatar của ${name}`);
-    host.append(svg); applyAvatar(svg, data);
-  } else host.append(node("span", "", (name || "C").trim().charAt(0).toLocaleUpperCase("vi-VN")));
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 240 240"); svg.setAttribute("role", "img"); svg.setAttribute("aria-label", `Avatar của ${name}`);
+  host.append(svg); applyAvatar(svg, createAvatarForProfile({ id: profileId, display_name: name, avatar_data: data }));
 }
 
 async function getNames(ids) {
@@ -219,7 +217,7 @@ async function load() {
   $("publicHeadline").textContent = profile.headline || "";
   $("publicCity").textContent = profile.city ? `⌖ ${profile.city}` : "Thành viên Connect";
   $("publicBio").textContent = profile.bio || "Thành viên này chưa thêm phần giới thiệu.";
-  renderAvatar($("publicAvatar"), profile.avatar_data, profile.display_name);
+  renderAvatar($("publicAvatar"), profile.avatar_data, profile.display_name, profile.id);
   renderAvatarHologram($("publicAvatarHologram"), profile.avatar_data, profile.display_name || "thành viên Connect");
   if (profile.cover_url) $("publicCover").style.backgroundImage = `linear-gradient(90deg,rgba(8,12,30,.45),rgba(8,12,30,.05)),url("${profile.cover_url.replaceAll('"','%22')}")`;
   chipList($("publicInterests"), profile.interests, "public-chip");

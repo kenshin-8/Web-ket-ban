@@ -15,14 +15,7 @@ const prompts = [
  "Bạn thích ngắm bình minh hay hoàng hôn hơn?",
  "Một sở thích nhỏ giúp bạn thư giãn là gì?"
 ];
-const tarot = [
- ["The Star · Ngôi Sao","Giữ hy vọng và dành thời gian nuôi dưỡng điều khiến bạn hứng khởi."],
- ["The Sun · Mặt Trời","Chú ý đến những niềm vui giản dị và chia sẻ năng lượng tích cực."],
- ["The Hermit · Ẩn Sĩ","Một khoảng lặng có thể giúp bạn lắng nghe suy nghĩ của chính mình."],
- ["The World · Thế Giới","Ghi nhận những tiến bộ nhỏ và sẵn sàng cho trải nghiệm mới."],
- ["Strength · Sức Mạnh","Sự kiên nhẫn và lòng tử tế cũng là những dạng sức mạnh."],
- ["The Magician · Nhà Ảo Thuật","Thử bắt đầu từ những nguồn lực và khả năng bạn đang có."]
-];
+
 const $ = id => document.getElementById(id);
 let activeWord = null;
 function newWord(){
@@ -50,11 +43,4 @@ $("copyPrompt").addEventListener("click",async()=>{
  try{await navigator.clipboard.writeText($("promptText").textContent);$("promptFeedback").textContent="Đã sao chép câu hỏi.";}
  catch{$("promptFeedback").textContent="Trình duyệt không cho phép sao chép. Bạn có thể chọn và copy câu hỏi.";}
 });
-$("drawTarot").addEventListener("click",()=>{
- const card=tarot[Math.floor(Math.random()*tarot.length)];
- const box=$("tarotResult"); box.replaceChildren();
- const icon=document.createElement("span");icon.textContent="✦";
- const title=document.createElement("strong");title.textContent=card[0];
- const desc=document.createElement("small");desc.textContent=card[1];
- box.append(icon,title,desc);
-});
+

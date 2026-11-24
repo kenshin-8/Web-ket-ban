@@ -1,4 +1,5 @@
 import { supabase } from './supabase.js';
+import { createAvatarSvg, createAvatarForProfile } from './avatar-data.js';
 
 const communities = {
   tech: { name: 'Tech Planet', subtitle: 'Công nghệ · Lập trình · AI', description: 'Dành cho những người yêu công nghệ, lập trình, trí tuệ nhân tạo và khám phá ý tưởng mới.', keys: ['công nghệ','technology','tech','lập trình','programming','code','coding','ai','trí tuệ nhân tạo','máy tính','developer','software','phần mềm'] },
@@ -57,12 +58,12 @@ function renderMembers(members) {
   members.forEach(member => {
     const item = document.createElement('div');
     item.className = 'universe-member-chip';
-    const initial = document.createElement('span');
-    initial.className = 'universe-member-initial';
-    initial.textContent = (member.display_name || 'T').trim().charAt(0).toLocaleUpperCase('vi-VN');
+    const avatar = document.createElement('span');
+    avatar.className = 'universe-member-avatar';
+    avatar.appendChild(createAvatarSvg(createAvatarForProfile(member), `Avatar của ${member.display_name || 'thành viên'}`));
     const name = document.createElement('span');
     name.textContent = member.display_name || 'Thành viên Connect';
-    item.append(initial, name);
+    item.append(avatar, name);
     list.appendChild(item);
   });
   membersBox.appendChild(list);
@@ -95,7 +96,7 @@ async function loadCommunityMembers(communityId) {
   if (joinedCount) joinedCount.textContent = `${ids.length} người đã tham gia`;
   if (!ids.length) { renderMembers([]); return; }
   const { data: visibleProfiles, error: profileError } = await supabase.from('profiles')
-    .select('id,display_name').eq('is_visible', true).in('id', ids);
+    .select('id,display_name,avatar_data').eq('is_visible', true).in('id', ids);
   if (profileError) throw profileError;
   const byId = new Map((visibleProfiles || []).map(profile => [profile.id, profile]));
   renderMembers(ids.map(id => byId.get(id)).filter(Boolean));

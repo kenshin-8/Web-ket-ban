@@ -1,22 +1,22 @@
 # Connect Navigation Update
 
-## Changes
-- Standardized the navigation links across all pages that contain the shared site header.
-- Kept four primary destinations visible: Trang chủ, Khám phá, Bạn bè, Hồ sơ.
-- Grouped Soul Match, Quảng trường, Phòng thoại, Tạo Avatar, Mini-games, and Trắc nghiệm under “Thêm tiện ích”.
-- Preserved the existing cosmic theme and reused the current header styling.
-- Improved keyboard and screen-reader support for the compact menu.
-- Added outside-click, Escape-key, and resize handling for the mobile navigation.
-- Kept the existing page URLs and application features unchanged.
+## Compact area navigation (2026-11-24)
+
+The shared navigation now presents two direct destinations and four compact areas. Each area contains no more than two main pages:
+
+- **Trang chủ:** `index.html`
+- **Soul Match:** `match.html`
+- **Kết nối:** `discover.html`, `friends.html`
+- **Cộng đồng:** `square.html`, `voice.html`
+- **Cá nhân:** `profile.html`, `avatar.html`
+- **Giải trí & khám phá:** `icebreaker.html`, `quiz.html`
+
+Account settings remain reachable from the account controls; `public-profile.html` remains a profile-detail route, and `admin.html`, `login.html`, and `register.html` remain dedicated system routes.
+
+This is a navigation and information-architecture change only. It does not delete or rename HTML pages, alter database tables, change Supabase configuration, or remove feature scripts. Existing page URLs and feature implementations are retained. Each area menu closes on outside click or Escape, exposes its expanded state to assistive technology, and supports the existing mobile navigation layout.
 
 ## Validation
-- Checked JavaScript syntax for `js/nav-compact.js` and `js/script.js` with Node.js.
-- Checked that all shared navigation links point to HTML files present in the project.
-- Checked that all pages containing the navigation load `css/header-compact.css`, `js/nav-compact.js`, and `js/script.js`.
 
-## Modern Cosmic refinement (2026-11-23)
-- Refined the shared header with a restrained glass effect, clearer active/hover states, and responsive spacing.
-- Grouped utility links into “Kết nối” and “Khám phá & giải trí” sections while retaining their original href values.
-- Added a compact utility icon/chevron, panel entrance motion, focus states, and reduced-motion handling.
-- Refined the existing account popover and added an explicit `aria-controls` relationship; all account-setting destinations remain unchanged.
-- Kept the four primary links, page URLs, session logic, and existing application features intact.
+- Checked JavaScript syntax for `js/nav-compact.js`.
+- Checked that every grouped destination has a corresponding HTML file.
+- Checked that every page loading the shared navigation script contains the expected navigation container.

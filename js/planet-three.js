@@ -170,7 +170,7 @@ if (wrap && canvas) {
     function resize() {
       const rect = wrap.getBoundingClientRect();
       const width = Math.max(1, rect.width);
-      const height = Math.max(320, Math.min(520, width * .72));
+      const height = Math.max(320, Math.min(460, width * .62));
       renderer.setSize(width, height, false);
       canvas.style.width = '100%';
       canvas.style.height = `${height}px`;
